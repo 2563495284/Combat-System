@@ -124,12 +124,12 @@ TextureImporter:
       name: hero_jian_idle_0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 31
-        width: 26
-        height: 20
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -146,12 +146,12 @@ TextureImporter:
       name: hero_jian_idle_1
       rect:
         serializedVersion: 2
-        x: 109
-        y: 31
-        width: 26
-        height: 21
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: hero_jian_idle_2
       rect:
         serializedVersion: 2
-        x: 189
-        y: 31
-        width: 26
-        height: 21
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -190,12 +190,12 @@ TextureImporter:
       name: hero_jian_idle_3
       rect:
         serializedVersion: 2
-        x: 268
-        y: 31
-        width: 26
-        height: 20
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -212,12 +212,12 @@ TextureImporter:
       name: hero_jian_idle_4
       rect:
         serializedVersion: 2
-        x: 347
-        y: 31
-        width: 26
-        height: 20
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -234,12 +234,12 @@ TextureImporter:
       name: hero_jian_idle_5
       rect:
         serializedVersion: 2
-        x: 427
-        y: 31
-        width: 26
-        height: 21
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -256,12 +256,12 @@ TextureImporter:
       name: hero_jian_idle_6
       rect:
         serializedVersion: 2
-        x: 507
-        y: 31
-        width: 26
-        height: 21
+        x: 480
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -278,12 +278,12 @@ TextureImporter:
       name: hero_jian_idle_7
       rect:
         serializedVersion: 2
-        x: 588
-        y: 31
-        width: 26
-        height: 21
+        x: 560
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7260f0aa80546b84da37ce863771f17e
     internalID: 0
     vertices: []
     indices: 
@@ -308,8 +308,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_idle_0: 6728311569458933250
+      hero_jian_idle_1: 2481539155761856777
+      hero_jian_idle_2: -7058417178491675874
+      hero_jian_idle_3: 3021587729512845814
+      hero_jian_idle_4: 3683987442224118862
+      hero_jian_idle_5: 1671542807097508781
+      hero_jian_idle_6: -1593854541836658905
+      hero_jian_idle_7: -329245899851387002
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

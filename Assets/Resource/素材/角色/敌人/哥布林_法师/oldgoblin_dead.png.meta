@@ -834,7 +834,36 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      oldgoblin_dead_0: 6711750497682271662
+      oldgoblin_dead_1: -7118142675759128862
+      oldgoblin_dead_10: -665391003052952000
+      oldgoblin_dead_11: 4192990731911143152
+      oldgoblin_dead_12: -1004490001220790761
+      oldgoblin_dead_13: -6664692540717082975
+      oldgoblin_dead_14: -5116790413761013897
+      oldgoblin_dead_15: -6783348248437611858
+      oldgoblin_dead_16: 5922137957146595207
+      oldgoblin_dead_17: 5326334806501807383
+      oldgoblin_dead_18: 1804541228879452361
+      oldgoblin_dead_19: -8401847198721858899
+      oldgoblin_dead_2: 1519412213946713111
+      oldgoblin_dead_20: 8625762807691917491
+      oldgoblin_dead_21: 3604759944643906492
+      oldgoblin_dead_22: 4230788882866055756
+      oldgoblin_dead_23: 2842625003290264117
+      oldgoblin_dead_24: 7082388185181263712
+      oldgoblin_dead_25: 7968531777471566307
+      oldgoblin_dead_26: -3897336135345021279
+      oldgoblin_dead_27: -8086058853605649381
+      oldgoblin_dead_28: 8702324523126195296
+      oldgoblin_dead_3: 8906184484588951872
+      oldgoblin_dead_4: 7762713775609841671
+      oldgoblin_dead_5: -6933562898085374592
+      oldgoblin_dead_6: -961586182997626372
+      oldgoblin_dead_7: 4567150012817185819
+      oldgoblin_dead_8: -915468549289659979
+      oldgoblin_dead_9: -7999712186288861641
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

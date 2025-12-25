@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_walk_0: -4772134311653484798
+      hero_kuodao_walk_1: 4723334742049255242
+      hero_kuodao_walk_2: -3182643796982401556
+      hero_kuodao_walk_3: -4207807936949484229
+      hero_kuodao_walk_4: 2161062016779493422
+      hero_kuodao_walk_5: -9173376955833188784
+      hero_kuodao_walk_6: -900681761185963190
+      hero_kuodao_walk_7: 9187109726977767600
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

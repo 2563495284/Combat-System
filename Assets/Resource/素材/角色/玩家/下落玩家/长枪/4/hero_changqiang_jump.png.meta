@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_jump_0: 6762244466319249389
+      hero_changqiang_jump_1: 4603688819369147854
+      hero_changqiang_jump_2: 3519287454321082645
+      hero_changqiang_jump_3: 8099464039183257935
+      hero_changqiang_jump_4: 2103793425388895663
+      hero_changqiang_jump_5: -4562150849128577796
+      hero_changqiang_jump_6: -5593436642246106057
+      hero_changqiang_jump_7: -5722768970419071850
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

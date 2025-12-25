@@ -534,7 +534,24 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_xiapi_0: 2158692414820883718
+      hero_xiapi_1: 7979465568802654490
+      hero_xiapi_10: 5355307003766737981
+      hero_xiapi_11: 2187199066899536638
+      hero_xiapi_12: 552202727807549643
+      hero_xiapi_13: 1313610496097178686
+      hero_xiapi_14: -1670026614400246299
+      hero_xiapi_15: 7717347915579179754
+      hero_xiapi_16: 6007900848405372589
+      hero_xiapi_2: 7060228465583921454
+      hero_xiapi_3: 9202933699977848956
+      hero_xiapi_4: 7770733703914129754
+      hero_xiapi_5: 4721706241386579006
+      hero_xiapi_6: -1071603508228755995
+      hero_xiapi_7: 4013310412286722522
+      hero_xiapi_8: -1276904488720010856
+      hero_xiapi_9: 2161892626561742631
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -154,12 +154,12 @@ TextureImporter:
       name: hero_xiapi_0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 31
-        width: 24
-        height: 26
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -176,12 +176,12 @@ TextureImporter:
       name: hero_xiapi_1
       rect:
         serializedVersion: 2
-        x: 110
-        y: 30
-        width: 21
-        height: 30
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -198,12 +198,12 @@ TextureImporter:
       name: hero_xiapi_2
       rect:
         serializedVersion: 2
-        x: 126
-        y: 47
-        width: 6
-        height: 6
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -220,12 +220,12 @@ TextureImporter:
       name: hero_xiapi_3
       rect:
         serializedVersion: 2
-        x: 186
-        y: 21
-        width: 21
-        height: 34
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -242,12 +242,12 @@ TextureImporter:
       name: hero_xiapi_4
       rect:
         serializedVersion: 2
-        x: 265
-        y: 21
-        width: 22
-        height: 31
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -264,12 +264,12 @@ TextureImporter:
       name: hero_xiapi_5
       rect:
         serializedVersion: 2
-        x: 343
-        y: 21
-        width: 35
-        height: 34
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -286,12 +286,12 @@ TextureImporter:
       name: hero_xiapi_6
       rect:
         serializedVersion: 2
-        x: 430
-        y: 20
-        width: 17
-        height: 37
+        x: 480
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -308,12 +308,12 @@ TextureImporter:
       name: hero_xiapi_7
       rect:
         serializedVersion: 2
-        x: 510
-        y: 21
-        width: 17
-        height: 36
+        x: 560
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -330,12 +330,12 @@ TextureImporter:
       name: hero_xiapi_8
       rect:
         serializedVersion: 2
-        x: 590
-        y: 20
-        width: 19
-        height: 37
+        x: 640
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -352,12 +352,12 @@ TextureImporter:
       name: hero_xiapi_9
       rect:
         serializedVersion: 2
-        x: 670
-        y: 16
-        width: 17
-        height: 40
+        x: 720
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -374,12 +374,12 @@ TextureImporter:
       name: hero_xiapi_10
       rect:
         serializedVersion: 2
-        x: 750
-        y: 31
-        width: 21
-        height: 31
+        x: 800
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -396,12 +396,12 @@ TextureImporter:
       name: hero_xiapi_11
       rect:
         serializedVersion: 2
-        x: 826
-        y: 31
-        width: 21
-        height: 26
+        x: 880
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -414,143 +414,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_12
-      rect:
-        serializedVersion: 2
-        x: 899
-        y: 31
-        width: 28
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bc088fa8471d9a700800000000000000
-      internalID: 552202727807549643
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_13
-      rect:
-        serializedVersion: 2
-        x: 205
-        y: 38
-        width: 10
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e34d81159c1ea3210800000000000000
-      internalID: 1313610496097178686
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_14
-      rect:
-        serializedVersion: 2
-        x: 289
-        y: 38
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5ed993374afd2d8e0800000000000000
-      internalID: -1670026614400246299
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_15
-      rect:
-        serializedVersion: 2
-        x: 844
-        y: 31
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ae2c23c7a07891b60800000000000000
-      internalID: 7717347915579179754
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_16
-      rect:
-        serializedVersion: 2
-        x: 928
-        y: 31
-        width: 14
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dae58fa8df9506350800000000000000
-      internalID: 6007900848405372589
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_xiapi_17
-      rect:
-        serializedVersion: 2
-        x: 515
-        y: 18
-        width: 11
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 23e70d2976a66a250800000000000000
-      internalID: 5955564550321372722
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5d9c8018c80728e4c9d7f2411ef168a3
     internalID: 0
     vertices: []
     indices: 
@@ -558,8 +426,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":12.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_xiapi_0: 2158692414820883718
+      hero_xiapi_1: 7979465568802654490
+      hero_xiapi_10: 5355307003766737981
+      hero_xiapi_11: 2187199066899536638
+      hero_xiapi_2: 7060228465583921454
+      hero_xiapi_3: 9202933699977848956
+      hero_xiapi_4: 7770733703914129754
+      hero_xiapi_5: 4721706241386579006
+      hero_xiapi_6: -1071603508228755995
+      hero_xiapi_7: 4013310412286722522
+      hero_xiapi_8: -1276904488720010856
+      hero_xiapi_9: 2161892626561742631
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

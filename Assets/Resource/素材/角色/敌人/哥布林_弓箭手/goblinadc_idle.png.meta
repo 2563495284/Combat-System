@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goblinadc_idle_0: -1099388413654519878
+      goblinadc_idle_1: 6384944219869557655
+      goblinadc_idle_2: 7896389871160874387
+      goblinadc_idle_3: -8990467921475238175
+      goblinadc_idle_4: 7684341008814166789
+      goblinadc_idle_5: 1864760760494721756
+      goblinadc_idle_6: -2844025472108060112
+      goblinadc_idle_7: 8871277192602304104
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

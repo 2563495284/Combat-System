@@ -139,12 +139,12 @@ TextureImporter:
       name: hero_jian_cj_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 31
-        width: 26
-        height: 21
+        x: 0
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -161,12 +161,12 @@ TextureImporter:
       name: hero_jian_cj_1
       rect:
         serializedVersion: 2
-        x: 149
-        y: 31
-        width: 26
-        height: 23
+        x: 112
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -183,12 +183,12 @@ TextureImporter:
       name: hero_jian_cj_2
       rect:
         serializedVersion: 2
-        x: 223
-        y: 43
-        width: 11
-        height: 7
+        x: 224
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -205,12 +205,12 @@ TextureImporter:
       name: hero_jian_cj_3
       rect:
         serializedVersion: 2
-        x: 267
-        y: 31
-        width: 21
-        height: 31
+        x: 336
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -227,12 +227,12 @@ TextureImporter:
       name: hero_jian_cj_4
       rect:
         serializedVersion: 2
-        x: 342
-        y: 43
-        width: 24
-        height: 12
+        x: 448
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -249,12 +249,12 @@ TextureImporter:
       name: hero_jian_cj_5
       rect:
         serializedVersion: 2
-        x: 362
-        y: 31
-        width: 38
-        height: 30
+        x: 560
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -271,12 +271,12 @@ TextureImporter:
       name: hero_jian_cj_6
       rect:
         serializedVersion: 2
-        x: 454
-        y: 31
-        width: 74
-        height: 34
+        x: 672
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -293,12 +293,12 @@ TextureImporter:
       name: hero_jian_cj_7
       rect:
         serializedVersion: 2
-        x: 571
-        y: 31
-        width: 101
-        height: 32
+        x: 784
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -315,12 +315,12 @@ TextureImporter:
       name: hero_jian_cj_8
       rect:
         serializedVersion: 2
-        x: 707
-        y: 31
-        width: 69
-        height: 34
+        x: 896
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -337,12 +337,12 @@ TextureImporter:
       name: hero_jian_cj_9
       rect:
         serializedVersion: 2
-        x: 818
-        y: 33
-        width: 39
-        height: 36
+        x: 1008
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -359,12 +359,12 @@ TextureImporter:
       name: hero_jian_cj_10
       rect:
         serializedVersion: 2
-        x: 930
-        y: 35
-        width: 43
-        height: 37
+        x: 1120
+        y: 0
+        width: 112
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -377,55 +377,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: hero_jian_cj_11
-      rect:
-        serializedVersion: 2
-        x: 1037
-        y: 32
-        width: 44
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8bdad50668e1c82e0800000000000000
-      internalID: -2122287761907143240
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jian_cj_12
-      rect:
-        serializedVersion: 2
-        x: 1148
-        y: 31
-        width: 39
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 94aebec9f42370b00800000000000000
-      internalID: 794659176770693705
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5422b66c0b3ac6a4fb292696f66fdb6e
     internalID: 0
     vertices: []
     indices: 
@@ -433,8 +389,21 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":112.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_cj_0: -7319503526356094151
+      hero_jian_cj_1: 6779092357986359057
+      hero_jian_cj_10: 8106048008894855202
+      hero_jian_cj_2: -942089044437867418
+      hero_jian_cj_3: -1084189240391921495
+      hero_jian_cj_4: -7943113748190015030
+      hero_jian_cj_5: -6158254364333422214
+      hero_jian_cj_6: 7395131781038791675
+      hero_jian_cj_7: 1879401678401761488
+      hero_jian_cj_8: -3501168750836280695
+      hero_jian_cj_9: 6780351748382043030
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

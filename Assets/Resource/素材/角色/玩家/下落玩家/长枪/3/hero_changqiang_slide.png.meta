@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_slide_0: 1794217196073436221
+      hero_changqiang_slide_1: -4633582883537031708
+      hero_changqiang_slide_2: -1689816234346405769
+      hero_changqiang_slide_3: -1332405402511144259
+      hero_changqiang_slide_4: 9061061752043379465
+      hero_changqiang_slide_5: 7598450567854734664
+      hero_changqiang_slide_6: 183277523058002199
+      hero_changqiang_slide_7: -957979799681150092
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

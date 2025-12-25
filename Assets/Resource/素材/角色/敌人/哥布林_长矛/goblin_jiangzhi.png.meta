@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goblin_jiangzhi_0: 1096054196923611871
+      goblin_jiangzhi_1: 3968969468489069388
+      goblin_jiangzhi_2: 9162489897857695644
+      goblin_jiangzhi_3: 7951288352632127546
+      goblin_jiangzhi_4: -4043923913486169669
+      goblin_jiangzhi_5: 5776345988758791784
+      goblin_jiangzhi_6: -4706291348796075704
+      goblin_jiangzhi_7: -5647068536052151739
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

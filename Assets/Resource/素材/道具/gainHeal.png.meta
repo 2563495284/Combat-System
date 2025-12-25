@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gainHeal_0: -2594553615607196619
+      gainHeal_1: 6981419970599354595
+      gainHeal_2: 220803214374855720
+      gainHeal_3: -928837607104458888
+      gainHeal_4: 698235384621745986
+      gainHeal_5: -9154183468151011097
+      gainHeal_6: 9017675063277516777
+      gainHeal_7: -8578822001002055731
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

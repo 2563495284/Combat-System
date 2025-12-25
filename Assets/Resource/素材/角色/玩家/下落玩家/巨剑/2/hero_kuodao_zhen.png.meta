@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_zhen_0: 3240210015364450210
+      hero_kuodao_zhen_1: 3395630007653122789
+      hero_kuodao_zhen_2: 6795083494717573082
+      hero_kuodao_zhen_3: 5293335469694704536
+      hero_kuodao_zhen_4: 5611877298823183794
+      hero_kuodao_zhen_5: 940350285245166807
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -234,7 +234,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_tiaosha_0: -8011039190383605470
+      hero_changqiang_tiaosha_1: -4240944515683915869
+      hero_changqiang_tiaosha_2: 1618190885624985013
+      hero_changqiang_tiaosha_3: -8251257403956714628
+      hero_changqiang_tiaosha_4: 8014295627419045998
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

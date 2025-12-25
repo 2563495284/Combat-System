@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      shouji_0: -4168336504317110508
+      shouji_1: -7475219529857816750
+      shouji_2: -389417216786438214
+      shouji_3: -5993239507367122846
+      shouji_4: 6838818701408284040
+      shouji_5: 2755036195055611704
+      shouji_6: 3786439218742174974
+      shouji_7: 8830305006069702725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

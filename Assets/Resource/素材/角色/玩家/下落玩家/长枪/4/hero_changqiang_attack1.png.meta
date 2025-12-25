@@ -559,7 +559,25 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_attack1_0: -7825978316680060373
+      hero_changqiang_attack1_1: 4497258486962700282
+      hero_changqiang_attack1_10: 1776008432939118740
+      hero_changqiang_attack1_11: -3500905893389693613
+      hero_changqiang_attack1_12: -2971367487617229564
+      hero_changqiang_attack1_13: -5857226118598719828
+      hero_changqiang_attack1_14: 6933355909937785540
+      hero_changqiang_attack1_15: -4141176884648542040
+      hero_changqiang_attack1_16: -5197212132785094612
+      hero_changqiang_attack1_17: -2136796196493841034
+      hero_changqiang_attack1_2: -8058586676046108020
+      hero_changqiang_attack1_3: -8251415496254056236
+      hero_changqiang_attack1_4: -5582405927338732850
+      hero_changqiang_attack1_5: 3181204699122959747
+      hero_changqiang_attack1_6: -8317485722040319080
+      hero_changqiang_attack1_7: 802479047214083408
+      hero_changqiang_attack1_8: -4013041735410859635
+      hero_changqiang_attack1_9: 4152880002026237047
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

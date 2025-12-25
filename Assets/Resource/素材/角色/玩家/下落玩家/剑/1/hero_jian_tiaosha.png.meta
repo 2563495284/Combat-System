@@ -118,12 +118,12 @@ TextureImporter:
       name: hero_jian_tiaosha_0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 27
-        width: 26
-        height: 29
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -140,12 +140,12 @@ TextureImporter:
       name: hero_jian_tiaosha_1
       rect:
         serializedVersion: 2
-        x: 95
-        y: 26
-        width: 19
-        height: 44
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: hero_jian_tiaosha_2
       rect:
         serializedVersion: 2
-        x: 105
-        y: 23
-        width: 22
-        height: 29
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: hero_jian_tiaosha_3
       rect:
         serializedVersion: 2
-        x: 175
-        y: 31
-        width: 55
-        height: 45
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -206,12 +206,12 @@ TextureImporter:
       name: hero_jian_tiaosha_4
       rect:
         serializedVersion: 2
-        x: 270
+        x: 320
         y: 0
-        width: 41
-        height: 72
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -224,33 +224,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: hero_jian_tiaosha_5
-      rect:
-        serializedVersion: 2
-        x: 338
-        y: 31
-        width: 29
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 282ea64c3d6224740800000000000000
-      internalID: 5134709216131080834
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 18617eba80d891f40a5c02b95d0603ae
     internalID: 0
     vertices: []
     indices: 
@@ -258,8 +236,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_tiaosha_0: 8670422453934391041
+      hero_jian_tiaosha_1: -225046927779866561
+      hero_jian_tiaosha_2: -2793735545258294616
+      hero_jian_tiaosha_3: 1087553140330369766
+      hero_jian_tiaosha_4: 7925033573665885474
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -609,7 +609,27 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_dao_dead_0: -1724359473902911373
+      hero_dao_dead_1: 4352956992192792476
+      hero_dao_dead_10: 8273275284787680511
+      hero_dao_dead_11: -2145385485269004586
+      hero_dao_dead_12: -3426747259529758816
+      hero_dao_dead_13: 5901395915024229168
+      hero_dao_dead_14: -1113238791311571991
+      hero_dao_dead_15: -8509954075509013900
+      hero_dao_dead_16: 6546863165378313228
+      hero_dao_dead_17: 6224377451477041319
+      hero_dao_dead_18: 7569206874821623691
+      hero_dao_dead_19: -7010083195741332636
+      hero_dao_dead_2: -8060665976177781691
+      hero_dao_dead_3: 4192248824272951334
+      hero_dao_dead_4: 8006260719705625538
+      hero_dao_dead_5: -5487953087190966774
+      hero_dao_dead_6: -6696276946761553093
+      hero_dao_dead_7: -4926028456901011093
+      hero_dao_dead_8: 1266147368198466839
+      hero_dao_dead_9: -3554497732662519438
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

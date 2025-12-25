@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_jump_0: -3167441153460142702
+      hero_kuodao_jump_1: 300959088730694946
+      hero_kuodao_jump_2: -2982568454070963071
+      hero_kuodao_jump_3: 911281915261189859
+      hero_kuodao_jump_4: -5586835935489322392
+      hero_kuodao_jump_5: 5403393007883485858
+      hero_kuodao_jump_6: -5498088424141132643
+      hero_kuodao_jump_7: -6535619791637442948
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

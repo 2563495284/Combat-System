@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goblin_rush_0: 3804435890018818059
+      goblin_rush_1: -3742001493274758672
+      goblin_rush_2: 6683377958948279022
+      goblin_rush_3: -6750347384139531205
+      goblin_rush_4: 860096287987005547
+      goblin_rush_5: -3799285227768495205
+      goblin_rush_6: -5159152024857925857
+      goblin_rush_7: -2196489154428804858
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

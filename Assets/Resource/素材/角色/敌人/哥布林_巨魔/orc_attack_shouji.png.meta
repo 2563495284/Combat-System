@@ -509,7 +509,23 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      orc_attack_shouji_0: 5430809856623702673
+      orc_attack_shouji_1: -5711821620984309854
+      orc_attack_shouji_10: -8015825645086989926
+      orc_attack_shouji_11: 1055823731355759744
+      orc_attack_shouji_12: -6061456764675052497
+      orc_attack_shouji_13: 3234012245891185125
+      orc_attack_shouji_14: -481776614555437988
+      orc_attack_shouji_15: -5051029152209881032
+      orc_attack_shouji_2: 4092246910164453187
+      orc_attack_shouji_3: -7498703783878180919
+      orc_attack_shouji_4: -4698172324409221924
+      orc_attack_shouji_5: -9095091838236801841
+      orc_attack_shouji_6: 646865793803835083
+      orc_attack_shouji_7: -3949170856190618599
+      orc_attack_shouji_8: 2739425733014132736
+      orc_attack_shouji_9: -8853145272245547356
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

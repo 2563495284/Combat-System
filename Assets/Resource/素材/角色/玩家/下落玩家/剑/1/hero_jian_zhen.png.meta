@@ -118,12 +118,12 @@ TextureImporter:
       name: hero_jian_zhen_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 31
-        width: 29
-        height: 21
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -140,12 +140,12 @@ TextureImporter:
       name: hero_jian_zhen_1
       rect:
         serializedVersion: 2
-        x: 105
-        y: 31
-        width: 29
-        height: 20
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: hero_jian_zhen_2
       rect:
         serializedVersion: 2
-        x: 187
-        y: 31
-        width: 34
-        height: 22
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: hero_jian_zhen_3
       rect:
         serializedVersion: 2
-        x: 267
-        y: 31
-        width: 36
-        height: 23
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -206,12 +206,12 @@ TextureImporter:
       name: hero_jian_zhen_4
       rect:
         serializedVersion: 2
-        x: 349
-        y: 31
-        width: 31
-        height: 23
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -228,12 +228,12 @@ TextureImporter:
       name: hero_jian_zhen_5
       rect:
         serializedVersion: 2
-        x: 430
-        y: 31
-        width: 28
-        height: 26
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -250,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1c0fc2bba929c274d80c0fb13394f933
     internalID: 0
     vertices: []
     indices: 
@@ -258,8 +258,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_zhen_0: -8680724014811707674
+      hero_jian_zhen_1: -8672453927830916088
+      hero_jian_zhen_2: 1770964040853310947
+      hero_jian_zhen_3: -4988150277383046449
+      hero_jian_zhen_4: 8296184106622920859
+      hero_jian_zhen_5: -5369310087340169669
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -169,12 +169,12 @@ TextureImporter:
       name: hero_jian_attack1_0
       rect:
         serializedVersion: 2
-        x: 22
-        y: 31
-        width: 26
-        height: 21
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: hero_jian_attack1_1
       rect:
         serializedVersion: 2
-        x: 102
-        y: 31
-        width: 34
-        height: 21
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -213,12 +213,12 @@ TextureImporter:
       name: hero_jian_attack1_2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 31
-        width: 9
-        height: 12
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -235,12 +235,12 @@ TextureImporter:
       name: hero_jian_attack1_3
       rect:
         serializedVersion: 2
-        x: 189
-        y: 29
-        width: 51
-        height: 21
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -257,12 +257,12 @@ TextureImporter:
       name: hero_jian_attack1_4
       rect:
         serializedVersion: 2
-        x: 258
-        y: 31
-        width: 29
-        height: 21
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -279,12 +279,12 @@ TextureImporter:
       name: hero_jian_attack1_5
       rect:
         serializedVersion: 2
-        x: 289
-        y: 34
-        width: 6
-        height: 8
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -301,12 +301,12 @@ TextureImporter:
       name: hero_jian_attack1_6
       rect:
         serializedVersion: 2
-        x: 339
-        y: 31
-        width: 30
-        height: 21
+        x: 480
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -323,12 +323,12 @@ TextureImporter:
       name: hero_jian_attack1_7
       rect:
         serializedVersion: 2
-        x: 421
-        y: 31
-        width: 27
-        height: 21
+        x: 560
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -345,12 +345,12 @@ TextureImporter:
       name: hero_jian_attack1_8
       rect:
         serializedVersion: 2
-        x: 505
-        y: 31
-        width: 24
-        height: 23
+        x: 640
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -367,12 +367,12 @@ TextureImporter:
       name: hero_jian_attack1_9
       rect:
         serializedVersion: 2
-        x: 577
-        y: 31
-        width: 37
-        height: 24
+        x: 720
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -389,12 +389,12 @@ TextureImporter:
       name: hero_jian_attack1_10
       rect:
         serializedVersion: 2
-        x: 654
-        y: 31
-        width: 36
-        height: 27
+        x: 800
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -411,12 +411,12 @@ TextureImporter:
       name: hero_jian_attack1_11
       rect:
         serializedVersion: 2
-        x: 735
-        y: 31
-        width: 34
-        height: 25
+        x: 880
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -433,12 +433,12 @@ TextureImporter:
       name: hero_jian_attack1_12
       rect:
         serializedVersion: 2
-        x: 815
-        y: 31
-        width: 43
-        height: 25
+        x: 960
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -455,12 +455,12 @@ TextureImporter:
       name: hero_jian_attack1_13
       rect:
         serializedVersion: 2
-        x: 895
-        y: 31
-        width: 58
-        height: 25
+        x: 1040
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -477,12 +477,12 @@ TextureImporter:
       name: hero_jian_attack1_14
       rect:
         serializedVersion: 2
-        x: 978
-        y: 29
-        width: 32
-        height: 22
+        x: 1120
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -499,12 +499,12 @@ TextureImporter:
       name: hero_jian_attack1_15
       rect:
         serializedVersion: 2
-        x: 1058
-        y: 27
-        width: 29
-        height: 24
+        x: 1200
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -521,12 +521,12 @@ TextureImporter:
       name: hero_jian_attack1_16
       rect:
         serializedVersion: 2
-        x: 1084
-        y: 34
-        width: 6
-        height: 8
+        x: 1280
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -543,12 +543,12 @@ TextureImporter:
       name: hero_jian_attack1_17
       rect:
         serializedVersion: 2
-        x: 1138
-        y: 25
-        width: 29
-        height: 26
+        x: 1360
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -561,121 +561,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: hero_jian_attack1_18
-      rect:
-        serializedVersion: 2
-        x: 1165
-        y: 34
-        width: 6
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2e5168e08a446f380800000000000000
-      internalID: -8937880921881307678
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jian_attack1_19
-      rect:
-        serializedVersion: 2
-        x: 1218
-        y: 25
-        width: 29
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 86ebad4fbf425cff0800000000000000
-      internalID: -16566359062561176
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jian_attack1_20
-      rect:
-        serializedVersion: 2
-        x: 1245
-        y: 34
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ac7936506e8111ec0800000000000000
-      internalID: -3598067251080357942
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jian_attack1_21
-      rect:
-        serializedVersion: 2
-        x: 1298
-        y: 25
-        width: 40
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 679b4e4a1523ac520800000000000000
-      internalID: 2723044250939079030
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jian_attack1_22
-      rect:
-        serializedVersion: 2
-        x: 1378
-        y: 25
-        width: 54
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0157de1de14c98c70800000000000000
-      internalID: 8973919369162487056
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e78ab9bfaa9068a41bb7fd8ffe877d6c
     internalID: 0
     vertices: []
     indices: 
@@ -683,8 +573,28 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":18.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_attack1_0: 2452841513103874644
+      hero_jian_attack1_1: 3480145098802960138
+      hero_jian_attack1_10: 6943257259905908316
+      hero_jian_attack1_11: 1773880139947754931
+      hero_jian_attack1_12: 1343165641803297370
+      hero_jian_attack1_13: -2603969732351187896
+      hero_jian_attack1_14: 1650630925942414547
+      hero_jian_attack1_15: 2960908075077152752
+      hero_jian_attack1_16: 2004046428688973991
+      hero_jian_attack1_17: 24227275679827244
+      hero_jian_attack1_2: 1029061366804111983
+      hero_jian_attack1_3: 3413240598291984588
+      hero_jian_attack1_4: 5498962167942356531
+      hero_jian_attack1_5: 2913997804750035125
+      hero_jian_attack1_6: -4556189544866162013
+      hero_jian_attack1_7: -7914410556430935965
+      hero_jian_attack1_8: 7740386255290375839
+      hero_jian_attack1_9: -5712536244577262104
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

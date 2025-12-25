@@ -234,7 +234,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      orc_shouji_0: -3053238098696270258
+      orc_shouji_1: -2188826071111751214
+      orc_shouji_2: -7779309360610012399
+      orc_shouji_3: 7722683953175607212
+      orc_shouji_4: -7683769931136295402
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

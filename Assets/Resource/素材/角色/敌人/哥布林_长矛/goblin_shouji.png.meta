@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goblin_shouji_0: 5006335565751566416
+      goblin_shouji_1: -7834531157994768306
+      goblin_shouji_2: 4996793727422715833
+      goblin_shouji_3: -4244936130310968374
+      goblin_shouji_4: -1377122432832662931
+      goblin_shouji_5: 3887272405046133622
+      goblin_shouji_6: 2358650090130700083
+      goblin_shouji_7: 4314330309522067761
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

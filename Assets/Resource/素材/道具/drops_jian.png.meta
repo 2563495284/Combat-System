@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      drops_jian_0: -5834048503412229274
+      drops_jian_1: -5286312053699034715
+      drops_jian_2: 4326993883751249678
+      drops_jian_3: 9038245797098528251
+      drops_jian_4: 8424743911580688506
+      drops_jian_5: -5556436618851905481
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

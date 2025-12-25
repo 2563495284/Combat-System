@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_idle_0: 1700954658500505842
+      hero_kuodao_idle_1: 1131883742751038873
+      hero_kuodao_idle_2: 3947900084153070457
+      hero_kuodao_idle_3: -391881109591921784
+      hero_kuodao_idle_4: 5319809146618422748
+      hero_kuodao_idle_5: 6593521639495234272
+      hero_kuodao_idle_6: -8074257342594246190
+      hero_kuodao_idle_7: -8098456192703253726
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
