@@ -7,7 +7,7 @@ namespace Character3C.Tasks
     /// 冲刺状态任务
     /// 处理角色的冲刺状态逻辑
     /// </summary>
-    public class DashStateTask : TaskEntry<CharacterBlackboard>
+    public class DashStateTask : TaskEntry<CharacterBlackboard25D>
     {
         private bool dashStarted = false;
         private float dashTimer = 0f;

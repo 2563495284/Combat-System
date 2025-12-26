@@ -4,27 +4,27 @@ using CombatSystem.Core;
 namespace Character3C.Tasks
 {
     /// <summary>
-    /// 攻击状态任务
+    /// 攻击状态任务 (2.5D)
     /// 处理角色的攻击状态逻辑
     /// </summary>
-    public class AttackStateTask : TaskEntry<CharacterBlackboard>
+    public class AttackStateTask : TaskEntry<CharacterBlackboard25D>
     {
-        private CharacterController2D character;
-        private CharacterAnimator animator;
+        private Character25DController character;
+        private Animator animator;
 
         private float attackDuration = 0.5f;
         private float attackTimer = 0f;
         private bool hitExecuted = false;
 
         // 攻击配置
-        private Vector2 attackOffset = new Vector2(1f, 0f);
-        private Vector2 attackSize = new Vector2(1.5f, 1f);
+        private Vector3 attackOffset = new Vector3(1f, 0.5f, 0f);
+        private Vector3 attackSize = new Vector3(1.5f, 1f, 1.5f);
         private LayerMask enemyLayer;
 
-        public AttackStateTask(CharacterController2D character)
+        public AttackStateTask(Character25DController character)
         {
             this.character = character;
-            this.animator = character.GetComponent<CharacterAnimator>();
+            this.animator = character.GetComponent<Animator>();
 
             // 默认敌人层
             this.enemyLayer = LayerMask.GetMask("Enemy");
@@ -81,19 +81,19 @@ namespace Character3C.Tasks
                 return;
 
             // 计算攻击判定框位置
-            Vector2 attackPos = (Vector2)Blackboard.Transform.position;
-            Vector2 offset = attackOffset;
+            Vector3 attackPos = Blackboard.Transform.position;
+            Vector3 offset = attackOffset;
 
-            // 根据朝向调整偏移
-            if (!Blackboard.IsFacingRight)
+            // 根据朝向调整偏移（使用面向方向）
+            if (Blackboard.FacingDirection.x < 0)
             {
                 offset.x *= -1;
             }
 
             attackPos += offset;
 
-            // 检测碰撞
-            Collider2D[] hits = Physics2D.OverlapBoxAll(attackPos, attackSize, 0f, enemyLayer);
+            // 检测碰撞（使用 3D 物理）
+            Collider[] hits = Physics.OverlapBox(attackPos, attackSize * 0.5f, Quaternion.identity, enemyLayer);
 
             if (hits.Length > 0)
             {
@@ -121,7 +121,7 @@ namespace Character3C.Tasks
         /// <summary>
         /// 对敌人造成伤害
         /// </summary>
-        private void DealDamageToEnemy(Collider2D enemy)
+        private void DealDamageToEnemy(Collider enemy)
         {
             // 计算伤害
             float baseDamage = 10f;
@@ -142,19 +142,21 @@ namespace Character3C.Tasks
         /// </summary>
         private void ApplyKnockback(Transform target)
         {
-            if (target.TryGetComponent<Rigidbody2D>(out var rb))
+            if (target.TryGetComponent<Rigidbody>(out var rb))
             {
-                Vector2 knockbackDir = Blackboard.IsFacingRight ? Vector2.right : Vector2.left;
+                Vector3 knockbackDir = Blackboard.FacingDirection;
+                knockbackDir.y = 0;
+                knockbackDir.Normalize();
                 float knockbackForce = 5f;
 
-                rb.AddForce(knockbackDir * knockbackForce, ForceMode2D.Impulse);
+                rb.AddForce(knockbackDir * knockbackForce, ForceMode.Impulse);
             }
         }
 
         /// <summary>
         /// 播放击中特效
         /// </summary>
-        private void PlayHitEffect(Vector2 position)
+        private void PlayHitEffect(Vector3 position)
         {
             // 播放击中音效
             // AudioManager.Instance?.PlaySound("Hit");
@@ -166,29 +168,29 @@ namespace Character3C.Tasks
         /// <summary>
         /// 调试绘制攻击判定框
         /// </summary>
-        private void DebugDrawAttackBox(Vector2 center)
+        private void DebugDrawAttackBox(Vector3 center)
         {
 #if UNITY_EDITOR
-            Debug.DrawLine(
-                center + new Vector2(-attackSize.x * 0.5f, -attackSize.y * 0.5f),
-                center + new Vector2(attackSize.x * 0.5f, -attackSize.y * 0.5f),
-                Color.red, 0.5f
-            );
-            Debug.DrawLine(
-                center + new Vector2(attackSize.x * 0.5f, -attackSize.y * 0.5f),
-                center + new Vector2(attackSize.x * 0.5f, attackSize.y * 0.5f),
-                Color.red, 0.5f
-            );
-            Debug.DrawLine(
-                center + new Vector2(attackSize.x * 0.5f, attackSize.y * 0.5f),
-                center + new Vector2(-attackSize.x * 0.5f, attackSize.y * 0.5f),
-                Color.red, 0.5f
-            );
-            Debug.DrawLine(
-                center + new Vector2(-attackSize.x * 0.5f, attackSize.y * 0.5f),
-                center + new Vector2(-attackSize.x * 0.5f, -attackSize.y * 0.5f),
-                Color.red, 0.5f
-            );
+            // 绘制3D立方体的边框
+            Vector3 halfSize = attackSize * 0.5f;
+
+            // 底部四条边
+            Debug.DrawLine(center + new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), center + new Vector3(halfSize.x, -halfSize.y, -halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, -halfSize.y, -halfSize.z), center + new Vector3(halfSize.x, -halfSize.y, halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, -halfSize.y, halfSize.z), center + new Vector3(-halfSize.x, -halfSize.y, halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(-halfSize.x, -halfSize.y, halfSize.z), center + new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), Color.red, 0.5f);
+
+            // 顶部四条边
+            Debug.DrawLine(center + new Vector3(-halfSize.x, halfSize.y, -halfSize.z), center + new Vector3(halfSize.x, halfSize.y, -halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, halfSize.y, -halfSize.z), center + new Vector3(halfSize.x, halfSize.y, halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, halfSize.y, halfSize.z), center + new Vector3(-halfSize.x, halfSize.y, halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(-halfSize.x, halfSize.y, halfSize.z), center + new Vector3(-halfSize.x, halfSize.y, -halfSize.z), Color.red, 0.5f);
+
+            // 四条竖边
+            Debug.DrawLine(center + new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), center + new Vector3(-halfSize.x, halfSize.y, -halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, -halfSize.y, -halfSize.z), center + new Vector3(halfSize.x, halfSize.y, -halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(halfSize.x, -halfSize.y, halfSize.z), center + new Vector3(halfSize.x, halfSize.y, halfSize.z), Color.red, 0.5f);
+            Debug.DrawLine(center + new Vector3(-halfSize.x, -halfSize.y, halfSize.z), center + new Vector3(-halfSize.x, halfSize.y, halfSize.z), Color.red, 0.5f);
 #endif
         }
 
@@ -228,7 +230,7 @@ namespace Character3C.Tasks
         /// <summary>
         /// 设置攻击配置
         /// </summary>
-        public void SetAttackConfig(Vector2 offset, Vector2 size, LayerMask layer)
+        public void SetAttackConfig(Vector3 offset, Vector3 size, LayerMask layer)
         {
             this.attackOffset = offset;
             this.attackSize = size;

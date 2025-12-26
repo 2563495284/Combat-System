@@ -68,7 +68,7 @@ namespace Character3C
         /// <summary>
         /// 更新动画状态
         /// </summary>
-        public void UpdateAnimations(CharacterBlackboard blackboard)
+        public void UpdateAnimations(CharacterBlackboard25D blackboard)
         {
             if (animator == null) return;
 
@@ -89,8 +89,6 @@ namespace Character3C
             animator.SetBool(isAttackingHash, blackboard.IsAttacking);
             animator.SetInteger(comboIndexHash, blackboard.ComboIndex);
 
-            // 更新动画速度
-            animator.speed = blackboard.AnimationSpeed;
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 namespace Character3C
 {
     /// <summary>
-    /// 输入控制器
+    /// 输入控制器 (2.5D)
     /// 处理玩家输入并更新到角色黑板
     /// 支持 Unity 新输入系统
     /// </summary>
@@ -18,7 +18,7 @@ namespace Character3C
         [SerializeField] private float inputDeadZone = 0.1f;
 
         [Header("角色引用")]
-        [SerializeField] private CharacterController2D character;
+        [SerializeField] private Character25DController character;
 
 #if ENABLE_INPUT_SYSTEM
         // 输入动作（使用新输入系统）
@@ -32,7 +32,6 @@ namespace Character3C
         // 输入缓存
         private Vector2 moveInput;
         private bool jumpPressed;
-        private bool jumpReleased;
         private bool dashPressed;
         private bool attackPressed;
         private bool interactPressed;
@@ -41,7 +40,7 @@ namespace Character3C
         {
             if (character == null)
             {
-                character = GetComponent<CharacterController2D>();
+                character = GetComponent<Character25DController>();
             }
 
             SetupInputActions();
@@ -140,13 +139,11 @@ namespace Character3C
             if (jumpAction != null && jumpAction.enabled)
             {
                 jumpPressed = jumpAction.WasPressedThisFrame();
-                jumpReleased = jumpAction.WasReleasedThisFrame();
             }
             else
 #endif
             {
                 jumpPressed = Input.GetButtonDown("Jump");
-                jumpReleased = Input.GetButtonUp("Jump");
             }
 
 #if ENABLE_INPUT_SYSTEM
@@ -210,18 +207,6 @@ namespace Character3C
             {
                 character.Jump();
             }
-
-            // 跳跃中断
-            if (jumpReleased)
-            {
-                character.CutJump();
-            }
-
-            // 冲刺
-            if (dashPressed)
-            {
-                character.Dash();
-            }
         }
 
         /// <summary>
@@ -233,12 +218,19 @@ namespace Character3C
 
             if (!enabled)
             {
-                // 清空输入
+                // 清空输入缓存
                 moveInput = Vector2.zero;
                 jumpPressed = false;
                 dashPressed = false;
                 attackPressed = false;
                 interactPressed = false;
+
+                // 同步清空黑板输入
+                if (character != null)
+                {
+                    character.Blackboard.ResetInputFlags();
+                    character.Blackboard.InputMove = Vector2.zero;
+                }
             }
         }
 

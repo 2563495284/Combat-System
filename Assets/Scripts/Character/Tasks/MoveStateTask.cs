@@ -4,10 +4,10 @@ using CombatSystem.Core;
 namespace Character3C.Tasks
 {
     /// <summary>
-    /// 移动状态任务
+    /// 移动状态任务 (2.5D)
     /// 处理角色的移动状态逻辑
     /// </summary>
-    public class MoveStateTask : TaskEntry<CharacterBlackboard>
+    public class MoveStateTask : TaskEntry<CharacterBlackboard25D>
     {
         private float minMoveThreshold = 0.1f;
 
@@ -18,8 +18,8 @@ namespace Character3C.Tasks
 
         protected override void OnUpdate(float deltaTime)
         {
-            // 检查是否有移动输入
-            bool isMoving = Mathf.Abs(Blackboard.InputMove.x) > minMoveThreshold;
+            // 检查是否有移动输入（2.5D 需要检查 X 和 Y 两个方向）
+            bool isMoving = Blackboard.InputMove.sqrMagnitude > minMoveThreshold * minMoveThreshold;
 
             if (!isMoving)
             {
@@ -28,7 +28,7 @@ namespace Character3C.Tasks
                 return;
             }
 
-            // 移动逻辑由 CharacterController2D 处理
+            // 移动逻辑由 Character25DController 处理
             // 这里可以添加移动相关的特效、音效等
 
             // 示例：每隔一段时间播放脚步声

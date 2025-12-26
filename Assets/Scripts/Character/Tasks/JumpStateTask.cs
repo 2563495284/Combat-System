@@ -4,10 +4,10 @@ using CombatSystem.Core;
 namespace Character3C.Tasks
 {
     /// <summary>
-    /// 跳跃状态任务
+    /// 跳跃状态任务 (2.5D)
     /// 处理角色的跳跃状态逻辑
     /// </summary>
-    public class JumpStateTask : TaskEntry<CharacterBlackboard>
+    public class JumpStateTask : TaskEntry<CharacterBlackboard25D>
     {
         private bool jumpExecuted = false;
 
@@ -40,7 +40,7 @@ namespace Character3C.Tasks
         {
             jumpExecuted = true;
 
-            // 跳跃逻辑由 CharacterController2D 处理
+            // 跳跃逻辑由 Character25DController 处理
             // 这里可以添加跳跃特效
 
             // 播放跳跃音效

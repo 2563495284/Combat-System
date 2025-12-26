@@ -4,14 +4,14 @@ using CombatSystem.Core;
 namespace Character3C.Tasks
 {
     /// <summary>
-    /// 玩家控制任务
+    /// 玩家控制任务 (2.5D)
     /// 基于 TaskEntry 框架的玩家控制逻辑
     /// </summary>
-    public class PlayerControlTask : TaskEntry<CharacterBlackboard>
+    public class PlayerControlTask : TaskEntry<CharacterBlackboard25D>
     {
-        private CharacterController2D character;
+        private Character25DController character;
 
-        public PlayerControlTask(CharacterController2D character)
+        public PlayerControlTask(Character25DController character)
         {
             this.character = character;
         }
