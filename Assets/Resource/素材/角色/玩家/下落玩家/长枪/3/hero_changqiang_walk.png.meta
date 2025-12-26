@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_walk_0: 471585504869914604
+      hero_changqiang_walk_1: 3271545570284224951
+      hero_changqiang_walk_2: 8064271170057748180
+      hero_changqiang_walk_3: -40274767382915114
+      hero_changqiang_walk_4: -1048763075831803839
+      hero_changqiang_walk_5: 201160171161723464
+      hero_changqiang_walk_6: 4724330499112058688
+      hero_changqiang_walk_7: -3780310748255063412
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -559,7 +559,25 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      orc_rushk_0: -5347064971214022210
+      orc_rushk_1: -6040790797796889207
+      orc_rushk_10: 1442994189891130104
+      orc_rushk_11: 3513472126460723383
+      orc_rushk_12: 8697561479958946709
+      orc_rushk_13: 7845615227097108892
+      orc_rushk_14: 592424824988474873
+      orc_rushk_15: 3898839624018959625
+      orc_rushk_16: 7632511276166521601
+      orc_rushk_17: -229030017355641837
+      orc_rushk_2: 7309466202326338177
+      orc_rushk_3: -5868326846976486682
+      orc_rushk_4: -3094779800580403556
+      orc_rushk_5: -1477196594550752936
+      orc_rushk_6: 8453617017859407388
+      orc_rushk_7: 3935003536440477780
+      orc_rushk_8: -7200660438189418404
+      orc_rushk_9: 946976130139046902
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

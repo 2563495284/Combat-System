@@ -609,7 +609,27 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_dead_0: -748195452784714453
+      hero_kuodao_dead_1: -8088221128918009321
+      hero_kuodao_dead_10: 1911678277427899702
+      hero_kuodao_dead_11: 5609828058384142615
+      hero_kuodao_dead_12: -1955148788707824927
+      hero_kuodao_dead_13: 9006900425439181255
+      hero_kuodao_dead_14: 6928625412256344742
+      hero_kuodao_dead_15: 8387432172863805681
+      hero_kuodao_dead_16: -3339209473096161744
+      hero_kuodao_dead_17: 3819891143220857834
+      hero_kuodao_dead_18: 5822233017735715627
+      hero_kuodao_dead_19: -3891526933412985509
+      hero_kuodao_dead_2: 654847956103547578
+      hero_kuodao_dead_3: -5195503558775398078
+      hero_kuodao_dead_4: 1730867193245490730
+      hero_kuodao_dead_5: -7975504991716330649
+      hero_kuodao_dead_6: 1333229363687408218
+      hero_kuodao_dead_7: -2550435698695266448
+      hero_kuodao_dead_8: -8658965061806563322
+      hero_kuodao_dead_9: 1697399617987891326
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

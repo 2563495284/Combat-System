@@ -334,7 +334,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      orc_standup_0: -7464478231630746362
+      orc_standup_1: 4838451914789020009
+      orc_standup_2: -956617552277718338
+      orc_standup_3: 1445074638875977113
+      orc_standup_4: 2282950727801908594
+      orc_standup_5: 275951402933372061
+      orc_standup_6: -5570541993274291470
+      orc_standup_7: 3849958825717306723
+      orc_standup_8: 6072560088836694220
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

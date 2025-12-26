@@ -484,7 +484,22 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_xiapi_0: 5253907965808200158
+      hero_changqiang_xiapi_1: -3979493343501669516
+      hero_changqiang_xiapi_10: -4529240564455384009
+      hero_changqiang_xiapi_11: -1374925116243411223
+      hero_changqiang_xiapi_12: -6405604331025318872
+      hero_changqiang_xiapi_13: -8336188038521982483
+      hero_changqiang_xiapi_14: -9015601614942393935
+      hero_changqiang_xiapi_2: 5949902584228401169
+      hero_changqiang_xiapi_3: 6223702200468842289
+      hero_changqiang_xiapi_4: 511063774008637494
+      hero_changqiang_xiapi_5: -1612786467602008075
+      hero_changqiang_xiapi_6: 9147971004200109179
+      hero_changqiang_xiapi_7: -1884186313739529447
+      hero_changqiang_xiapi_8: -5158473291629447674
+      hero_changqiang_xiapi_9: 6331439386467449977
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

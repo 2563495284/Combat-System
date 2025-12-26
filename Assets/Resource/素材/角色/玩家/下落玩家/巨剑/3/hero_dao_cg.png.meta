@@ -384,7 +384,18 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_dao_cg_0: 409357998668883808
+      hero_dao_cg_1: 7329519783208948195
+      hero_dao_cg_10: -8330344788773369432
+      hero_dao_cg_2: -8447659483855086525
+      hero_dao_cg_3: -8709667632030049371
+      hero_dao_cg_4: 645386524282014962
+      hero_dao_cg_5: -7841421856104915472
+      hero_dao_cg_6: 2415292649005828650
+      hero_dao_cg_7: -649558270622244077
+      hero_dao_cg_8: 7010134128633128457
+      hero_dao_cg_9: 5579846170994139199
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

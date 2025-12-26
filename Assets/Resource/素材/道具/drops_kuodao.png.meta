@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      drops_kuodao_0: -303643588746376095
+      drops_kuodao_1: -3959171742327675533
+      drops_kuodao_2: -6830203982882997151
+      drops_kuodao_3: -8080581720084762426
+      drops_kuodao_4: -2825664948558067571
+      drops_kuodao_5: 4060555315007503115
+      drops_kuodao_6: 30680677022957750
+      drops_kuodao_7: 4397827086090922054
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

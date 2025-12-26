@@ -234,7 +234,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      bgtile_fragile_0: 6452412524410660747
+      bgtile_fragile_1: 8712883030859630104
+      bgtile_fragile_2: -6977454713825920488
+      bgtile_fragile_3: -6484011418135311239
+      bgtile_fragile_4: 7575885557210466820
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

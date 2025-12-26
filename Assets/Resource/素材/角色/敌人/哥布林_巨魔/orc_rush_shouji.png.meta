@@ -509,7 +509,23 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      orc_rush_shouji_0: 3959697814654689095
+      orc_rush_shouji_1: -4061395065244902801
+      orc_rush_shouji_10: 7608027825493419499
+      orc_rush_shouji_11: -7368589408309824103
+      orc_rush_shouji_12: -2362157230035159751
+      orc_rush_shouji_13: -5159511403939755709
+      orc_rush_shouji_14: -6376727742644763182
+      orc_rush_shouji_15: 961658230411417247
+      orc_rush_shouji_2: 2297688078616466963
+      orc_rush_shouji_3: 1252726637901539127
+      orc_rush_shouji_4: -4256301807603009250
+      orc_rush_shouji_5: 4754797465670658865
+      orc_rush_shouji_6: -1968649134173831592
+      orc_rush_shouji_7: 2096558333986831509
+      orc_rush_shouji_8: 5875261111998490001
+      orc_rush_shouji_9: -4223628940358454279
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

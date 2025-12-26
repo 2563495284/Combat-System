@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      oldgoblin_walk_0: 7359363475587096490
+      oldgoblin_walk_1: -5077077994981923155
+      oldgoblin_walk_2: -830962844345346880
+      oldgoblin_walk_3: 7198914548354889275
+      oldgoblin_walk_4: -3638790521532859805
+      oldgoblin_walk_5: 2513530941836750518
+      oldgoblin_walk_6: -4256445021365874576
+      oldgoblin_walk_7: 4501676375856741089
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

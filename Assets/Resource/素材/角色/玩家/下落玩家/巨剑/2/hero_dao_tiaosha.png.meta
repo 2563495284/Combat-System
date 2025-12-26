@@ -334,7 +334,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_dao_tiaosha_0: -6162158276044226300
+      hero_dao_tiaosha_1: -8873814503579792364
+      hero_dao_tiaosha_2: 6415384269582829953
+      hero_dao_tiaosha_3: -410346909147732118
+      hero_dao_tiaosha_4: 3394310174710897183
+      hero_dao_tiaosha_5: 3403315292591894755
+      hero_dao_tiaosha_6: -1830547298728142676
+      hero_dao_tiaosha_7: 6691556379750896484
+      hero_dao_tiaosha_8: -6828101520149853874
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

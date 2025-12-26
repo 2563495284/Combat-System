@@ -484,7 +484,22 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_jian_cg_0: -5913302849160915239
+      hero_jian_cg_1: -4446801986812649489
+      hero_jian_cg_10: 3675427336671417500
+      hero_jian_cg_11: 6061260954175607902
+      hero_jian_cg_12: 4301976259043230266
+      hero_jian_cg_13: -5908578729423549531
+      hero_jian_cg_14: -9137429306523879742
+      hero_jian_cg_2: -2070413060205099811
+      hero_jian_cg_3: 7781867836527732046
+      hero_jian_cg_4: -9010032634491485712
+      hero_jian_cg_5: 6019569535479182519
+      hero_jian_cg_6: -2184707130658369417
+      hero_jian_cg_7: -5091020990598612174
+      hero_jian_cg_8: 6988893143404972610
+      hero_jian_cg_9: 7832591644774487504
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

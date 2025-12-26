@@ -409,7 +409,19 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_dao_fangun_0: -6240962751638579626
+      hero_dao_fangun_1: 5386376797578968614
+      hero_dao_fangun_10: -3556494756634864134
+      hero_dao_fangun_11: 4524137551871391886
+      hero_dao_fangun_2: 6970688727151189346
+      hero_dao_fangun_3: -3876321756283820438
+      hero_dao_fangun_4: -6218611085767501356
+      hero_dao_fangun_5: -208004262594223207
+      hero_dao_fangun_6: -6228339975939635872
+      hero_dao_fangun_7: -5812612345644938495
+      hero_dao_fangun_8: -4874099055405196918
+      hero_dao_fangun_9: -6247403940922750364
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

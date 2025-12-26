@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_jian_idle_0: 6728311569458933250
+      hero_jian_idle_1: 2481539155761856777
+      hero_jian_idle_2: -7058417178491675874
+      hero_jian_idle_3: 3021587729512845814
+      hero_jian_idle_4: 3683987442224118862
+      hero_jian_idle_5: 1671542807097508781
+      hero_jian_idle_6: -1593854541836658905
+      hero_jian_idle_7: -329245899851387002
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goblin_faxian_0: -1142390302695232877
+      goblin_faxian_1: 1733819657920093155
+      goblin_faxian_2: 5596346508626679981
+      goblin_faxian_3: 3985403149205089656
+      goblin_faxian_4: 7398478610202121566
+      goblin_faxian_5: 5178410638667826648
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

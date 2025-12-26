@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_jian_jump_0: 7486485106210904658
+      hero_jian_jump_1: 9206675078658209770
+      hero_jian_jump_2: -989564491589343378
+      hero_jian_jump_3: 1501494464100793029
+      hero_jian_jump_4: 6521489523088249508
+      hero_jian_jump_5: 8097093105381198376
+      hero_jian_jump_6: -2966836992432230284
+      hero_jian_jump_7: 8176562821711416789
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

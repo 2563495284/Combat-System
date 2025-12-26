@@ -234,7 +234,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_jian_tiaosha_0: 8670422453934391041
+      hero_jian_tiaosha_1: -225046927779866561
+      hero_jian_tiaosha_2: -2793735545258294616
+      hero_jian_tiaosha_3: 1087553140330369766
+      hero_jian_tiaosha_4: 7925033573665885474
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

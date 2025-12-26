@@ -124,12 +124,12 @@ TextureImporter:
       name: hero_jian_jump_0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 31
-        width: 26
-        height: 25
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -146,12 +146,12 @@ TextureImporter:
       name: hero_jian_jump_1
       rect:
         serializedVersion: 2
-        x: 106
-        y: 31
-        width: 26
-        height: 26
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: hero_jian_jump_2
       rect:
         serializedVersion: 2
-        x: 186
-        y: 31
-        width: 26
-        height: 26
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -190,12 +190,12 @@ TextureImporter:
       name: hero_jian_jump_3
       rect:
         serializedVersion: 2
-        x: 266
-        y: 31
-        width: 26
-        height: 25
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -212,12 +212,12 @@ TextureImporter:
       name: hero_jian_jump_4
       rect:
         serializedVersion: 2
-        x: 346
-        y: 31
-        width: 26
-        height: 21
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -234,12 +234,12 @@ TextureImporter:
       name: hero_jian_jump_5
       rect:
         serializedVersion: 2
-        x: 426
-        y: 31
-        width: 26
-        height: 24
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -256,12 +256,12 @@ TextureImporter:
       name: hero_jian_jump_6
       rect:
         serializedVersion: 2
-        x: 506
-        y: 31
-        width: 26
-        height: 29
+        x: 480
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -278,12 +278,12 @@ TextureImporter:
       name: hero_jian_jump_7
       rect:
         serializedVersion: 2
-        x: 586
-        y: 31
-        width: 26
-        height: 26
+        x: 560
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 6c560fb9a34728a489979adaab87f304
     internalID: 0
     vertices: []
     indices: 
@@ -308,8 +308,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jian_jump_0: 7486485106210904658
+      hero_jian_jump_1: 9206675078658209770
+      hero_jian_jump_2: -989564491589343378
+      hero_jian_jump_3: 1501494464100793029
+      hero_jian_jump_4: 6521489523088249508
+      hero_jian_jump_5: 8097093105381198376
+      hero_jian_jump_6: -2966836992432230284
+      hero_jian_jump_7: 8176562821711416789
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

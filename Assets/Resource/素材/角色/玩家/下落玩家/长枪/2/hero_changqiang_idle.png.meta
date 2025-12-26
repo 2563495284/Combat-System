@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_changqiang_idle_0: -5413521606958493996
+      hero_changqiang_idle_1: -441198320389335637
+      hero_changqiang_idle_2: -2761721194367353628
+      hero_changqiang_idle_3: 4014125608197177912
+      hero_changqiang_idle_4: 7483316501686378995
+      hero_changqiang_idle_5: -7327124760112720738
+      hero_changqiang_idle_6: 1282506524657384754
+      hero_changqiang_idle_7: 5360522090804547956
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

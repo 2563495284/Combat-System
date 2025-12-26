@@ -309,7 +309,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      drops_mao_0: 5778992086822563948
+      drops_mao_1: -5350446397017759880
+      drops_mao_2: 2733616894602459328
+      drops_mao_3: -2158006719831474994
+      drops_mao_4: -536982019424819168
+      drops_mao_5: 5241402058655806268
+      drops_mao_6: 6820145692548463194
+      drops_mao_7: 8651135448131760752
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

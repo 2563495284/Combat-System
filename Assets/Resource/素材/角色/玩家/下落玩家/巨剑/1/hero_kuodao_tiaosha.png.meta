@@ -334,7 +334,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hero_kuodao_tiaosha_0: 653401462769655276
+      hero_kuodao_tiaosha_1: -7377575799713979832
+      hero_kuodao_tiaosha_2: 3361685244563569584
+      hero_kuodao_tiaosha_3: -6476485719706833974
+      hero_kuodao_tiaosha_4: -4408653415125613747
+      hero_kuodao_tiaosha_5: -7421103858929061066
+      hero_kuodao_tiaosha_6: 1267524154602415278
+      hero_kuodao_tiaosha_7: 7313774857799113703
+      hero_kuodao_tiaosha_8: -1504753493618288871
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

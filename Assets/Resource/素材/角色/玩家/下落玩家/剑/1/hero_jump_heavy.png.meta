@@ -154,12 +154,12 @@ TextureImporter:
       name: hero_jump_heavy_0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 31
-        width: 24
-        height: 26
+        x: 0
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -176,12 +176,12 @@ TextureImporter:
       name: hero_jump_heavy_1
       rect:
         serializedVersion: 2
-        x: 110
-        y: 30
-        width: 21
-        height: 30
+        x: 80
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -198,12 +198,12 @@ TextureImporter:
       name: hero_jump_heavy_2
       rect:
         serializedVersion: 2
-        x: 126
-        y: 47
-        width: 6
-        height: 6
+        x: 160
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -220,12 +220,12 @@ TextureImporter:
       name: hero_jump_heavy_3
       rect:
         serializedVersion: 2
-        x: 186
-        y: 21
-        width: 21
-        height: 34
+        x: 240
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -242,12 +242,12 @@ TextureImporter:
       name: hero_jump_heavy_4
       rect:
         serializedVersion: 2
-        x: 265
-        y: 21
-        width: 22
-        height: 31
+        x: 320
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -264,12 +264,12 @@ TextureImporter:
       name: hero_jump_heavy_5
       rect:
         serializedVersion: 2
-        x: 343
-        y: 21
-        width: 35
-        height: 34
+        x: 400
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -286,12 +286,12 @@ TextureImporter:
       name: hero_jump_heavy_6
       rect:
         serializedVersion: 2
-        x: 430
-        y: 20
-        width: 17
-        height: 37
+        x: 480
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -308,12 +308,12 @@ TextureImporter:
       name: hero_jump_heavy_7
       rect:
         serializedVersion: 2
-        x: 510
-        y: 21
-        width: 17
-        height: 36
+        x: 560
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -330,12 +330,12 @@ TextureImporter:
       name: hero_jump_heavy_8
       rect:
         serializedVersion: 2
-        x: 590
-        y: 20
-        width: 19
-        height: 37
+        x: 640
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -352,12 +352,12 @@ TextureImporter:
       name: hero_jump_heavy_9
       rect:
         serializedVersion: 2
-        x: 670
-        y: 16
-        width: 17
-        height: 40
+        x: 720
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -374,12 +374,12 @@ TextureImporter:
       name: hero_jump_heavy_10
       rect:
         serializedVersion: 2
-        x: 750
-        y: 31
-        width: 21
-        height: 31
+        x: 800
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -396,12 +396,12 @@ TextureImporter:
       name: hero_jump_heavy_11
       rect:
         serializedVersion: 2
-        x: 826
-        y: 31
-        width: 21
-        height: 26
+        x: 880
+        y: 0
+        width: 80
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -414,143 +414,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_12
-      rect:
-        serializedVersion: 2
-        x: 899
-        y: 31
-        width: 28
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f0cde48d3260abdf0800000000000000
-      internalID: -163811685422932977
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_13
-      rect:
-        serializedVersion: 2
-        x: 205
-        y: 38
-        width: 10
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 872a23542e73a13a0800000000000000
-      internalID: -6693976451169738120
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_14
-      rect:
-        serializedVersion: 2
-        x: 289
-        y: 38
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8c1db1a182e2dc560800000000000000
-      internalID: 7335570117828006344
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_15
-      rect:
-        serializedVersion: 2
-        x: 844
-        y: 31
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2bd775a57613be230800000000000000
-      internalID: 3669080641390476722
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_16
-      rect:
-        serializedVersion: 2
-        x: 928
-        y: 31
-        width: 14
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 18fcf07330c290890800000000000000
-      internalID: -7491408112833802367
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: hero_jump_heavy_17
-      rect:
-        serializedVersion: 2
-        x: 515
-        y: 18
-        width: 11
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7cb62e69e23a79040800000000000000
-      internalID: 4654368160405941191
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 91857d753f2341347a72e13ec5dffdd7
     internalID: 0
     vertices: []
     indices: 
@@ -558,8 +426,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-    nameFileIdTable: {}
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":12.0,"y":1.0},"gridSpriteSize":{"x":80.0,"y":80.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      hero_jump_heavy_0: 459424309929221939
+      hero_jump_heavy_1: -5226225268020825238
+      hero_jump_heavy_10: -3063966106934963248
+      hero_jump_heavy_11: 4841825462881878428
+      hero_jump_heavy_2: -4526470654147775642
+      hero_jump_heavy_3: 4654854692850392151
+      hero_jump_heavy_4: 8374126407044560415
+      hero_jump_heavy_5: -3363042673794992049
+      hero_jump_heavy_6: 2875875785633068616
+      hero_jump_heavy_7: 5166447116647200911
+      hero_jump_heavy_8: -597088222678315281
+      hero_jump_heavy_9: 1525044639003590486
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
