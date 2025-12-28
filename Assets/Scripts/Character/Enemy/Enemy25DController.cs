@@ -516,13 +516,6 @@ namespace Character3C.Enemy
                 }
             }
             
-            // 检查是否已经有Billboard组件
-            Billboard billboard = spriteTransform.GetComponent<Billboard>();
-            if (billboard == null)
-            {
-                billboard = spriteTransform.gameObject.AddComponent<Billboard>();
-                Debug.Log($"{gameObject.name}: 已添加Billboard组件到Sprite对象");
-            }
         }
         
         /// <summary>

@@ -19,9 +19,6 @@ namespace Character3C
         [SerializeField] private Camera25DController cameraController;
         [SerializeField] private bool autoCreateCamera = true;
 
-        [Header("2.5D设置")]
-        [SerializeField] private bool autoSetupBillboard = true; // 是否自动设置Billboard
-
         private Character25DController controller;
         private InputController inputController;
 
@@ -89,22 +86,6 @@ namespace Character3C
                 spriteObj.transform.SetParent(transform);
                 spriteObj.transform.localPosition = Vector3.zero;
                 spriteRenderer = spriteObj.AddComponent<SpriteRenderer>();
-
-                // 自动添加Billboard到Sprite子对象（推荐用于2.5D）
-                if (autoSetupBillboard)
-                {
-                    Billboard spriteBillboard = spriteObj.AddComponent<Billboard>();
-                    Debug.Log("已在Sprite子对象上自动添加Billboard组件");
-                }
-            }
-            else
-            {
-                // 如果已有Sprite，检查是否需要添加Billboard
-                if (autoSetupBillboard && spriteRenderer.GetComponent<Billboard>() == null)
-                {
-                    spriteRenderer.gameObject.AddComponent<Billboard>();
-                    Debug.Log("已在现有Sprite对象上添加Billboard组件");
-                }
             }
         }
 
