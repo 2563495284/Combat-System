@@ -65,7 +65,8 @@ namespace Character3C
             col = GetComponent<CapsuleCollider>();
             mainCamera = Camera.main;
 
-            // 配置Rigidbody
+            // 配置Rigidbody - 设置为Kinematic模式
+            rb.isKinematic = true; // Kinematic模式：完全由脚本控制，不受物理力影响
             rb.useGravity = false; // 使用自定义重力
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
@@ -82,9 +83,6 @@ namespace Character3C
         {
             float deltaTime = Time.deltaTime;
 
-            // 更新地面检测
-            UpdateGroundedState();
-
             // 更新黑板数据
             UpdateBlackboard();
 
@@ -97,14 +95,18 @@ namespace Character3C
 
         private void FixedUpdate()
         {
+            // 在物理更新中检测地面（与移动同步）
+            UpdateGroundedState();
+            
+            CalculateHorizontalMovement();
+            CalculateVerticalMovement();
             ApplyMovement();
-            ApplyGravity();
         }
 
         /// <summary>
-        /// 应用移动
+        /// 计算水平移动速度 (Kinematic模式)
         /// </summary>
-        private void ApplyMovement()
+        private void CalculateHorizontalMovement()
         {
             // 处理击退衰减
             if (isKnockedBack)
@@ -117,13 +119,11 @@ namespace Character3C
                 }
             }
 
-            if (!Blackboard.CanMove)
+            if (!Blackboard.CanMove && !isKnockedBack)
             {
-                // 即使不能移动，也要应用击退效果
-                if (isKnockedBack)
-                {
-                    rb.linearVelocity = new Vector3(knockbackVelocity.x, rb.linearVelocity.y, knockbackVelocity.z);
-                }
+                // 不能移动且没有击退时，速度归零
+                velocity.x = 0;
+                velocity.z = 0;
                 return;
             }
 
@@ -146,22 +146,85 @@ namespace Character3C
                 velocity.z = Mathf.MoveTowards(velocity.z, 0, deceleration * Time.fixedDeltaTime);
             }
 
-            // 合并移动速度和击退速度
-            Vector3 horizontalVelocity = velocity;
-            if (isKnockedBack)
-            {
-                // 击退时，移动速度会被击退速度影响（可以叠加或混合）
-                horizontalVelocity = Vector3.Lerp(horizontalVelocity, knockbackVelocity, 0.7f);
-            }
-
-            // 应用水平移动
-            rb.linearVelocity = new Vector3(horizontalVelocity.x, rb.linearVelocity.y, horizontalVelocity.z);
-
             // 更新面向方向（但不旋转，因为使用Billboard）
             if (moveDirection.sqrMagnitude > 0.01f && !isKnockedBack)
             {
                 Blackboard.FacingDirection = moveDirection.normalized;
             }
+        }
+
+        /// <summary>
+        /// 计算垂直移动速度 (Kinematic模式)
+        /// </summary>
+        private void CalculateVerticalMovement()
+        {
+            if (!isGrounded)
+            {
+                // 应用重力加速度
+                velocity.y -= gravity * Time.fixedDeltaTime;
+            }
+            else
+            {
+                // 在地面上时，只有向下的速度才重置
+                if (velocity.y < 0)
+                {
+                    velocity.y = 0;
+                }
+                
+                // 只有在真正贴地时才重置跳跃计数
+                if (velocity.y <= 0.01f)
+                {
+                    jumpCount = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 应用移动 - 统一处理水平和垂直移动 (Kinematic模式，带碰撞检测)
+        /// </summary>
+        private void ApplyMovement()
+        {
+            // 计算水平速度（包含击退）
+            Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
+            if (isKnockedBack)
+            {
+                // 击退时，移动速度会被击退速度影响
+                horizontalVelocity = Vector3.Lerp(horizontalVelocity, knockbackVelocity, 0.7f);
+            }
+
+            // 合并水平和垂直速度
+            Vector3 finalVelocity = new Vector3(horizontalVelocity.x, velocity.y, horizontalVelocity.z);
+
+            // 计算目标位置
+            Vector3 newPosition = rb.position + finalVelocity * Time.fixedDeltaTime;
+            
+            // 碰撞检测：分离水平和垂直移动
+            Vector3 horizontalMovement = new Vector3(horizontalVelocity.x, 0, horizontalVelocity.z) * Time.fixedDeltaTime;
+            Vector3 verticalMovement = new Vector3(0, velocity.y, 0) * Time.fixedDeltaTime;
+            
+            // 检测水平移动碰撞
+            if (horizontalMovement.sqrMagnitude > 0.0001f)
+            {
+                float distance = horizontalMovement.magnitude;
+                Vector3 direction = horizontalMovement.normalized;
+                RaycastHit hit;
+                
+                // 使用 SphereCast 检测前方障碍物（使用 Collider 半径）
+                if (Physics.SphereCast(rb.position + Vector3.up * col.height * 0.5f, 
+                                      col.radius * 0.8f, 
+                                      direction, 
+                                      out hit, 
+                                      distance + 0.01f))
+                {
+                    // 如果碰到障碍，缩短移动距离
+                    float safeDistance = Mathf.Max(0, hit.distance - 0.01f);
+                    horizontalMovement = direction * safeDistance;
+                }
+            }
+            
+            // 应用最终位置（水平 + 垂直）
+            newPosition = rb.position + horizontalMovement + verticalMovement;
+            rb.MovePosition(newPosition);
         }
 
         /// <summary>
@@ -175,41 +238,7 @@ namespace Character3C
         }
 
         /// <summary>
-        /// 应用重力
-        /// </summary>
-        private void ApplyGravity()
-        {
-            if (!isGrounded)
-            {
-                velocity.y = rb.linearVelocity.y - gravity * Time.fixedDeltaTime;
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, velocity.y, rb.linearVelocity.z);
-            }
-            else
-            {
-                // 在地面时，限制 Y 速度范围防止累积，但允许跳跃
-                // 允许向上的跳跃力（正值），但限制向下累积（负值）
-                if (rb.linearVelocity.y < 0)
-                {
-                    // 向下的速度，清零防止穿地
-                    velocity.y = 0;
-                    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-                }
-                else
-                {
-                    // 向上的速度（跳跃），保持不变
-                    velocity.y = rb.linearVelocity.y;
-                }
-                
-                // 只有在真正贴地时才重置跳跃计数
-                if (rb.linearVelocity.y <= 0.01f)
-                {
-                    jumpCount = 0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 跳跃
+        /// 跳跃 (Kinematic模式)
         /// </summary>
         public void Jump()
         {
@@ -219,8 +248,8 @@ namespace Character3C
             if (jumpCount >= maxJumpCount)
                 return;
 
+            // 直接设置垂直速度，由ApplyGravity处理位置变化
             velocity.y = jumpForce;
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, velocity.y, rb.linearVelocity.z);
             jumpCount++;
 
             Debug.Log($"跳跃 - 次数: {jumpCount}");
@@ -240,7 +269,8 @@ namespace Character3C
         /// </summary>
         private void UpdateBlackboard()
         {
-            Blackboard.Velocity = rb.linearVelocity;
+            // 对于Kinematic Rigidbody，使用我们手动维护的velocity
+            Blackboard.Velocity = velocity;
             Blackboard.IsGrounded = isGrounded;
             Blackboard.Position = transform.position;
             Blackboard.MoveDirection = moveDirection;
@@ -280,9 +310,6 @@ namespace Character3C
             // 计算击退速度
             knockbackVelocity = direction * force;
             isKnockedBack = true;
-            
-            // 同时使用 AddForce 作为备用（如果使用纯物理方式）
-            // rb.AddForce(direction * force, ForceMode.Impulse);
         }
 
         /// <summary>

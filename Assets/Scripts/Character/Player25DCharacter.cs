@@ -43,7 +43,7 @@ namespace Character3C
         private void Start()
         {
             // 确保在可行走的位置生成
-            EnsureValidSpawnPosition();
+            // EnsureValidSpawnPosition();
         }
 
         /// <summary>

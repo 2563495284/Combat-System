@@ -119,9 +119,6 @@ namespace Character3C.Enemy
                 
             float deltaTime = Time.deltaTime;
             
-            // 更新地面检测
-            UpdateGroundedState();
-            
             // 更新目标检测
             UpdateTargetDetection();
             
@@ -136,15 +133,19 @@ namespace Character3C.Enemy
         {
             if (Blackboard.IsDead)
                 return;
-                
+            
+            // 在物理更新中检测地面（与移动同步）
+            UpdateGroundedState();
+            
+            CalculateHorizontalMovement();
+            CalculateVerticalMovement();
             ApplyMovement();
-            ApplyGravity();
         }
         
         /// <summary>
-        /// 应用移动 (Kinematic模式)
+        /// 计算水平移动速度 (Kinematic模式)
         /// </summary>
-        private void ApplyMovement()
+        private void CalculateHorizontalMovement()
         {
             // 处理击退衰减
             if (isKnockedBack)
@@ -181,18 +182,6 @@ namespace Character3C.Enemy
                 velocity.z = Mathf.MoveTowards(velocity.z, 0, deceleration * Time.fixedDeltaTime);
             }
             
-            // 合并移动速度和击退速度
-            Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
-            if (isKnockedBack)
-            {
-                // 击退时，移动速度会被击退速度影响
-                horizontalVelocity = Vector3.Lerp(horizontalVelocity, knockbackVelocity, 0.7f);
-            }
-            
-            // 使用MovePosition来移动Kinematic Rigidbody (带碰撞检测)
-            Vector3 newPosition = rb.position + horizontalVelocity * Time.fixedDeltaTime;
-            rb.MovePosition(newPosition);
-            
             // 更新面向方向
             if (moveDirection.sqrMagnitude > 0.01f && !isKnockedBack)
             {
@@ -201,24 +190,71 @@ namespace Character3C.Enemy
         }
         
         /// <summary>
-        /// 应用重力 (Kinematic模式)
+        /// 计算垂直移动速度 (Kinematic模式)
         /// </summary>
-        private void ApplyGravity()
+        private void CalculateVerticalMovement()
         {
             if (!isGrounded)
             {
                 // 应用重力加速度
                 velocity.y -= gravity * Time.fixedDeltaTime;
-                
-                // 移动垂直位置
-                Vector3 newPosition = rb.position + new Vector3(0, velocity.y * Time.fixedDeltaTime, 0);
-                rb.MovePosition(newPosition);
             }
             else
             {
                 // 在地面上时，重置垂直速度
-                velocity.y = 0;
+                if (velocity.y < 0)
+                {
+                    velocity.y = 0;
+                }
             }
+        }
+        
+        /// <summary>
+        /// 应用移动 - 统一处理水平和垂直移动 (Kinematic模式，带碰撞检测)
+        /// </summary>
+        private void ApplyMovement()
+        {
+            // 计算水平速度（包含击退）
+            Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
+            if (isKnockedBack)
+            {
+                // 击退时，移动速度会被击退速度影响
+                horizontalVelocity = Vector3.Lerp(horizontalVelocity, knockbackVelocity, 0.7f);
+            }
+            
+            // 合并水平和垂直速度
+            Vector3 finalVelocity = new Vector3(horizontalVelocity.x, velocity.y, horizontalVelocity.z);
+            
+            // 计算目标位置
+            Vector3 newPosition = rb.position + finalVelocity * Time.fixedDeltaTime;
+            
+            // 碰撞检测：分离水平和垂直移动
+            Vector3 horizontalMovement = new Vector3(horizontalVelocity.x, 0, horizontalVelocity.z) * Time.fixedDeltaTime;
+            Vector3 verticalMovement = new Vector3(0, velocity.y, 0) * Time.fixedDeltaTime;
+            
+            // 检测水平移动碰撞
+            if (horizontalMovement.sqrMagnitude > 0.0001f)
+            {
+                float distance = horizontalMovement.magnitude;
+                Vector3 direction = horizontalMovement.normalized;
+                RaycastHit hit;
+                
+                // 使用 SphereCast 检测前方障碍物（使用 Collider 半径）
+                if (Physics.SphereCast(rb.position + Vector3.up * col.height * 0.5f, 
+                                      col.radius * 0.8f, 
+                                      direction, 
+                                      out hit, 
+                                      distance + 0.01f))
+                {
+                    // 如果碰到障碍，缩短移动距离
+                    float safeDistance = Mathf.Max(0, hit.distance - 0.01f);
+                    horizontalMovement = direction * safeDistance;
+                }
+            }
+            
+            // 应用最终位置（水平 + 垂直）
+            newPosition = rb.position + horizontalMovement + verticalMovement;
+            rb.MovePosition(newPosition);
         }
         
         /// <summary>
