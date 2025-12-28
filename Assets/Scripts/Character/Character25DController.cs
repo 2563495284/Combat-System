@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 using CombatSystem.Core;
 
 namespace Character3C
@@ -46,6 +46,11 @@ namespace Character3C
         private Vector3 moveDirection;
         private bool isGrounded;
         private int jumpCount;
+        
+        // 击退状态管理
+        private Vector3 knockbackVelocity;
+        private float knockbackDecay = 10f; // 击退衰减速度
+        private bool isKnockedBack = false;
 
         // 相机引用（用于计算移动方向）
         private Camera mainCamera;
@@ -101,8 +106,24 @@ namespace Character3C
         /// </summary>
         private void ApplyMovement()
         {
+            // 处理击退衰减
+            if (isKnockedBack)
+            {
+                knockbackVelocity = Vector3.MoveTowards(knockbackVelocity, Vector3.zero, knockbackDecay * Time.fixedDeltaTime);
+                if (knockbackVelocity.sqrMagnitude < 0.01f)
+                {
+                    knockbackVelocity = Vector3.zero;
+                    isKnockedBack = false;
+                }
+            }
+
             if (!Blackboard.CanMove)
             {
+                // 即使不能移动，也要应用击退效果
+                if (isKnockedBack)
+                {
+                    rb.linearVelocity = new Vector3(knockbackVelocity.x, rb.linearVelocity.y, knockbackVelocity.z);
+                }
                 return;
             }
 
@@ -125,11 +146,19 @@ namespace Character3C
                 velocity.z = Mathf.MoveTowards(velocity.z, 0, deceleration * Time.fixedDeltaTime);
             }
 
+            // 合并移动速度和击退速度
+            Vector3 horizontalVelocity = velocity;
+            if (isKnockedBack)
+            {
+                // 击退时，移动速度会被击退速度影响（可以叠加或混合）
+                horizontalVelocity = Vector3.Lerp(horizontalVelocity, knockbackVelocity, 0.7f);
+            }
+
             // 应用水平移动
-            rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+            rb.linearVelocity = new Vector3(horizontalVelocity.x, rb.linearVelocity.y, horizontalVelocity.z);
 
             // 更新面向方向（但不旋转，因为使用Billboard）
-            if (moveDirection.sqrMagnitude > 0.01f)
+            if (moveDirection.sqrMagnitude > 0.01f && !isKnockedBack)
             {
                 Blackboard.FacingDirection = moveDirection.normalized;
             }
@@ -140,36 +169,9 @@ namespace Character3C
         /// </summary>
         private Vector3 GetCameraRelativeMovement(Vector2 input)
         {
-            if (mainCamera == null)
-                return new Vector3(input.x, 0, input.y);
-
-            if (isIsometric)
-            {
-                // 等角视角：固定角度的相机
-                // 输入的X对应世界的X和Z，输入的Y对应世界的Z和X
-                float angle = isometricAngle * Mathf.Deg2Rad;
-                float cos = Mathf.Cos(angle);
-                float sin = Mathf.Sin(angle);
-
-                Vector3 right = new Vector3(cos, 0, -sin);
-                Vector3 forward = new Vector3(sin, 0, cos);
-
-                return (right * input.x + forward * input.y).normalized;
-            }
-            else
-            {
-                // 自由相机：根据相机朝向计算
-                Vector3 forward = mainCamera.transform.forward;
-                Vector3 right = mainCamera.transform.right;
-
-                forward.y = 0;
-                right.y = 0;
-
-                forward.Normalize();
-                right.Normalize();
-
-                return (right * input.x + forward * input.y).normalized;
-            }
+            // input.x -> X轴（左右）
+            // input.y -> Z轴（上下）
+            return new Vector3(input.x, 0, input.y).normalized;
         }
 
         /// <summary>
@@ -184,8 +186,25 @@ namespace Character3C
             }
             else
             {
-                velocity.y = rb.linearVelocity.y;
-                jumpCount = 0;
+                // 在地面时，限制 Y 速度范围防止累积，但允许跳跃
+                // 允许向上的跳跃力（正值），但限制向下累积（负值）
+                if (rb.linearVelocity.y < 0)
+                {
+                    // 向下的速度，清零防止穿地
+                    velocity.y = 0;
+                    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+                }
+                else
+                {
+                    // 向上的速度（跳跃），保持不变
+                    velocity.y = rb.linearVelocity.y;
+                }
+                
+                // 只有在真正贴地时才重置跳跃计数
+                if (rb.linearVelocity.y <= 0.01f)
+                {
+                    jumpCount = 0;
+                }
             }
         }
 
@@ -248,6 +267,22 @@ namespace Character3C
         public TaskEntry<CharacterBlackboard25D> GetTask()
         {
             return currentTask;
+        }
+
+        /// <summary>
+        /// 应用击退效果（供外部调用，如技能系统）
+        /// </summary>
+        public void ApplyKnockback(Vector3 direction, float force)
+        {
+            direction.y = 0;
+            direction.Normalize();
+            
+            // 计算击退速度
+            knockbackVelocity = direction * force;
+            isKnockedBack = true;
+            
+            // 同时使用 AddForce 作为备用（如果使用纯物理方式）
+            // rb.AddForce(direction * force, ForceMode.Impulse);
         }
 
         /// <summary>

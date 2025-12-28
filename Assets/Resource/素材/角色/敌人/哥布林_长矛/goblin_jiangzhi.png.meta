@@ -124,10 +124,10 @@ TextureImporter:
       name: goblin_jiangzhi_0
       rect:
         serializedVersion: 2
-        x: 9
+        x: 0
         y: 0
-        width: 30
-        height: 18
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,10 +146,10 @@ TextureImporter:
       name: goblin_jiangzhi_1
       rect:
         serializedVersion: 2
-        x: 54
+        x: 48
         y: 0
-        width: 33
-        height: 24
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -168,10 +168,10 @@ TextureImporter:
       name: goblin_jiangzhi_2
       rect:
         serializedVersion: 2
-        x: 98
+        x: 96
         y: 0
-        width: 37
-        height: 25
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,9 +191,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 1
-        width: 39
-        height: 26
+        y: 0
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,10 +212,10 @@ TextureImporter:
       name: goblin_jiangzhi_4
       rect:
         serializedVersion: 2
-        x: 195
+        x: 192
         y: 0
-        width: 36
-        height: 25
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -234,10 +234,10 @@ TextureImporter:
       name: goblin_jiangzhi_5
       rect:
         serializedVersion: 2
-        x: 245
+        x: 240
         y: 0
-        width: 34
-        height: 23
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -256,10 +256,10 @@ TextureImporter:
       name: goblin_jiangzhi_6
       rect:
         serializedVersion: 2
-        x: 293
+        x: 288
         y: 0
-        width: 34
-        height: 23
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -278,10 +278,10 @@ TextureImporter:
       name: goblin_jiangzhi_7
       rect:
         serializedVersion: 2
-        x: 341
+        x: 336
         y: 0
-        width: 34
-        height: 23
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 12c18de18b0f8ef489b8b7ef0d0a9f11
     internalID: 0
     vertices: []
     indices: 
@@ -308,7 +308,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       goblin_jiangzhi_0: 1096054196923611871
       goblin_jiangzhi_1: 3968969468489069388

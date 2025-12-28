@@ -81,8 +81,10 @@ namespace Character3C
             }
             else
             {
-                // 非旋转模式下，确保相机始终朝向目标
-                UpdateCameraRotation();
+                if (mode != CameraMode.Isometric)
+                {
+                    UpdateCameraRotation();
+                }
             }
 
             // 更新目标位置
@@ -103,6 +105,9 @@ namespace Character3C
             switch (mode)
             {
                 case CameraMode.Isometric:
+                    // 旋转在SetupCameraForMode中已设置，这里不再改变
+                    break;
+
                 case CameraMode.TopDown:
                 case CameraMode.ThirdPerson:
                     // 让相机朝向目标
@@ -129,23 +134,22 @@ namespace Character3C
             {
                 case CameraMode.Isometric:
                     // 等角视角：从斜上方俯视
-                    // 计算相机的旋转和位置
-                    float angleRad = isometricAngle * Mathf.Deg2Rad;
-                    float horizontalDistance = isometricDistance * Mathf.Cos(angleRad);
-
-                    // 设置偏移：相机在目标的右后上方
+                    
+                    // 设置偏移：相机在目标的后上方
                     offset = new Vector3(
-                        horizontalDistance * Mathf.Sin(45 * Mathf.Deg2Rad),  // X偏移
-                        isometricHeight,                                      // Y偏移（高度）
-                        -horizontalDistance * Mathf.Cos(45 * Mathf.Deg2Rad)  // Z偏移
+                        0,                    // X偏移：0（正对玩家）
+                        isometricHeight,      // Y偏移（高度）
+                        -isometricDistance    // Z偏移（相机在后方）
                     );
 
-                    // 设置旋转：俯视角度 + 45度水平旋转
-                    transform.rotation = Quaternion.Euler(isometricAngle, 45, 0);
+                    // 只绕X轴旋转45度，Y轴和Z轴保持0
+                    transform.rotation = Quaternion.Euler(45, 0, 0);
 
                     // 设置正交投影
                     cam.orthographic = true;
-                    cam.orthographicSize = 5f;
+                    cam.orthographicSize = 1f;
+
+                    smoothSpeed = 0;
 
                     Debug.Log($"等角视角已设置 - Rotation: {transform.rotation.eulerAngles}, Offset: {offset}", this);
                     break;

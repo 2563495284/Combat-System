@@ -147,7 +147,7 @@ namespace Character3C
             // 根据移动方向翻转Sprite（可选）
             if (blackboard.FacingDirection.x != 0 && spriteRenderer != null)
             {
-                spriteRenderer.flipX = blackboard.FacingDirection.x < 0;
+                spriteRenderer.flipX = blackboard.FacingDirection.x > 0;
             }
         }
 

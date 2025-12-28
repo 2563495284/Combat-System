@@ -118,10 +118,10 @@ TextureImporter:
       name: goblin_faxian_0
       rect:
         serializedVersion: 2
-        x: 12
+        x: 0
         y: 0
-        width: 27
-        height: 25
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,10 +140,10 @@ TextureImporter:
       name: goblin_faxian_1
       rect:
         serializedVersion: 2
-        x: 60
+        x: 48
         y: 0
-        width: 27
-        height: 25
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,10 +162,10 @@ TextureImporter:
       name: goblin_faxian_2
       rect:
         serializedVersion: 2
-        x: 106
+        x: 96
         y: 0
-        width: 31
-        height: 26
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,10 +184,10 @@ TextureImporter:
       name: goblin_faxian_3
       rect:
         serializedVersion: 2
-        x: 154
+        x: 144
         y: 0
-        width: 33
-        height: 27
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,10 +206,10 @@ TextureImporter:
       name: goblin_faxian_4
       rect:
         serializedVersion: 2
-        x: 201
+        x: 192
         y: 0
-        width: 30
-        height: 23
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -228,10 +228,10 @@ TextureImporter:
       name: goblin_faxian_5
       rect:
         serializedVersion: 2
-        x: 250
+        x: 240
         y: 0
-        width: 29
-        height: 18
+        width: 48
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -250,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 88b8f23faa8d54e4a9e2dcb6f1104ab8
     internalID: 0
     vertices: []
     indices: 
@@ -258,7 +258,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       goblin_faxian_0: -1142390302695232877
       goblin_faxian_1: 1733819657920093155
