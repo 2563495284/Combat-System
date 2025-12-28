@@ -15,10 +15,6 @@ namespace Character3C
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Animator animator;
 
-        [Header("相机设置")]
-        [SerializeField] private Camera25DController cameraController;
-        [SerializeField] private bool autoCreateCamera = true;
-
         private Character25DController controller;
         private InputController inputController;
 
@@ -48,30 +44,6 @@ namespace Character3C
         /// </summary>
         private void SetupCamera()
         {
-            if (cameraController == null)
-            {
-                cameraController = FindFirstObjectByType<Camera25DController>();
-
-                if (cameraController == null && autoCreateCamera)
-                {
-                    // 创建相机
-                    GameObject camObj = new GameObject("Camera 2.5D");
-                    Camera cam = camObj.AddComponent<Camera>();
-                    cameraController = camObj.AddComponent<Camera25DController>();
-
-                    // 配置相机
-                    cam.clearFlags = CameraClearFlags.Skybox;
-                    cam.orthographic = true;
-                    cam.orthographicSize = 5f;
-
-                    Debug.Log("自动创建了2.5D相机");
-                }
-            }
-
-            if (cameraController != null)
-            {
-                cameraController.SetTarget(transform);
-            }
         }
 
         /// <summary>
@@ -119,10 +91,10 @@ namespace Character3C
 
             var blackboard = controller.Blackboard;
 
-            // 更新动画参数
-            float speed = new Vector2(blackboard.Velocity.x, blackboard.Velocity.z).magnitude;
+            // 更新动画参数（XY平面系统）
+            float speed = Mathf.Abs(blackboard.Velocity.x); // X轴是水平移动
             animator.SetFloat("Speed", speed);
-            animator.SetFloat("VerticalSpeed", blackboard.Velocity.y);
+            animator.SetFloat("VerticalSpeed", blackboard.Velocity.y); // Y轴是垂直（跳跃/重力）
             animator.SetBool("IsGrounded", blackboard.IsGrounded);
 
             // 根据移动方向翻转Sprite（可选）

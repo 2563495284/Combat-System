@@ -23387,6 +23387,9 @@ GameObject:
   - component: {fileID: 1807951483}
   - component: {fileID: 1807951482}
   - component: {fileID: 1807951481}
+  - component: {fileID: 1807951488}
+  - component: {fileID: 1807951487}
+  - component: {fileID: 1807951486}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -23559,6 +23562,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1330398315}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1807951486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807951480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79eccd9281fac40d7a07465e594c694c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 0}
+  animator: {fileID: 0}
+--- !u!114 &1807951487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807951480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64e460ff627484eb09629258d05879f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableInput: 1
+  inputDeadZone: 0.1
+  character: {fileID: 0}
+--- !u!114 &1807951488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807951480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b6730643804047e1840b77737a63697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  acceleration: 20
+  deceleration: 20
+  jumpForce: 8
+  maxJumpCount: 1
 --- !u!1 &1925519956
 GameObject:
   m_ObjectHideFlags: 0

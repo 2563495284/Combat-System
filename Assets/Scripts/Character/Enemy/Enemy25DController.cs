@@ -8,8 +8,8 @@ namespace Character3C.Enemy
     /// 2.5D 敌人控制器
     /// 管理敌人的移动、AI行为和战斗逻辑
     /// </summary>
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(CapsuleCollider))]
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(BoxCollider2D))]
     [RequireComponent(typeof(CombatEntity))]
     public class Enemy25DController : MonoBehaviour
     {
@@ -85,7 +85,7 @@ namespace Character3C.Enemy
             rb.useGravity = true; // 使用Unity系统重力
             rb.isKinematic = false; // 非运动学模式：受物理力影响
             rb.interpolation = RigidbodyInterpolation.Interpolate; // 平滑移动
-            rb.constraints = RigidbodyConstraints.FreezeRotation; // 只锁定旋转，Y轴由重力控制
+            rb.constraints = RigidbodyConstraints.FreezeRotation; // 只锁定旋转，Z轴由重力控制
 
             // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
             // 这样可以与地面产生真实的物理碰撞，同时通过代码控制角色间碰撞
@@ -186,9 +186,8 @@ namespace Character3C.Enemy
 
             if (!Blackboard.CanMove && !isKnockedBack)
             {
-                // 不能移动且没有击退时，速度归零
+                // 不能移动且没有击退时，水平速度归零（X轴）
                 velocity.x = 0;
-                velocity.z = 0;
                 return;
             }
             
@@ -196,16 +195,14 @@ namespace Character3C.Enemy
             
             if (moveDirection.sqrMagnitude > 0.01f)
             {
-                // 直接设置目标速度
-                Vector3 targetVelocity = moveDirection * moveSpeed;
+                // 直接设置目标速度（X轴水平）
+                Vector3 targetVelocity = new Vector3(moveDirection.x * moveSpeed, 0, 0);
                 velocity.x = targetVelocity.x;
-                velocity.z = targetVelocity.z;
             }
             else
             {
                 // 停止移动
                 velocity.x = 0;
-                velocity.z = 0;
             }
             
             // 更新面向方向
@@ -216,15 +213,16 @@ namespace Character3C.Enemy
         }
         
         /// <summary>
-        /// 计算垂直移动速度（使用Unity系统重力）
+        /// 计算垂直移动速度（Y轴，使用Unity系统重力）
         /// </summary>
         private void CalculateVerticalMovement()
         {
             // 使用Unity系统重力，不需要手动计算重力
             // 只需要在地面上时重置垂直速度
+            // 注意：在XY平面系统中，Y轴是垂直方向（重力向下），Z轴是深度方向（用于2.5D渲染层次）
             if (isGrounded)
             {
-                // 在地面上时，如果垂直速度向下，重置为0（防止穿透地面）
+                // 在地面上时，如果垂直速度向下（负Y），重置为0（防止穿透地面）
                 if (rb.linearVelocity.y < 0)
                 {
                     velocity.y = 0;
@@ -243,24 +241,23 @@ namespace Character3C.Enemy
         }
         
         /// <summary>
-        /// 应用移动 - 使用Rigidbody.velocity直接控制
+        /// 应用移动 - 使用Rigidbody.velocity直接控制（XY平面系统）
         /// </summary>
         private void ApplyMovement()
         {
-            // 计算水平速度（包含击退）
-            Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
+            // 计算水平速度（X轴，包含击退）
+            Vector3 horizontalVelocity = new Vector3(velocity.x, 0, 0);
             if (isKnockedBack)
             {
-                // 击退时，使用击退速度
-                horizontalVelocity = knockbackVelocity;
+                // 击退时，使用击退速度（X轴）
+                horizontalVelocity = new Vector3(knockbackVelocity.x, 0, 0);
             }
 
             // 获取当前Rigidbody的速度（包含Unity重力系统影响的垂直速度）
             Vector3 currentVelocity = rb.linearVelocity;
             
-            // 设置水平速度（覆盖物理引擎可能推离的速度）
+            // 设置水平速度（X轴）
             currentVelocity.x = horizontalVelocity.x;
-            currentVelocity.z = horizontalVelocity.z;
             
             // 在地面上时，强制垂直速度为0（防止穿透地面）
             if (isGrounded)
@@ -269,21 +266,25 @@ namespace Character3C.Enemy
             }
             // 否则保持Unity重力系统计算的垂直速度（已经在 currentVelocity.y 中）
             
+            // Z轴是深度方向，保持原值（用于2.5D渲染层次，不影响物理）
+            // currentVelocity.z 保持不变
+            
             rb.linearVelocity = currentVelocity;
             
             // 如果敌人不应该移动（CanMove为false），强制速度为0
             if (!Blackboard.CanMove && !isKnockedBack)
             {
-                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, rb.linearVelocity.z);
             }
         }
         
         /// <summary>
-        /// 更新地面状态
+        /// 更新地面状态（XY平面系统）
         /// </summary>
         private void UpdateGroundedState()
         {
             // 使用 SphereCast 进行地面检测（用于判断是否在地面上）
+            // 在XY平面系统中，地面在Y轴负方向（向下）
             Vector3 origin = transform.position + Vector3.up * (col.height * 0.5f);
             float checkDistance = groundCheckDistance + col.height * 0.5f;
             
@@ -388,13 +389,14 @@ namespace Character3C.Enemy
         /// </summary>
         public void ApplyKnockback(Vector3 direction, float force)
         {
-            direction.y = 0;
+            // 在XY平面系统中，击退只在X轴（水平方向），不影响Y轴（垂直）和Z轴（深度）
+            direction.y = 0; // 不影响垂直
+            direction.z = 0; // 不影响深度
             direction.Normalize();
             
-            // 先清零当前水平速度（保留垂直速度）
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            // 先清零当前水平速度（保留垂直速度和深度）
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, rb.linearVelocity.z);
             velocity.x = 0;
-            velocity.z = 0;
             
             // 清除阻挡碰撞体（允许击退时穿透）
             blockingColliders.Clear();
@@ -414,7 +416,8 @@ namespace Character3C.Enemy
         public void TakeKnockback(Vector3 fromPosition, float force)
         {
             Vector3 direction = (transform.position - fromPosition).normalized;
-            direction.y = 0; // 保持水平
+            direction.y = 0; // 保持水平（不影响垂直）
+            direction.z = 0; // 保持水平（不影响深度）
             ApplyKnockback(direction, force);
         }
 
@@ -428,8 +431,8 @@ namespace Character3C.Enemy
             // 如果碰撞到玩家，立即重置速度，防止被推走
             if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
-                // 保持当前应该有的速度（由AI控制的速度）
-                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+                // 保持当前应该有的速度（由AI控制的速度，X轴水平）
+                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, rb.linearVelocity.z);
                 rb.linearVelocity = targetVel;
             }
         }
@@ -444,8 +447,8 @@ namespace Character3C.Enemy
             // 如果持续碰撞到玩家，持续重置速度，防止被推走
             if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
-                // 保持当前应该有的速度（由AI控制的速度）
-                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+                // 保持当前应该有的速度（由AI控制的速度，X轴水平）
+                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, rb.linearVelocity.z);
                 rb.linearVelocity = targetVel;
             }
         }
@@ -523,14 +526,14 @@ namespace Character3C.Enemy
         /// </summary>
         private void OnDrawGizmosSelected()
         {
-            // 绘制地面检测范围
+            // 绘制地面检测范围（XY平面系统）
             float colHeight = col != null ? col.height : 1f;
             float colRadius = col != null ? col.radius : 0.5f;
             Vector3 origin = transform.position + Vector3.up * (colHeight * 0.5f);
             float checkDistance = groundCheckDistance + colHeight * 0.5f;
             
             Gizmos.color = isGrounded ? Color.green : Color.red;
-            // 绘制 SphereCast 的起点和方向
+            // 绘制 SphereCast 的起点和方向（Y轴负方向）
             Gizmos.DrawWireSphere(origin, colRadius * 0.9f);
             Gizmos.DrawRay(origin, Vector3.down * checkDistance);
             // 绘制检测终点
@@ -552,7 +555,7 @@ namespace Character3C.Enemy
                 Gizmos.DrawWireSphere(spawnPos, patrolRadius);
             }
             
-            // 绘制移动方向
+            // 绘制移动方向（X轴水平）
             if (Application.isPlaying && moveDirection.sqrMagnitude > 0.01f)
             {
                 Gizmos.color = Color.blue;
