@@ -302,5 +302,115 @@ namespace CombatSystem.Skills
             }
         }
     }
+
+    /// <summary>
+    /// 击退技能
+    /// 对范围内所有敌人造成伤害并击退
+    /// </summary>
+    public class KnockbackSkill : SkillTask
+    {
+        private float _castTime;
+        private float _currentTime;
+        private bool _hasExecuted;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _castTime = Blackboard.Get<float>("CastTime", 0.5f);
+            _currentTime = 0;
+            _hasExecuted = false;
+        }
+
+        protected override void OnUpdate(float deltaTime)
+        {
+            _currentTime += deltaTime;
+
+            // 技能生效时间点
+            if (!_hasExecuted && _currentTime >= _castTime * 0.5f)
+            {
+                ExecuteKnockback();
+                _hasExecuted = true;
+            }
+
+            // 技能完成
+            if (_currentTime >= _castTime)
+            {
+                Complete();
+            }
+        }
+
+        private void ExecuteKnockback()
+        {
+            float damage = Blackboard.Get<float>("Damage", 25f);
+            float knockbackForce = Blackboard.Get<float>("KnockbackForce", 15f);
+            float radius = Blackboard.Get<float>("Radius", 3f);
+            Vector3 center = Blackboard.Get<Vector3>("Center", Caster.transform.position);
+
+            // 查找范围内的所有目标
+            var colliders = Physics.OverlapSphere(center, radius);
+            int hitCount = 0;
+
+            foreach (var col in colliders)
+            {
+                var entity = col.GetComponent<CombatEntity>();
+                if (entity != null && entity != Caster && entity.IsAlive())
+                {
+                    // 检查阵营（只击退敌对单位）
+                    if (entity.Camp != Caster.Camp)
+                    {
+                        // 造成伤害
+                        Caster.DealDamage(entity, damage, DamageType.Physical);
+
+                        // 应用击退效果
+                        ApplyKnockbackToEntity(entity, center, knockbackForce);
+                        
+                        hitCount++;
+                    }
+                }
+            }
+
+            Debug.Log($"[KnockbackSkill] 击退技能命中 {hitCount} 个目标，造成 {damage} 点伤害并击退");
+        }
+
+        /// <summary>
+        /// 对单个实体应用击退效果
+        /// </summary>
+        private void ApplyKnockbackToEntity(CombatEntity target, Vector3 fromPosition, float force)
+        {
+            // 计算击退方向
+            Vector3 direction = (target.transform.position - fromPosition).normalized;
+            direction.y = 0; // 保持水平击退
+
+            // 使用反射调用 TakeKnockback 方法（支持任何控制器）
+            var controllerType = target.GetType().Assembly.GetType("Character3C.Character25DController");
+            if (controllerType == null)
+            {
+                controllerType = target.GetType().Assembly.GetType("Character3C.Enemy.Enemy25DController");
+            }
+            
+            // 尝试通过组件查找
+            var components = target.GetComponents<MonoBehaviour>();
+            foreach (var component in components)
+            {
+                var method = component.GetType().GetMethod("TakeKnockback", 
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                
+                if (method != null)
+                {
+                    method.Invoke(component, new object[] { fromPosition, force });
+                    return;
+                }
+            }
+
+            // 如果没有找到 TakeKnockback 方法，尝试使用Rigidbody
+            var rb = target.GetComponent<Rigidbody>();
+            if (rb != null && !rb.isKinematic)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.AddForce(direction * force, ForceMode.VelocityChange);
+            }
+        }
+    }
 }
 

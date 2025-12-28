@@ -85,6 +85,17 @@ namespace CombatSystem.Configuration
                 taskTypeName = "CombatSystem.Skills.DashSkill"
             });
 
+            // 技能：击退
+            AddConfig(new StateCfg
+            {
+                cid = 1005,
+                name = "击退",
+                slot = -1,
+                duration = 800,
+                isActiveSkill = true,
+                taskTypeName = "CombatSystem.Skills.KnockbackSkill"
+            });
+
             // Buff：攻击力加成
             AddConfig(new StateCfg
             {
