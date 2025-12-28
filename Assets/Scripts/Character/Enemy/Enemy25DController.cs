@@ -1,5 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
+using System.Collections.Generic;
 
 namespace Character3C.Enemy
 {
@@ -28,7 +29,7 @@ namespace Character3C.Enemy
         [SerializeField] private float attackCooldown = 2f;
         
         [Header("巡逻参数")]
-        [SerializeField] private bool enablePatrol = true;
+        [SerializeField] private bool enablePatrol = false;
         [SerializeField] private float patrolRadius = 5f;
         [SerializeField] private float patrolWaitTime = 2f;
         
@@ -64,6 +65,10 @@ namespace Character3C.Enemy
         private float knockbackDecay = 10f; // 击退衰减速度
         private bool isKnockedBack = false;
         
+        // 碰撞处理
+        private HashSet<Collider> blockingColliders = new HashSet<Collider>(); // 阻挡敌人移动的碰撞体
+        private bool ignoreCharacterCollisions = false; // 是否忽略角色间碰撞（用于技能强制位移）
+        
         public float MoveSpeed => moveSpeed;
         public bool IsGrounded => isGrounded;
         
@@ -82,8 +87,10 @@ namespace Character3C.Enemy
             rb.interpolation = RigidbodyInterpolation.Interpolate; // 平滑移动
             rb.constraints = RigidbodyConstraints.FreezeRotation; // 只锁定旋转，Y轴由重力控制
 
-            // 配置碰撞体 - 设置为Trigger
-            col.isTrigger = true;
+            // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
+            // 这样可以与地面产生真实的物理碰撞，同时通过代码控制角色间碰撞
+            col.isTrigger = false;
+            col.material = null; // 使用默认物理材质（无摩擦力，无弹跳）
             
             // 初始化黑板
             Blackboard = new EnemyBlackboard
@@ -112,8 +119,12 @@ namespace Character3C.Enemy
             // 设置Sprite朝向相机
             SetupBillboard();
             
-            // 初始化AI任务
-            SetTask(new Tasks.EnemyAITask(this));
+            // 初始化AI任务 - 已禁用
+            // SetTask(new Tasks.EnemyAITask(this));
+            
+            // 禁用移动
+            Blackboard.CanMove = false;
+            Blackboard.MoveDirection = Vector3.zero;
             
             // 注册死亡事件
             combatEntity.EventBus.Register<CombatSystem.Events.DeathEvent>(OnDeath);
@@ -126,14 +137,18 @@ namespace Character3C.Enemy
                 
             float deltaTime = Time.deltaTime;
             
-            // 更新目标检测
-            UpdateTargetDetection();
+            // 更新目标检测 - 已禁用
+            // UpdateTargetDetection();
             
             // 更新黑板数据
             UpdateBlackboard();
             
-            // 更新当前任务
-            currentTask?.Update(deltaTime);
+            // 更新当前任务 - 已禁用
+            // currentTask?.Update(deltaTime);
+            
+            // 确保敌人不移动
+            Blackboard.CanMove = false;
+            Blackboard.MoveDirection = Vector3.zero;
         }
         
         private void FixedUpdate()
@@ -162,8 +177,12 @@ namespace Character3C.Enemy
                 {
                     knockbackVelocity = Vector3.zero;
                     isKnockedBack = false;
+                    ignoreCharacterCollisions = false; // 击退结束后恢复碰撞检测
                 }
             }
+
+            // 敌人不受玩家碰撞影响，所以不需要检查blockingColliders
+            // 但如果有其他敌人阻挡，可以在这里处理
 
             if (!Blackboard.CanMove && !isKnockedBack)
             {
@@ -239,7 +258,7 @@ namespace Character3C.Enemy
             // 获取当前Rigidbody的速度（包含Unity重力系统影响的垂直速度）
             Vector3 currentVelocity = rb.linearVelocity;
             
-            // 设置水平速度
+            // 设置水平速度（覆盖物理引擎可能推离的速度）
             currentVelocity.x = horizontalVelocity.x;
             currentVelocity.z = horizontalVelocity.z;
             
@@ -251,6 +270,12 @@ namespace Character3C.Enemy
             // 否则保持Unity重力系统计算的垂直速度（已经在 currentVelocity.y 中）
             
             rb.linearVelocity = currentVelocity;
+            
+            // 如果敌人不应该移动（CanMove为false），强制速度为0
+            if (!Blackboard.CanMove && !isKnockedBack)
+            {
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            }
         }
         
         /// <summary>
@@ -258,34 +283,15 @@ namespace Character3C.Enemy
         /// </summary>
         private void UpdateGroundedState()
         {
-            // 使用 SphereCast 进行更可靠的地面检测
+            // 使用 SphereCast 进行地面检测（用于判断是否在地面上）
             Vector3 origin = transform.position + Vector3.up * (col.height * 0.5f);
             float checkDistance = groundCheckDistance + col.height * 0.5f;
             
             RaycastHit hit;
             isGrounded = Physics.SphereCast(origin, col.radius * 0.9f, Vector3.down, out hit, checkDistance, groundLayer);
             
-            // 如果检测到地面，确保角色不会穿透
-            if (isGrounded)
-            {
-                // 计算角色底部应该在地面上方的位置
-                float groundY = hit.point.y;
-                float characterBottomY = transform.position.y - col.height * 0.5f;
-                float targetY = groundY + col.height * 0.5f;
-                
-                // 如果角色穿透了地面，将其推回
-                if (characterBottomY < groundY)
-                {
-                    Vector3 pos = transform.position;
-                    pos.y = targetY;
-                    transform.position = pos;
-                    
-                    // 强制垂直速度为0
-                    Vector3 vel = rb.linearVelocity;
-                    vel.y = 0;
-                    rb.linearVelocity = vel;
-                }
-            }
+            // 注意：真实的地面碰撞由Unity物理引擎自动处理，这里只用于状态判断
+            // 如果检测到地面，确保垂直速度被正确重置（在ApplyMovement中处理）
         }
         
         /// <summary>
@@ -294,26 +300,26 @@ namespace Character3C.Enemy
         private void UpdateTargetDetection()
         {
             // 如果已有目标，更新距离
-            if (Blackboard.Target != null)
-            {
-                Blackboard.TargetPosition = Blackboard.Target.position;
-                Blackboard.DistanceToTarget = Vector3.Distance(transform.position, Blackboard.Target.position);
-            }
-            else
-            {
-                // 尝试寻找目标
-                GameObject targetObj = GameObject.FindGameObjectWithTag(targetTag);
-                if (targetObj != null)
-                {
-                    float distance = Vector3.Distance(transform.position, targetObj.transform.position);
-                    if (distance <= detectionRadius)
-                    {
-                        Blackboard.Target = targetObj.transform;
-                        Blackboard.TargetPosition = targetObj.transform.position;
-                        Blackboard.DistanceToTarget = distance;
-                    }
-                }
-            }
+            // if (Blackboard.Target != null)
+            // {
+            //     Blackboard.TargetPosition = Blackboard.Target.position;
+            //     Blackboard.DistanceToTarget = Vector3.Distance(transform.position, Blackboard.Target.position);
+            // }
+            // else
+            // {
+            //     // 尝试寻找目标
+            //     GameObject targetObj = GameObject.FindGameObjectWithTag(targetTag);
+            //     if (targetObj != null)
+            //     {
+            //         float distance = Vector3.Distance(transform.position, targetObj.transform.position);
+            //         if (distance <= detectionRadius)
+            //         {
+            //             Blackboard.Target = targetObj.transform;
+            //             Blackboard.TargetPosition = targetObj.transform.position;
+            //             Blackboard.DistanceToTarget = distance;
+            //         }
+            //     }
+            // }
         }
         
         /// <summary>
@@ -385,9 +391,14 @@ namespace Character3C.Enemy
             direction.y = 0;
             direction.Normalize();
             
-            // 先清零当前速度
-            rb.linearVelocity = Vector3.zero;
-            velocity = Vector3.zero;
+            // 先清零当前水平速度（保留垂直速度）
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            velocity.x = 0;
+            velocity.z = 0;
+            
+            // 清除阻挡碰撞体（允许击退时穿透）
+            blockingColliders.Clear();
+            ignoreCharacterCollisions = true; // 临时忽略角色间碰撞
             
             // 应用击退力
             rb.AddForce(direction * force, ForceMode.VelocityChange);
@@ -408,33 +419,76 @@ namespace Character3C.Enemy
         }
 
         /// <summary>
-        /// Trigger碰撞检测 - 与玩家碰撞时停止移动
+        /// 物理碰撞检测 - 敌人不受玩家碰撞影响，但需要处理与其他敌人的碰撞
         /// </summary>
-        private void OnTriggerEnter(Collider other)
+        private void OnCollisionEnter(Collision collision)
         {
-            // 检测与玩家的碰撞
-            if (other.CompareTag("Player"))
+            HandleCollision(collision.collider, true);
+            
+            // 如果碰撞到玩家，立即重置速度，防止被推走
+            if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
-                // 停止移动速度（但不影响击退）
-                if (!isKnockedBack)
-                {
-                    rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-                }
+                // 保持当前应该有的速度（由AI控制的速度）
+                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+                rb.linearVelocity = targetVel;
             }
         }
 
         /// <summary>
-        /// Trigger持续检测 - 防止穿过玩家
+        /// 物理碰撞持续检测
         /// </summary>
-        private void OnTriggerStay(Collider other)
+        private void OnCollisionStay(Collision collision)
         {
-            // 持续检测，防止穿过
+            HandleCollision(collision.collider, false);
+            
+            // 如果持续碰撞到玩家，持续重置速度，防止被推走
+            if (collision.collider.CompareTag("Player") && !isKnockedBack)
+            {
+                // 保持当前应该有的速度（由AI控制的速度）
+                Vector3 targetVel = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+                rb.linearVelocity = targetVel;
+            }
+        }
+
+        /// <summary>
+        /// 碰撞离开 - 移除阻挡标记
+        /// </summary>
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.collider.CompareTag("Enemy"))
+            {
+                blockingColliders.Remove(collision.collider);
+            }
+        }
+
+        /// <summary>
+        /// 处理碰撞逻辑
+        /// </summary>
+        private void HandleCollision(Collider other, bool isEnter)
+        {
+            // 如果正在击退或忽略碰撞，不处理
+            if (ignoreCharacterCollisions || isKnockedBack)
+                return;
+
+            // 如果碰撞到玩家，强制保持当前速度，防止被物理引擎推走
             if (other.CompareTag("Player"))
             {
-                if (!isKnockedBack)
+                // 保持敌人的当前速度，不被物理碰撞影响
+                // 在下一帧的ApplyMovement中会重新设置速度
+                // 这里不做任何处理，让敌人保持固定
+            }
+            
+            // 敌人不受玩家碰撞影响（玩家会自己停下）
+            // 敌人也不受其他敌人碰撞影响，保持固定不动
+            if (other.CompareTag("Enemy") && other.gameObject != gameObject)
+            {
+                if (isEnter)
                 {
-                    rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                    blockingColliders.Add(other);
                 }
+                
+                // 不推离敌人，保持固定不动
+                // 如果需要防止重叠，可以在玩家那边处理
             }
         }
         

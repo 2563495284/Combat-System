@@ -176,7 +176,7 @@ MonoBehaviour:
   loseTargetRadius: 15
   attackDamage: 15
   attackCooldown: 2
-  enablePatrol: 1
+  enablePatrol: 0
   patrolRadius: 5
   patrolWaitTime: 2
   groundCheckDistance: 0.17
@@ -213,7 +213,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -340,7 +340,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
