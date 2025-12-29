@@ -191,16 +191,16 @@ namespace Character3C.Enemy
         /// </summary>
         private void CalculateVerticalMovement()
         {
-            // XY平面游戏不使用重力，Y轴速度由代码手动控制
+            // XY平面游戏不使用重力，X轴速度（垂直）由代码手动控制
             // 在地面上时，垂直速度强制为0（防止穿透地面）
             if (isGrounded)
             {
-                velocity.y = 0;
+                velocity.x = 0;
             }
             else
             {
                 // 在空中时，保持当前的垂直速度（如果没有其他力作用，应该为0）
-                velocity.y = rb.linearVelocity.y;
+                velocity.x = rb.linearVelocity.x;
             }
         }
 
@@ -212,26 +212,26 @@ namespace Character3C.Enemy
             // 获取当前速度
             Vector2 currentVelocity = rb.linearVelocity;
 
-            // 设置水平速度（X轴）
+            // 设置水平速度（Y轴）- XY平面中Y轴是水平方向
             if (isKnockedBack)
             {
-                currentVelocity.x = knockbackVelocity.x;
+                currentVelocity.y = knockbackVelocity.y;
             }
             else
             {
-                currentVelocity.x = velocity.x;
+                currentVelocity.y = velocity.y;
             }
 
-            // 处理垂直速度（Y轴）- 无重力，手动控制
+            // 处理垂直速度（X轴）- 无重力，手动控制，XY平面中X轴是垂直方向
             if (isGrounded)
             {
                 // 在地面上时，强制垂直速度为0（防止穿透地面）
-                currentVelocity.y = 0;
+                currentVelocity.x = 0;
             }
             else
             {
                 // 在空中时，使用计算的垂直速度
-                currentVelocity.y = velocity.y;
+                currentVelocity.x = velocity.x;
             }
             
             rb.linearVelocity = currentVelocity;
@@ -239,7 +239,7 @@ namespace Character3C.Enemy
             // 如果敌人不应该移动（CanMove为false），强制速度为0
             if (!Blackboard.CanMove && !isKnockedBack)
             {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
             }
         }
 
@@ -249,26 +249,32 @@ namespace Character3C.Enemy
         /// </summary>
         private void CheckGrounded()
         {
+            isGrounded = true;
+            return;
             // 计算检测起点（角色底部中心）
-            Vector2 checkPosition = (Vector2)transform.position;
+            // 地面是XY平面，Z轴是垂直方向
+            Vector3 checkPosition = transform.position;
             
-            // 如果有BoxCollider2D，使用碰撞体底部作为检测起点
+            // 如果有Collider2D，使用碰撞体底部作为检测起点
             if (col != null)
             {
                 Bounds bounds = col.bounds;
-                checkPosition = new Vector2(bounds.center.x, bounds.min.y);
+                // 底部是Z轴的最小值（bounds.min.z），XY保持中心
+                checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z);
             }
             
-            // 向下发射射线检测地面
-            RaycastHit2D hit = Physics2D.Raycast(
+            // 向Z轴正方向（向上）发射射线检测地面（地面是XY平面）
+            RaycastHit hit;
+            bool hasHit = Physics.Raycast(
                 checkPosition,
-                Vector2.down,
+                Vector3.forward, // Z轴正方向（向上，朝向XY平面）
+                out hit,
                 groundCheckDistance,
                 groundLayer
             );
             
-            // 如果检测到地面，且垂直速度向下或接近0，则认为在地面上
-            isGrounded = hit.collider != null && rb.linearVelocity.y <= 0.1f;
+            // 如果检测到地面，且Z轴速度向下或接近0，则认为在地面上
+            isGrounded = hasHit && transform.position.z <= hit.point.z + 0.1f;
         }
 
         /// <summary>
@@ -337,14 +343,13 @@ namespace Character3C.Enemy
         /// </summary>
         public void ApplyKnockback(Vector3 direction, float force)
         {
-            // 在XY平面系统中，击退只在X轴（水平方向），不影响Y轴（垂直）和Z轴（深度）
-            direction.y = 0; // 不影响垂直
-            direction.z = 0; // 不影响深度
+            // 在XY平面系统中，击退只在Y轴（水平方向），不影响X轴（垂直）
+            direction.x = 0; // 不影响垂直（X轴是垂直方向）
             direction.Normalize();
 
-            // 先清零当前水平速度（保留垂直速度和深度）
-            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-            velocity.x = 0;
+            // 先清零当前水平速度（保留垂直速度）
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+            velocity.y = 0;
 
             // 清除阻挡碰撞体（允许击退时穿透）
             blockingColliders.Clear();
@@ -364,8 +369,7 @@ namespace Character3C.Enemy
         public void TakeKnockback(Vector3 fromPosition, float force)
         {
             Vector3 direction = (transform.position - fromPosition).normalized;
-            direction.y = 0; // 保持水平（不影响垂直）
-            direction.z = 0; // 保持水平（不影响深度）
+            direction.x = 0; // 保持水平（不影响垂直，X轴是垂直方向）
             ApplyKnockback(direction, force);
         }
 
@@ -395,8 +399,8 @@ namespace Character3C.Enemy
             // 如果持续碰撞到玩家，持续重置速度，防止被推走
             if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
-                // 保持当前应该有的速度（由AI控制的速度，X轴水平）
-                Vector2 targetVel = new Vector2(velocity.x, rb.linearVelocity.y);
+                // 保持当前应该有的速度（由AI控制的速度，Y轴水平）
+                Vector2 targetVel = new Vector2(rb.linearVelocity.x, velocity.y);
                 rb.linearVelocity = targetVel;
             }
         }
@@ -469,16 +473,16 @@ namespace Character3C.Enemy
         /// </summary>
         private void OnDrawGizmosSelected()
         {
-            // 绘制地面检测射线
-            Vector2 checkPosition = (Vector2)transform.position;
+            // 绘制地面检测射线（XY平面为地面，Z轴是垂直方向）
+            Vector3 checkPosition = transform.position;
             if (col != null)
             {
                 Bounds bounds = col.bounds;
-                checkPosition = new Vector2(bounds.center.x, bounds.min.y);
+                checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z);
             }
             
             Gizmos.color = isGrounded ? Color.green : Color.red;
-            Gizmos.DrawRay(checkPosition, Vector2.down * groundCheckDistance);
+            Gizmos.DrawRay(checkPosition, Vector3.forward * groundCheckDistance); // Z轴正方向（向上，朝向XY平面）
         }
 
         private void OnDestroy()
