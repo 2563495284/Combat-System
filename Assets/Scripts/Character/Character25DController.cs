@@ -48,11 +48,6 @@ namespace Character3C
         private float knockbackDecay = 10f; // 击退衰减速度
         private bool isKnockedBack = false;
         
-        // 碰撞处理
-        private HashSet<Collider2D> blockingColliders = new HashSet<Collider2D>(); // 阻挡玩家移动的碰撞体
-        private bool ignoreCharacterCollisions = false; // 是否忽略角色间碰撞（用于技能强制位移）
-        private HashSet<Collider2D> ignoredColliders = new HashSet<Collider2D>(); // 临时忽略的碰撞体（用于击退）
-
         // 相机引用（用于计算移动方向）
         private Camera mainCamera;
 
@@ -126,17 +121,6 @@ namespace Character3C
                 {
                     knockbackVelocity = Vector2.zero;
                     isKnockedBack = false;
-                    ignoreCharacterCollisions = false; // 击退结束后恢复碰撞检测
-                    
-                    // 恢复所有被忽略的碰撞
-                    foreach (var ignoredCol in ignoredColliders)
-                    {
-                        if (ignoredCol != null)
-                        {
-                            Physics2D.IgnoreCollision(col, ignoredCol, false);
-                        }
-                    }
-                    ignoredColliders.Clear();
                 }
             }
 
@@ -158,30 +142,6 @@ namespace Character3C
 
                 // 计算目标速度（X轴和Y轴）
                 Vector2 targetVelocity = moveDirection * moveSpeed;
-                
-                // 如果有阻挡碰撞体，简单检查移动方向是否朝向阻挡物
-                if (blockingColliders.Count > 0 && !isKnockedBack && !ignoreCharacterCollisions)
-                {
-                    foreach (var blockingCol in blockingColliders)
-                    {
-                        if (blockingCol == null) continue;
-                        
-                        // 计算从玩家到阻挡物的方向
-                        Vector2 toBlocking = (Vector2)(blockingCol.transform.position - transform.position);
-                        
-                        if (toBlocking.sqrMagnitude > 0.01f)
-                        {
-                            // 如果移动方向朝向阻挡物（点积 > 0），阻止移动
-                            float dot = Vector2.Dot(moveDirection.normalized, toBlocking.normalized);
-                            if (dot > 0.1f) // 朝向阻挡物
-                            {
-                                // 阻止移动
-                                targetVelocity = Vector2.zero;
-                                break;
-                            }
-                        }
-                    }
-                }
                 
                 velocity.x = targetVelocity.x;
                 velocity.y = targetVelocity.y; // 添加Y轴速度支持
@@ -221,12 +181,6 @@ namespace Character3C
         /// </summary>
         private void ApplyMovement()
         {
-            // 如果有阻挡碰撞体且不在击退状态，停止水平移动
-            if (blockingColliders.Count > 0 && !isKnockedBack && !ignoreCharacterCollisions)
-            {
-                velocity.x = 0;
-            }
-
             // 获取当前速度
             Vector2 currentVelocity = rb.linearVelocity;
 
@@ -412,10 +366,6 @@ namespace Character3C
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
             velocity.y = 0;
             
-            // 清除阻挡碰撞体（允许击退时穿透）
-            blockingColliders.Clear();
-            ignoreCharacterCollisions = true; // 临时忽略角色间碰撞
-            
             // 临时忽略所有角色碰撞体（允许穿透，但不影响地面碰撞）
             // 查找场景中所有角色碰撞体并临时忽略
             var allCharacters = FindObjectsByType<Character25DController>(FindObjectsSortMode.None);
@@ -424,7 +374,6 @@ namespace Character3C
                 if (character != this && character.col != null)
                 {
                     Physics2D.IgnoreCollision(col, character.col, true);
-                    ignoredColliders.Add(character.col);
                 }
             }
             
@@ -435,7 +384,6 @@ namespace Character3C
                 {
                     Collider2D enemyCol = enemy.GetComponent<Collider2D>();
                     Physics2D.IgnoreCollision(col, enemyCol, true);
-                    ignoredColliders.Add(enemyCol);
                 }
             }
             
@@ -462,7 +410,6 @@ namespace Character3C
         /// </summary>
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, collision, true);
         }
 
         /// <summary>
@@ -470,7 +417,6 @@ namespace Character3C
         /// </summary>
         private void OnCollisionStay2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, collision, false);
         }
 
         /// <summary>
@@ -478,10 +424,7 @@ namespace Character3C
         /// </summary>
         private void OnCollisionExit2D(Collision2D collision)
         {
-            if (collision.collider.CompareTag("Enemy"))
-            {
-                blockingColliders.Remove(collision.collider);
-            }
+
         }
 
         /// <summary>
@@ -504,53 +447,6 @@ namespace Character3C
                 Debug.Log($"离开敌人范围: {other.name}");
             }
         }
-
-        /// <summary>
-        /// 处理碰撞逻辑 - 强制阻止玩家穿过敌人
-        /// </summary>
-        private void HandleCollision(Collider2D other, Collision2D collision, bool isEnter)
-        {
-            // 如果正在击退或忽略碰撞，不处理
-            if (ignoreCharacterCollisions || isKnockedBack)
-                return;
-
-            // 检测与敌人的碰撞
-            if (other.CompareTag("Enemy"))
-            {
-                if (isEnter)
-                {
-                    blockingColliders.Add(other);
-                }
-
-                // 强制阻止玩家穿过敌人 - 计算碰撞法线并推回玩家
-                if (collision != null && collision.contactCount > 0)
-                {
-                    // 获取碰撞接触点
-                    ContactPoint2D contact = collision.GetContact(0);
-                    Vector2 normal = contact.normal;
-                    
-                    // 计算玩家相对于敌人的位置
-                    Vector2 toEnemy = (Vector2)(other.transform.position - transform.position);
-                    
-                    // 如果玩家正在朝向敌人移动，强制停止并推回
-                    if (Vector2.Dot(moveDirection.normalized, toEnemy.normalized) > 0.1f)
-                    {
-                        // 立即停止水平移动
-                        velocity.x = 0;
-                        
-                        // 推回玩家，防止重叠
-                        Vector2 pushBack = -normal * 0.1f; // 推回距离
-                        rb.MovePosition(rb.position + pushBack);
-                        
-                        // 强制设置速度为0
-                        Vector2 currentVel = rb.linearVelocity;
-                        currentVel.x = 0;
-                        rb.linearVelocity = currentVel;
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// 绘制 Gizmos（用于调试地面检测）
         /// </summary>

@@ -50,10 +50,6 @@ namespace Character3C.Enemy
         private float knockbackDecay = 10f; // 击退衰减速度
         private bool isKnockedBack = false;
 
-        // 碰撞处理
-        private HashSet<Collider2D> blockingColliders = new HashSet<Collider2D>(); // 阻挡敌人移动的碰撞体
-        private bool ignoreCharacterCollisions = false; // 是否忽略角色间碰撞（用于技能强制位移）
-
         public float MoveSpeed => moveSpeed;
         public bool IsGrounded => isGrounded;
 
@@ -151,7 +147,6 @@ namespace Character3C.Enemy
                 {
                     knockbackVelocity = Vector3.zero;
                     isKnockedBack = false;
-                    ignoreCharacterCollisions = false; // 击退结束后恢复碰撞检测
                 }
             }
 
@@ -351,10 +346,6 @@ namespace Character3C.Enemy
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
             velocity.y = 0;
 
-            // 清除阻挡碰撞体（允许击退时穿透）
-            blockingColliders.Clear();
-            ignoreCharacterCollisions = true; // 临时忽略角色间碰撞
-
             // 应用击退力
             rb.AddForce(direction * force, ForceMode2D.Impulse);
 
@@ -378,8 +369,6 @@ namespace Character3C.Enemy
         /// </summary>
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, true);
-
             // 如果碰撞到玩家，立即重置速度，防止被推走
             if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
@@ -394,8 +383,6 @@ namespace Character3C.Enemy
         /// </summary>
         private void OnCollisionStay2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, false);
-
             // 如果持续碰撞到玩家，持续重置速度，防止被推走
             if (collision.collider.CompareTag("Player") && !isKnockedBack)
             {
@@ -410,10 +397,6 @@ namespace Character3C.Enemy
         /// </summary>
         private void OnCollisionExit2D(Collision2D collision)
         {
-            if (collision.collider.CompareTag("Enemy"))
-            {
-                blockingColliders.Remove(collision.collider);
-            }
         }
 
         /// <summary>
@@ -436,38 +419,6 @@ namespace Character3C.Enemy
                 Debug.Log($"玩家离开敌人感知范围: {other.name}");
             }
         }
-
-        /// <summary>
-        /// 处理碰撞逻辑
-        /// </summary>
-        private void HandleCollision(Collider2D other, bool isEnter)
-        {
-            // 如果正在击退或忽略碰撞，不处理
-            if (ignoreCharacterCollisions || isKnockedBack)
-                return;
-
-            // 如果碰撞到玩家，强制保持当前速度，防止被物理引擎推走
-            if (other.CompareTag("Player"))
-            {
-                // 保持敌人的当前速度，不被物理碰撞影响
-                // 在下一帧的ApplyMovement中会重新设置速度
-                // 这里不做任何处理，让敌人保持固定
-            }
-
-            // 敌人不受玩家碰撞影响（玩家会自己停下）
-            // 敌人也不受其他敌人碰撞影响，保持固定不动
-            if (other.CompareTag("Enemy") && other.gameObject != gameObject)
-            {
-                if (isEnter)
-                {
-                    blockingColliders.Add(other);
-                }
-
-                // 不推离敌人，保持固定不动
-                // 如果需要防止重叠，可以在玩家那边处理
-            }
-        }
-
         /// <summary>
         /// 绘制 Gizmos（用于调试地面检测）
         /// </summary>
