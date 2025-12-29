@@ -66,13 +66,15 @@ namespace Character3C
             col = GetComponent<BoxCollider2D>();
             mainCamera = Camera.main;
 
-            // 配置Rigidbody2D - 使用物理模式（非Kinematic）
+            // 配置Rigidbody2D - 按照标准2D平台游戏设置
             rb.mass = 1f;
-            rb.linearDamping = 0f;
+            rb.linearDamping = 5f; // 线性阻力，让移动有惯性
             rb.angularDamping = 0f;
-            rb.gravityScale = 0f; // 禁用Unity重力系统，改为手动控制Y轴速度（用于精确控制移动）
-            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式：用于物理碰撞检测，但速度由代码手动控制
+            rb.gravityScale = 0f; // 禁用重力
+            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式
             rb.interpolation = RigidbodyInterpolation2D.Interpolate; // 平滑移动
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // 连续碰撞检测，防止高速穿透
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation; // 锁定旋转
 
             // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
             // 2D物理会自动处理地面碰撞，不需要手动检测
@@ -199,43 +201,46 @@ namespace Character3C
         }
 
         /// <summary>
-        /// 计算垂直移动速度（Y轴，无重力系统）
+        /// 计算垂直移动速度（Y轴，手动控制模式）
         /// </summary>
         private void CalculateVerticalMovement()
         {
-            // 2D游戏不需要重力，Y轴速度由输入控制
-            // Y轴速度已经在CalculateHorizontalMovement中设置了（通过WS键输入）
-            // 这里只需要处理跳跃相关的逻辑
-            
-            if (rb.linearVelocity.y <= 0.01f && rb.linearVelocity.y >= -0.01f)
+            // XY平面游戏不使用重力，Y轴速度由代码手动控制
+            // 在地面上时重置跳跃计数
+            if (isGrounded && rb.linearVelocity.y <= 0.01f)
             {
-                jumpCount = 0; // 重置跳跃计数
+                jumpCount = 0;
             }
             
-            // 如果有跳跃速度，使用跳跃速度；否则使用输入速度
-            // velocity.y已经在CalculateHorizontalMovement中设置了
+            // 如果有跳跃输入，velocity.y会在Jump()方法中设置
+            // 否则Y轴速度保持为0（无重力，不会自动下落）
         }
 
         /// <summary>
-        /// 应用移动 - 使用Rigidbody2D.velocity直接控制（XY平面系统）
+        /// 应用移动 - 使用Rigidbody2D.velocity直接控制（XY平面系统，无重力）
         /// </summary>
         private void ApplyMovement()
         {
-            // 计算水平速度（X轴，包含击退）
-            Vector2 horizontalVelocity = new Vector2(velocity.x, 0);
-            if (isKnockedBack)
+            // 如果有阻挡碰撞体且不在击退状态，停止水平移动
+            if (blockingColliders.Count > 0 && !isKnockedBack && !ignoreCharacterCollisions)
             {
-                // 击退时，使用击退速度（X轴）
-                horizontalVelocity = new Vector2(knockbackVelocity.x, 0);
+                velocity.x = 0;
             }
 
-            // 获取当前Rigidbody2D的速度
+            // 获取当前速度
             Vector2 currentVelocity = rb.linearVelocity;
-            
+
             // 设置水平速度（X轴）
-            currentVelocity.x = horizontalVelocity.x;
-            
-            // 处理垂直速度（Y轴）- 无重力，由输入或跳跃控制
+            if (isKnockedBack)
+            {
+                currentVelocity.x = knockbackVelocity.x;
+            }
+            else
+            {
+                currentVelocity.x = velocity.x;
+            }
+
+            // 处理垂直速度（Y轴）- 无重力，手动控制
             if (velocity.y != 0)
             {
                 // 使用输入或跳跃速度
@@ -272,13 +277,11 @@ namespace Character3C
             if (jumpCount >= maxJumpCount)
                 return;
 
-            // 直接设置垂直速度实现跳跃（不使用Unity重力系统）
-            // 在XY平面系统中，跳跃是沿Y轴（垂直方向）向上
-            Vector2 jumpVelocity = rb.linearVelocity;
-            jumpVelocity.y = jumpForce;
-            rb.linearVelocity = jumpVelocity;
-            
-            // 更新内部速度记录
+            // 在地面上才能跳跃
+            if (!isGrounded && jumpCount > 0)
+                return;
+
+            // 直接设置垂直速度实现跳跃（XY平面系统，无重力）
             velocity.y = jumpForce;
             jumpCount++;
 
@@ -454,7 +457,7 @@ namespace Character3C
         /// </summary>
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, true);
+            HandleCollision(collision.collider, collision, true);
         }
 
         /// <summary>
@@ -462,7 +465,7 @@ namespace Character3C
         /// </summary>
         private void OnCollisionStay2D(Collision2D collision)
         {
-            HandleCollision(collision.collider, false);
+            HandleCollision(collision.collider, collision, false);
         }
 
         /// <summary>
@@ -477,20 +480,68 @@ namespace Character3C
         }
 
         /// <summary>
-        /// 处理碰撞逻辑 - 简化版本：只记录碰撞体，不做其他处理
+        /// Trigger检测 - 用于检测敌人（CircleCollider2D设置为Trigger）
         /// </summary>
-        private void HandleCollision(Collider2D other, bool isEnter)
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Enemy"))
+            {
+                // Trigger检测到敌人，可以用于攻击判定、伤害检测等
+                // 物理碰撞由非Trigger Collider处理
+                Debug.Log($"检测到敌人: {other.name}");
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Enemy"))
+            {
+                Debug.Log($"离开敌人范围: {other.name}");
+            }
+        }
+
+        /// <summary>
+        /// 处理碰撞逻辑 - 强制阻止玩家穿过敌人
+        /// </summary>
+        private void HandleCollision(Collider2D other, Collision2D collision, bool isEnter)
         {
             // 如果正在击退或忽略碰撞，不处理
             if (ignoreCharacterCollisions || isKnockedBack)
                 return;
 
-            // 检测与敌人的碰撞，只记录碰撞体
+            // 检测与敌人的碰撞
             if (other.CompareTag("Enemy"))
             {
                 if (isEnter)
                 {
                     blockingColliders.Add(other);
+                }
+
+                // 强制阻止玩家穿过敌人 - 计算碰撞法线并推回玩家
+                if (collision != null && collision.contactCount > 0)
+                {
+                    // 获取碰撞接触点
+                    ContactPoint2D contact = collision.GetContact(0);
+                    Vector2 normal = contact.normal;
+                    
+                    // 计算玩家相对于敌人的位置
+                    Vector2 toEnemy = (Vector2)(other.transform.position - transform.position);
+                    
+                    // 如果玩家正在朝向敌人移动，强制停止并推回
+                    if (Vector2.Dot(moveDirection.normalized, toEnemy.normalized) > 0.1f)
+                    {
+                        // 立即停止水平移动
+                        velocity.x = 0;
+                        
+                        // 推回玩家，防止重叠
+                        Vector2 pushBack = -normal * 0.1f; // 推回距离
+                        rb.MovePosition(rb.position + pushBack);
+                        
+                        // 强制设置速度为0
+                        Vector2 currentVel = rb.linearVelocity;
+                        currentVel.x = 0;
+                        rb.linearVelocity = currentVel;
+                    }
                 }
             }
         }

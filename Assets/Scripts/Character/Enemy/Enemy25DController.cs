@@ -51,7 +51,7 @@ namespace Character3C.Enemy
         private bool isKnockedBack = false;
 
         // 碰撞处理
-        private HashSet<Collider> blockingColliders = new HashSet<Collider>(); // 阻挡敌人移动的碰撞体
+        private HashSet<Collider2D> blockingColliders = new HashSet<Collider2D>(); // 阻挡敌人移动的碰撞体
         private bool ignoreCharacterCollisions = false; // 是否忽略角色间碰撞（用于技能强制位移）
 
         public float MoveSpeed => moveSpeed;
@@ -63,13 +63,15 @@ namespace Character3C.Enemy
             col = GetComponent<BoxCollider2D>();
             combatEntity = GetComponent<CombatEntity>();
 
-            // 配置Rigidbody2D - 使用物理模式（非Kinematic）
-            rb.mass = 1f;
-            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式：用于物理碰撞检测，但速度由代码手动控制
-            rb.gravityScale = 0f; // 禁用Unity重力系统，改为手动控制Y轴速度（与玩家控制器保持一致）
-            rb.linearDamping = 0f;
+            // 配置Rigidbody2D - XY平面游戏，不使用重力
+            rb.mass = 1.5f; // 比玩家重一点
+            rb.linearDamping = 8f; // 阻力大，移动不灵活
             rb.angularDamping = 0f;
+            rb.gravityScale = 0f; // 禁用重力（XY平面游戏不需要重力）
+            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式
             rb.interpolation = RigidbodyInterpolation2D.Interpolate; // 平滑移动
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // 连续碰撞检测，防止高速穿透
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation; // 锁定旋转
 
             // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
             // 这样可以与地面产生真实的物理碰撞，同时通过代码控制角色间碰撞
@@ -189,41 +191,38 @@ namespace Character3C.Enemy
         /// </summary>
         private void CalculateVerticalMovement()
         {
-            // 手动控制模式：不使用Unity重力系统，Y轴速度由代码控制
-            // 注意：在XY平面系统中，Y轴是垂直方向，Z轴是深度方向（用于2.5D渲染层次）
+            // XY平面游戏不使用重力，Y轴速度由代码手动控制
+            // 在地面上时，垂直速度强制为0（防止穿透地面）
             if (isGrounded)
             {
-                // 在地面上时，垂直速度强制为0（防止穿透地面）
                 velocity.y = 0;
             }
             else
             {
                 // 在空中时，保持当前的垂直速度（如果没有其他力作用，应该为0）
-                // 如果需要敌人跳跃或受击飞效果，可以在这里添加逻辑
                 velocity.y = rb.linearVelocity.y;
             }
         }
 
         /// <summary>
-        /// 应用移动 - 使用Rigidbody.velocity直接控制（XY平面系统）
+        /// 应用移动 - 使用Rigidbody2D.velocity直接控制（XY平面系统，无重力）
         /// </summary>
         private void ApplyMovement()
         {
-            // 计算水平速度（X轴，包含击退）
-            Vector2 horizontalVelocity = new Vector2(velocity.x, 0);
-            if (isKnockedBack)
-            {
-                // 击退时，使用击退速度（X轴）
-                horizontalVelocity = new Vector2(knockbackVelocity.x, 0);
-            }
-
-            // 获取当前Rigidbody2D的速度
+            // 获取当前速度
             Vector2 currentVelocity = rb.linearVelocity;
 
             // 设置水平速度（X轴）
-            currentVelocity.x = horizontalVelocity.x;
+            if (isKnockedBack)
+            {
+                currentVelocity.x = knockbackVelocity.x;
+            }
+            else
+            {
+                currentVelocity.x = velocity.x;
+            }
 
-            // 处理垂直速度（Y轴）- 手动控制模式
+            // 处理垂直速度（Y轴）- 无重力，手动控制
             if (isGrounded)
             {
                 // 在地面上时，强制垂直速度为0（防止穿透地面）
@@ -231,10 +230,10 @@ namespace Character3C.Enemy
             }
             else
             {
-                // 在空中时，使用计算的垂直速度（如果没有其他力作用，应该为0）
+                // 在空中时，使用计算的垂直速度
                 currentVelocity.y = velocity.y;
             }
-
+            
             rb.linearVelocity = currentVelocity;
 
             // 如果敌人不应该移动（CanMove为false），强制速度为0
@@ -373,7 +372,7 @@ namespace Character3C.Enemy
         /// <summary>
         /// 物理碰撞检测 - 敌人不受玩家碰撞影响，但需要处理与其他敌人的碰撞
         /// </summary>
-        private void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
             HandleCollision(collision.collider, true);
 
@@ -389,7 +388,7 @@ namespace Character3C.Enemy
         /// <summary>
         /// 物理碰撞持续检测
         /// </summary>
-        private void OnCollisionStay(Collision collision)
+        private void OnCollisionStay2D(Collision2D collision)
         {
             HandleCollision(collision.collider, false);
 
@@ -405,7 +404,7 @@ namespace Character3C.Enemy
         /// <summary>
         /// 碰撞离开 - 移除阻挡标记
         /// </summary>
-        private void OnCollisionExit(Collision collision)
+        private void OnCollisionExit2D(Collision2D collision)
         {
             if (collision.collider.CompareTag("Enemy"))
             {
@@ -414,9 +413,30 @@ namespace Character3C.Enemy
         }
 
         /// <summary>
+        /// Trigger检测 - 用于检测玩家（CircleCollider2D设置为Trigger）
+        /// </summary>
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                // Trigger检测到玩家，可以用于AI感知、攻击判定等
+                // 物理碰撞由非Trigger Collider处理
+                Debug.Log($"敌人检测到玩家: {other.name}");
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                Debug.Log($"玩家离开敌人感知范围: {other.name}");
+            }
+        }
+
+        /// <summary>
         /// 处理碰撞逻辑
         /// </summary>
-        private void HandleCollision(Collider other, bool isEnter)
+        private void HandleCollision(Collider2D other, bool isEnter)
         {
             // 如果正在击退或忽略碰撞，不处理
             if (ignoreCharacterCollisions || isKnockedBack)
