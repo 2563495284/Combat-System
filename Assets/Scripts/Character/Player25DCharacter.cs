@@ -1,5 +1,4 @@
 using UnityEngine;
-using Character3C.Map;
 
 namespace Character3C
 {
@@ -35,8 +34,7 @@ namespace Character3C
 
         private void Start()
         {
-            // 确保在可行走的位置生成
-            // EnsureValidSpawnPosition();
+
         }
 
         /// <summary>
@@ -61,22 +59,6 @@ namespace Character3C
             }
         }
 
-        /// <summary>
-        /// 确保在有效位置生成
-        /// </summary>
-        private void EnsureValidSpawnPosition()
-        {
-            if (MapManager.Instance != null)
-            {
-                Vector3 validPos = MapManager.Instance.GetNearestWalkablePosition(transform.position);
-                if (validPos != transform.position)
-                {
-                    transform.position = validPos;
-                    Debug.Log($"角色位置已调整到可行走位置: {validPos}");
-                }
-            }
-        }
-
         private void Update()
         {
             UpdateAnimation();
@@ -95,12 +77,12 @@ namespace Character3C
             float speed = Mathf.Abs(blackboard.Velocity.x); // X轴是水平移动
             animator.SetFloat("Speed", speed);
             animator.SetFloat("VerticalSpeed", blackboard.Velocity.y); // Y轴是垂直（跳跃/重力）
-            animator.SetBool("IsGrounded", blackboard.IsGrounded);
+            animator.SetBool("IsGrounded", true);
 
             // 根据移动方向翻转Sprite（可选）
             if (blackboard.FacingDirection.x != 0 && spriteRenderer != null)
             {
-                spriteRenderer.flipX = blackboard.FacingDirection.x > 0;
+                spriteRenderer.flipX = blackboard.FacingDirection.x < 0f;
             }
         }
 

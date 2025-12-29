@@ -15,8 +15,8 @@ namespace Character3C
     {
         [Header("移动参数")]
         [SerializeField] private float moveSpeed = 5f;
-        [SerializeField] private float acceleration = 20f;
-        [SerializeField] private float deceleration = 20f;
+        // [SerializeField] private float acceleration = 20f;
+        // [SerializeField] private float deceleration = 20f;
 
         [Header("跳跃参数")]
         [SerializeField] private float jumpForce = 8f;
