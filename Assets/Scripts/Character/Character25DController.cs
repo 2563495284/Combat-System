@@ -22,6 +22,11 @@ namespace Character3C
         [SerializeField] private float jumpForce = 8f;
         [SerializeField] private int maxJumpCount = 1;
 
+        [Header("地面检测")]
+        [SerializeField] private float groundCheckDistance = 0.1f; // 地面检测距离
+        [SerializeField] private LayerMask groundLayer = 1; // 地面层级（默认所有层）
+        [SerializeField] private Vector2 groundCheckOffset = Vector2.zero; // 检测点偏移
+
         // 黑板数据
         public CharacterBlackboard25D Blackboard { get; private set; }
 
@@ -36,6 +41,7 @@ namespace Character3C
         private Vector2 velocity;
         private Vector2 moveDirection;
         private int jumpCount;
+        private bool isGrounded;
         
         // 击退状态管理
         private Vector2 knockbackVelocity;
@@ -52,7 +58,7 @@ namespace Character3C
 
         public float MoveSpeed => moveSpeed;
         public float JumpForce => jumpForce;
-        public bool IsGrounded => rb.IsTouchingLayers(); // 2D物理自动检测地面碰撞
+        public bool IsGrounded => isGrounded;
 
         private void Awake()
         {
@@ -64,8 +70,8 @@ namespace Character3C
             rb.mass = 1f;
             rb.linearDamping = 0f;
             rb.angularDamping = 0f;
-            rb.gravityScale = 0f; // 禁用重力（2D游戏不需要重力）
-            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式：受物理力影响
+            rb.gravityScale = 0f; // 禁用Unity重力系统，改为手动控制Y轴速度（用于精确控制移动）
+            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式：用于物理碰撞检测，但速度由代码手动控制
             rb.interpolation = RigidbodyInterpolation2D.Interpolate; // 平滑移动
 
             // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
@@ -97,7 +103,9 @@ namespace Character3C
 
         private void FixedUpdate()
         {
-            // 2D物理自动处理地面碰撞，不需要手动检测
+            // 检测地面
+            CheckGrounded();
+            
             CalculateHorizontalMovement();
             CalculateVerticalMovement();
             ApplyMovement();
@@ -264,7 +272,7 @@ namespace Character3C
             if (jumpCount >= maxJumpCount)
                 return;
 
-            // 使用AddForce应用跳跃力（与Unity重力系统配合）
+            // 直接设置垂直速度实现跳跃（不使用Unity重力系统）
             // 在XY平面系统中，跳跃是沿Y轴（垂直方向）向上
             Vector2 jumpVelocity = rb.linearVelocity;
             jumpVelocity.y = jumpForce;
@@ -279,13 +287,83 @@ namespace Character3C
 
 
         /// <summary>
+        /// 检测角色是否在地面上（Unity 2D XY平面）
+        /// 使用Raycast2D向下检测，这是最可靠的方法
+        /// </summary>
+        private void CheckGrounded()
+        {
+            // 方法1: 使用Raycast2D向下检测（推荐）
+            // 计算检测起点（角色底部中心 + 偏移）
+            Vector2 checkPosition = (Vector2)transform.position + groundCheckOffset;
+            
+            // 如果有BoxCollider2D，使用碰撞体底部作为检测起点
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                checkPosition = new Vector2(bounds.center.x, bounds.min.y) + groundCheckOffset;
+            }
+            
+            // 向下发射射线检测地面
+            RaycastHit2D hit = Physics2D.Raycast(
+                checkPosition,
+                Vector2.down,
+                groundCheckDistance,
+                groundLayer
+            );
+            
+            // 如果检测到地面，且垂直速度向下或接近0，则认为在地面上
+            isGrounded = hit.collider != null && rb.linearVelocity.y <= 0.1f;
+            
+            // 方法2（备选）: 使用BoxCast2D检测脚下区域（更准确，适合有宽度的角色）
+            // 如果需要更精确的检测，可以取消注释以下代码
+            /*
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                Vector2 boxSize = new Vector2(bounds.size.x * 0.9f, groundCheckDistance);
+                Vector2 boxCenter = new Vector2(bounds.center.x, bounds.min.y - groundCheckDistance * 0.5f);
+                
+                RaycastHit2D boxHit = Physics2D.BoxCast(
+                    boxCenter,
+                    boxSize,
+                    0f,
+                    Vector2.down,
+                    0f,
+                    groundLayer
+                );
+                
+                isGrounded = boxHit.collider != null && rb.linearVelocity.y <= 0.1f;
+            }
+            */
+            
+            // 方法3（备选）: 使用OverlapCircle检测脚下圆形区域
+            // 如果需要圆形检测，可以取消注释以下代码
+            /*
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                Vector2 circleCenter = new Vector2(bounds.center.x, bounds.min.y);
+                float radius = Mathf.Min(bounds.size.x, bounds.size.y) * 0.5f;
+                
+                Collider2D overlap = Physics2D.OverlapCircle(
+                    circleCenter,
+                    radius + groundCheckDistance,
+                    groundLayer
+                );
+                
+                isGrounded = overlap != null && rb.linearVelocity.y <= 0.1f;
+            }
+            */
+        }
+
+        /// <summary>
         /// 更新黑板数据
         /// </summary>
         private void UpdateBlackboard()
         {
             // 使用Rigidbody2D的实际速度
             Blackboard.Velocity = rb.linearVelocity;
-            Blackboard.IsGrounded = IsGrounded;
+            Blackboard.IsGrounded = isGrounded;
             Blackboard.Position = transform.position;
             Blackboard.MoveDirection = moveDirection;
         }
@@ -418,7 +496,7 @@ namespace Character3C
         }
 
         /// <summary>
-        /// 绘制 Gizmos
+        /// 绘制 Gizmos（用于调试地面检测）
         /// </summary>
         private void OnDrawGizmosSelected()
         {
@@ -428,6 +506,17 @@ namespace Character3C
                 Gizmos.color = Color.blue;
                 Gizmos.DrawRay(transform.position, moveDirection * 2f);
             }
+            
+            // 绘制地面检测射线
+            Vector2 checkPosition = (Vector2)transform.position + groundCheckOffset;
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                checkPosition = new Vector2(bounds.center.x, bounds.min.y) + groundCheckOffset;
+            }
+            
+            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.DrawRay(checkPosition, Vector2.down * groundCheckDistance);
         }
     }
 }

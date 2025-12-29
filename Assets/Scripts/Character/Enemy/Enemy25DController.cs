@@ -63,13 +63,13 @@ namespace Character3C.Enemy
             col = GetComponent<BoxCollider2D>();
             combatEntity = GetComponent<CombatEntity>();
 
-            // 配置Rigidbody - 使用物理模式（非Kinematic）
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.gravityScale = 0f;
+            // 配置Rigidbody2D - 使用物理模式（非Kinematic）
+            rb.mass = 1f;
+            rb.bodyType = RigidbodyType2D.Dynamic; // 动态模式：用于物理碰撞检测，但速度由代码手动控制
+            rb.gravityScale = 0f; // 禁用Unity重力系统，改为手动控制Y轴速度（与玩家控制器保持一致）
             rb.linearDamping = 0f;
             rb.angularDamping = 0f;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate; // 平滑移动
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation; // 只锁定旋转，Z轴由重力控制
 
             // 配置碰撞体 - 使用真实物理碰撞（非Trigger）
             // 这样可以与地面产生真实的物理碰撞，同时通过代码控制角色间碰撞
@@ -79,8 +79,8 @@ namespace Character3C.Enemy
             Blackboard = new EnemyBlackboard
             {
                 Transform = transform,
-                Rigidbody = null,
-                Collider = null,
+                Rigidbody = rb,
+                Collider = col,
                 CombatEntity = combatEntity,
             };
 
@@ -127,6 +127,9 @@ namespace Character3C.Enemy
         {
             if (Blackboard.IsDead)
                 return;
+
+            // 检测地面
+            CheckGrounded();
 
             CalculateHorizontalMovement();
             CalculateVerticalMovement();
@@ -182,29 +185,21 @@ namespace Character3C.Enemy
         }
 
         /// <summary>
-        /// 计算垂直移动速度（Y轴，使用Unity系统重力）
+        /// 计算垂直移动速度（Y轴，手动控制模式）
         /// </summary>
         private void CalculateVerticalMovement()
         {
-            // 使用Unity系统重力，不需要手动计算重力
-            // 只需要在地面上时重置垂直速度
-            // 注意：在XY平面系统中，Y轴是垂直方向（重力向下），Z轴是深度方向（用于2.5D渲染层次）
+            // 手动控制模式：不使用Unity重力系统，Y轴速度由代码控制
+            // 注意：在XY平面系统中，Y轴是垂直方向，Z轴是深度方向（用于2.5D渲染层次）
             if (isGrounded)
             {
-                // 在地面上时，如果垂直速度向下（负Y），重置为0（防止穿透地面）
-                if (rb.linearVelocity.y < 0)
-                {
-                    velocity.y = 0;
-                }
-                else
-                {
-                    // 保持当前的垂直速度
-                    velocity.y = rb.linearVelocity.y;
-                }
+                // 在地面上时，垂直速度强制为0（防止穿透地面）
+                velocity.y = 0;
             }
             else
             {
-                // 在空中时，使用Rigidbody的实际垂直速度（由Unity重力控制）
+                // 在空中时，保持当前的垂直速度（如果没有其他力作用，应该为0）
+                // 如果需要敌人跳跃或受击飞效果，可以在这里添加逻辑
                 velocity.y = rb.linearVelocity.y;
             }
         }
@@ -222,21 +217,23 @@ namespace Character3C.Enemy
                 horizontalVelocity = new Vector2(knockbackVelocity.x, 0);
             }
 
-            // 获取当前Rigidbody的速度（包含Unity重力系统影响的垂直速度）
-            Vector3 currentVelocity = rb.linearVelocity;
+            // 获取当前Rigidbody2D的速度
+            Vector2 currentVelocity = rb.linearVelocity;
 
             // 设置水平速度（X轴）
             currentVelocity.x = horizontalVelocity.x;
 
-            // 在地面上时，强制垂直速度为0（防止穿透地面）
+            // 处理垂直速度（Y轴）- 手动控制模式
             if (isGrounded)
             {
+                // 在地面上时，强制垂直速度为0（防止穿透地面）
                 currentVelocity.y = 0;
             }
-            // 否则保持Unity重力系统计算的垂直速度（已经在 currentVelocity.y 中）
-
-            // Z轴是深度方向，保持原值（用于2.5D渲染层次，不影响物理）
-            // currentVelocity.z 保持不变
+            else
+            {
+                // 在空中时，使用计算的垂直速度（如果没有其他力作用，应该为0）
+                currentVelocity.y = velocity.y;
+            }
 
             rb.linearVelocity = currentVelocity;
 
@@ -245,6 +242,34 @@ namespace Character3C.Enemy
             {
                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             }
+        }
+
+        /// <summary>
+        /// 检测角色是否在地面上（Unity 2D XY平面）
+        /// 使用Raycast2D向下检测
+        /// </summary>
+        private void CheckGrounded()
+        {
+            // 计算检测起点（角色底部中心）
+            Vector2 checkPosition = (Vector2)transform.position;
+            
+            // 如果有BoxCollider2D，使用碰撞体底部作为检测起点
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                checkPosition = new Vector2(bounds.center.x, bounds.min.y);
+            }
+            
+            // 向下发射射线检测地面
+            RaycastHit2D hit = Physics2D.Raycast(
+                checkPosition,
+                Vector2.down,
+                groundCheckDistance,
+                groundLayer
+            );
+            
+            // 如果检测到地面，且垂直速度向下或接近0，则认为在地面上
+            isGrounded = hit.collider != null && rb.linearVelocity.y <= 0.1f;
         }
 
         /// <summary>
@@ -299,7 +324,7 @@ namespace Character3C.Enemy
             currentTask?.Stop();
 
             // 禁用物理
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
             col.enabled = false;
 
             Debug.Log($"{combatEntity.EntityName} 已死亡");
@@ -417,6 +442,23 @@ namespace Character3C.Enemy
                 // 不推离敌人，保持固定不动
                 // 如果需要防止重叠，可以在玩家那边处理
             }
+        }
+
+        /// <summary>
+        /// 绘制 Gizmos（用于调试地面检测）
+        /// </summary>
+        private void OnDrawGizmosSelected()
+        {
+            // 绘制地面检测射线
+            Vector2 checkPosition = (Vector2)transform.position;
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                checkPosition = new Vector2(bounds.center.x, bounds.min.y);
+            }
+            
+            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.DrawRay(checkPosition, Vector2.down * groundCheckDistance);
         }
 
         private void OnDestroy()

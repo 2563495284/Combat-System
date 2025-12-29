@@ -28,20 +28,12 @@ namespace Character3C
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
 
-            SetupCamera();
             SetupVisuals();
         }
 
         private void Start()
         {
 
-        }
-
-        /// <summary>
-        /// 设置相机
-        /// </summary>
-        private void SetupCamera()
-        {
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace Character3C
             float speed = Mathf.Abs(blackboard.Velocity.x); // X轴是水平移动
             animator.SetFloat("Speed", speed);
             animator.SetFloat("VerticalSpeed", blackboard.Velocity.y); // Y轴是垂直（跳跃/重力）
-            animator.SetBool("IsGrounded", true);
+            animator.SetBool("IsGrounded", blackboard.IsGrounded); // 使用实际的地面检测结果
 
             // 根据移动方向翻转Sprite（可选）
             if (blackboard.FacingDirection.x != 0 && spriteRenderer != null)
