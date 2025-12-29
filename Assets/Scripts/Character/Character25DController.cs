@@ -11,6 +11,7 @@ namespace Character3C
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(BoxCollider2D))]
+    [RequireComponent(typeof(CombatEntity))]
     public class Character25DController : MonoBehaviour
     {
         [Header("移动参数")]
@@ -30,8 +31,8 @@ namespace Character3C
         // 黑板数据
         public CharacterBlackboard25D Blackboard { get; private set; }
 
-        // 任务管理
-        private TaskEntry<CharacterBlackboard25D> currentTask;
+        // 任务管理（主任务，通常是 PlayerControlTask）
+        private Tasks.PlayerControlTask mainTask;
 
         // 组件引用
         private Rigidbody2D rb;
@@ -84,6 +85,14 @@ namespace Character3C
             };
         }
 
+        private void Start()
+        {
+            // 初始化主任务（PlayerControlTask）
+            mainTask = new Tasks.PlayerControlTask(this);
+            mainTask.Blackboard = Blackboard;
+            mainTask.Start();
+        }
+
         private void Update()
         {
             float deltaTime = Time.deltaTime;
@@ -91,8 +100,8 @@ namespace Character3C
             // 更新黑板数据
             UpdateBlackboard();
 
-            // 更新当前任务
-            currentTask?.Update(deltaTime);
+            // 更新主任务（PlayerControlTask 会管理所有子状态任务）
+            mainTask?.Update(deltaTime);
 
             // 重置单帧输入标记
             Blackboard.ResetInputFlags();
@@ -250,8 +259,11 @@ namespace Character3C
         /// </summary>
         private void CheckGrounded()
         {
+            // 临时禁用地面检测，始终认为在地面上
             isGrounded = true;
-            return;
+            
+            // 以下代码已禁用，如需启用地面检测，请取消注释
+            /*
             // 计算检测起点（角色底部中心 + 偏移）
             Vector3 checkPosition = transform.position + new Vector3(groundCheckOffset.x, groundCheckOffset.y, 0);
             
@@ -278,7 +290,6 @@ namespace Character3C
             
             // 方法2（备选）: 使用BoxCast2D检测脚下区域（更准确，适合有宽度的角色）
             // 如果需要更精确的检测，可以取消注释以下代码
-            /*
             if (col != null)
             {
                 Bounds bounds = col.bounds;
@@ -296,11 +307,9 @@ namespace Character3C
                 
                 isGrounded = boxHit.collider != null && rb.linearVelocity.y <= 0.1f;
             }
-            */
             
             // 方法3（备选）: 使用OverlapCircle检测脚下圆形区域
             // 如果需要圆形检测，可以取消注释以下代码
-            /*
             if (col != null)
             {
                 Bounds bounds = col.bounds;
@@ -330,28 +339,6 @@ namespace Character3C
             Blackboard.MoveDirection = moveDirection;
         }
 
-        /// <summary>
-        /// 设置当前任务
-        /// </summary>
-        public void SetTask(TaskEntry<CharacterBlackboard25D> task)
-        {
-            currentTask?.Stop();
-            currentTask = task;
-
-            if (currentTask != null)
-            {
-                currentTask.Blackboard = Blackboard;
-                currentTask.Start();
-            }
-        }
-
-        /// <summary>
-        /// 获取当前任务
-        /// </summary>
-        public TaskEntry<CharacterBlackboard25D> GetTask()
-        {
-            return currentTask;
-        }
 
         /// <summary>
         /// 应用击退效果（供外部调用，如技能系统）

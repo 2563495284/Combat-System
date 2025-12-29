@@ -6,10 +6,12 @@ namespace Character3C.Tasks
     /// <summary>
     /// 玩家控制任务 (2.5D)
     /// 基于 TaskEntry 框架的玩家控制逻辑
+    /// 负责管理移动、攻击、冲刺等状态任务
     /// </summary>
     public class PlayerControlTask : TaskEntry<CharacterBlackboard25D>
     {
         private Character25DController character;
+        private TaskEntry<CharacterBlackboard25D> currentStateTask;
 
         public PlayerControlTask(Character25DController character)
         {
@@ -23,13 +25,63 @@ namespace Character3C.Tasks
 
         protected override void OnUpdate(float deltaTime)
         {
-            // 任务会通过 InputController 和 CharacterController2D 自动处理输入
-            // 这里可以添加额外的玩家控制逻辑
-
-            // 例如：检查攻击输入并触发攻击
-            if (Blackboard.InputAttack && Blackboard.CanAttack && !Blackboard.IsAttacking)
+            // 更新当前状态任务
+            if (currentStateTask != null)
             {
-                StartAttack();
+                currentStateTask.Update(deltaTime);
+                
+                // 如果状态任务完成，清除它
+                if (currentStateTask.IsCompleted)
+                {
+                    currentStateTask = null;
+                }
+            }
+
+            // 检查是否可以切换状态
+            if (currentStateTask == null || currentStateTask.IsCompleted)
+            {
+                // 优先级：攻击 > 冲刺 > 移动
+                
+                // 检查攻击输入
+                if (Blackboard.InputAttack && Blackboard.CanAttack && !Blackboard.IsAttacking)
+                {
+                    StartAttackTask();
+                    return;
+                }
+
+                // 检查冲刺输入
+                if (Blackboard.InputDash && Blackboard.CanDash && !Blackboard.IsDashing)
+                {
+                    StartDashTask();
+                    return;
+                }
+
+                // 检查移动输入
+                if (Blackboard.CanMove && Blackboard.InputMove.sqrMagnitude > 0.01f)
+                {
+                    StartMoveTask();
+                    return;
+                }
+            }
+            else
+            {
+                // 如果当前有状态任务，检查是否可以中断
+                // 攻击和冲刺不能被移动中断，但可以被更高优先级的状态中断
+                if (currentStateTask is MoveStateTask)
+                {
+                    // 移动可以被攻击或冲刺中断
+                    if (Blackboard.InputAttack && Blackboard.CanAttack && !Blackboard.IsAttacking)
+                    {
+                        StartAttackTask();
+                        return;
+                    }
+                    
+                    if (Blackboard.InputDash && Blackboard.CanDash && !Blackboard.IsDashing)
+                    {
+                        StartDashTask();
+                        return;
+                    }
+                }
             }
 
             // 更新攻击连击
@@ -37,19 +89,48 @@ namespace Character3C.Tasks
         }
 
         /// <summary>
-        /// 开始攻击
+        /// 开始移动任务
         /// </summary>
-        private void StartAttack()
+        private void StartMoveTask()
         {
-            Blackboard.IsAttacking = true;
-            Blackboard.LastAttackTime = Time.time;
-            Blackboard.CanMove = false;
+            if (currentStateTask is MoveStateTask)
+                return; // 已经在移动状态
 
-            // 获取动画器组件并触发攻击动画
-            var animator = character.GetComponent<CharacterAnimator>();
-            animator?.TriggerAttack(Blackboard.ComboIndex);
+            // 停止当前任务
+            currentStateTask?.Stop();
+            
+            // 创建并设置移动任务
+            currentStateTask = new MoveStateTask();
+            currentStateTask.Blackboard = Blackboard;
+            currentStateTask.Start();
+        }
 
-            Debug.Log($"开始攻击 - 连击索引: {Blackboard.ComboIndex}");
+        /// <summary>
+        /// 开始攻击任务
+        /// </summary>
+        private void StartAttackTask()
+        {
+            // 停止当前任务
+            currentStateTask?.Stop();
+            
+            // 创建并设置攻击任务
+            currentStateTask = new AttackStateTask(character.GetComponent<CombatEntity>());
+            currentStateTask.Blackboard = Blackboard;
+            currentStateTask.Start();
+        }
+
+        /// <summary>
+        /// 开始冲刺任务
+        /// </summary>
+        private void StartDashTask()
+        {
+            // 停止当前任务
+            currentStateTask?.Stop();
+            
+            // 创建并设置冲刺任务
+            currentStateTask = new DashStateTask();
+            currentStateTask.Blackboard = Blackboard;
+            currentStateTask.Start();
         }
 
         /// <summary>
@@ -112,6 +193,10 @@ namespace Character3C.Tasks
 
         protected override void OnStop()
         {
+            // 停止当前状态任务
+            currentStateTask?.Stop();
+            currentStateTask = null;
+            
             Debug.Log("玩家控制任务停止");
         }
     }

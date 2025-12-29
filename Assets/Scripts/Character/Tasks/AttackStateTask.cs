@@ -1,5 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
+using CombatSystem.Attributes;
 
 namespace Character3C.Tasks
 {
@@ -9,22 +10,21 @@ namespace Character3C.Tasks
     /// </summary>
     public class AttackStateTask : TaskEntry<CharacterBlackboard25D>
     {
-        private Character25DController character;
-        private Animator animator;
+        private CombatEntity combatEntity;
 
         private float attackDuration = 0.5f;
         private float attackTimer = 0f;
         private bool hitExecuted = false;
+        private State skillState; // 当前施放的技能状态
 
         // 攻击配置
         private Vector3 attackOffset = new Vector3(1f, 0.5f, 0f);
         private Vector3 attackSize = new Vector3(1.5f, 1f, 1.5f);
         private LayerMask enemyLayer;
 
-        public AttackStateTask(Character25DController character)
+        public AttackStateTask(CombatEntity combatEntity)
         {
-            this.character = character;
-            this.animator = character.GetComponent<Animator>();
+            this.combatEntity = combatEntity;
 
             // 默认敌人层
             this.enemyLayer = LayerMask.GetMask("Enemy");
@@ -34,10 +34,35 @@ namespace Character3C.Tasks
         {
             attackTimer = 0f;
             hitExecuted = false;
+            skillState = null;
 
             // 禁用移动
             Blackboard.CanMove = false;
             Blackboard.IsAttacking = true;
+
+            // 通过 CombatEntity 施放普通攻击技能
+            if (combatEntity != null)
+            {
+                var skillCfg = CombatSystem.Configuration.StateCfgManager.Instance.GetConfig(1001); // 普通攻击技能ID
+                if (skillCfg != null)
+                {
+                    // 查找攻击范围内的敌人作为目标
+                    CombatEntity target = FindNearestEnemyInRange();
+                    
+                    skillState = combatEntity.CastSkill(skillCfg, target);
+                    if (skillState != null)
+                    {
+                        // 设置技能参数
+                        float baseDamage = combatEntity.AttrComp.GetAttr(AttrType.Attack);
+                        float comboMultiplier = 1f + Blackboard.ComboIndex * 0.2f; // 连击加成
+                        skillState.Blackboard.Set("Damage", baseDamage * comboMultiplier);
+                        skillState.Blackboard.Set("CastTime", skillCfg.duration / 1000f);
+                        
+                        // 使用技能配置的持续时间
+                        attackDuration = skillCfg.duration / 1000f;
+                    }
+                }
+            }
 
             // 播放攻击音效
             // AudioManager.Instance?.PlaySound("Attack");
@@ -49,13 +74,31 @@ namespace Character3C.Tasks
         {
             attackTimer += deltaTime;
 
-            // 在攻击动画的中间帧执行判定
-            float hitTiming = attackDuration * 0.4f; // 40% 处执行判定
-
-            if (!hitExecuted && attackTimer >= hitTiming)
+            // 如果使用 CombatEntity 的技能系统，伤害由技能任务处理
+            // 这里只处理范围攻击判定（如果有多个目标）
+            if (skillState == null)
             {
-                ExecuteAttackHit();
-                hitExecuted = true;
+                // 如果没有技能状态，使用传统的攻击判定
+                float hitTiming = attackDuration * 0.4f; // 40% 处执行判定
+
+                if (!hitExecuted && attackTimer >= hitTiming)
+                {
+                    ExecuteAttackHit();
+                    hitExecuted = true;
+                }
+            }
+            else
+            {
+                // 使用技能系统时，检查技能是否完成
+                if (skillState != null && combatEntity.SkillComp != null)
+                {
+                    // 技能完成后，攻击任务也完成
+                    if (combatEntity.SkillComp.GetCastingSkill(skillState.Cfg.cid) == null || combatEntity.SkillComp.GetCastingSkill(skillState.Cfg.cid) != skillState)
+                    {
+                        Complete();
+                        return;
+                    }
+                }
             }
 
             // 检查攻击是否完成
@@ -119,22 +162,57 @@ namespace Character3C.Tasks
         }
 
         /// <summary>
-        /// 对敌人造成伤害
+        /// 查找攻击范围内的最近敌人
+        /// </summary>
+        private CombatEntity FindNearestEnemyInRange()
+        {
+            if (combatEntity == null || Blackboard.Transform == null)
+                return null;
+
+            float attackRange = 2f; // 攻击范围
+            var colliders = Physics.OverlapSphere(Blackboard.Transform.position, attackRange);
+            CombatEntity nearest = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var col in colliders)
+            {
+                var target = col.GetComponent<CombatEntity>();
+                if (target != null && target != combatEntity && target.IsAlive())
+                {
+                    // 检查阵营（不同阵营才能攻击）
+                    if (target.Camp != combatEntity.Camp)
+                    {
+                        float dist = Vector3.Distance(combatEntity.transform.position, target.transform.position);
+                        if (dist < minDistance)
+                        {
+                            minDistance = dist;
+                            nearest = target;
+                        }
+                    }
+                }
+            }
+
+            return nearest;
+        }
+
+        /// <summary>
+        /// 对敌人造成伤害（保留用于范围攻击判定）
         /// </summary>
         private void DealDamageToEnemy(Collider enemy)
         {
-            // 计算伤害
-            float baseDamage = 10f;
-            float damage = baseDamage * (1f + Blackboard.ComboIndex * 0.2f); // 连击加成
-
-            // 这里可以调用敌人的受伤接口
-            // var enemyEntity = enemy.GetComponent<CombatEntity>();
-            // enemyEntity?.TakeDamage(damage);
+            var enemyEntity = enemy.GetComponent<CombatEntity>();
+            if (enemyEntity != null && combatEntity != null)
+            {
+                // 使用 CombatEntity 的 DealDamage 方法
+                float baseDamage = combatEntity.AttrComp.GetAttr(CombatSystem.Attributes.AttrType.Attack);
+                float comboMultiplier = 1f + Blackboard.ComboIndex * 0.2f;
+                float damage = baseDamage * comboMultiplier;
+                
+                combatEntity.DealDamage(enemyEntity, damage, CombatSystem.DamageType.Physical);
+            }
 
             // 应用击退效果
             ApplyKnockback(enemy.transform);
-
-            Debug.Log($"对 {enemy.name} 造成 {damage} 点伤害");
         }
 
         /// <summary>
