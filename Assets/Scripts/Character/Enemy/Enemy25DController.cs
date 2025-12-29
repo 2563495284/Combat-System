@@ -64,7 +64,7 @@ namespace Character3C.Enemy
             combatEntity = GetComponent<CombatEntity>();
 
             // 配置Rigidbody2D - XY平面游戏，不使用重力
-            rb.mass = 1.5f; // 比玩家重一点
+            rb.mass = 100f; // 质量远大于玩家（玩家mass=1f），防止玩家推动敌人
             rb.linearDamping = 8f; // 阻力大，移动不灵活
             rb.angularDamping = 0f;
             rb.gravityScale = 0f; // 禁用重力（XY平面游戏不需要重力）
