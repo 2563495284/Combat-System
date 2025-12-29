@@ -40,8 +40,20 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Default
+  - name: Background
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 1
+    locked: 0
+  - name: Characters
+    uniqueID: 2
+    locked: 0
+  - name: Foreground
+    uniqueID: 3
+    locked: 0
+  - name: UI
+    uniqueID: 4
     locked: 0
   m_RenderingLayers:
   - Default
