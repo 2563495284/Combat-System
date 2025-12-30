@@ -1,0 +1,68 @@
+﻿using System.Collections.Generic;
+
+namespace BTree.Branch
+{
+    /// <summary>
+    /// 服务并发节点
+    /// 1.其中第一个任务为主要任务，其余任务为后台服务。
+    /// 2.每次所有任务都会执行一次，并保持长期运行。
+    /// 3.外部事件将派发给主要任务。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class ServiceParallel<T> : ParallelBranch<T> where T : class
+    {
+        public ServiceParallel()
+        {
+        }
+
+        public ServiceParallel(List<Task<T>>? children) : base(children)
+        {
+        }
+
+        protected override int Enter()
+        {
+            InitChildHelpers(false);
+            return TaskStatus.RUNNING;
+        }
+
+        protected override int Execute()
+        {
+            List<Task<T>> children = this.children;
+            for (int idx = 0; idx < children.Count; idx++)
+            {
+                Task<T> child = children[idx];
+                ParallelChildHelper<T> childHelper = GetChildHelper(child);
+                Task<T> inlinedChild = childHelper.GetInlinedChild();
+                if (inlinedChild != null)
+                {
+                    inlinedChild.Template_ExecuteInlined(ref childHelper.Unwrap(), child);
+                }
+                else if (child.IsRunning)
+                {
+                    child.Template_Execute(true);
+                }
+                else
+                {
+                    Template_StartChild(child, true, ref childHelper.Unwrap());
+                }
+            }
+            return TaskStatus.RUNNING;
+        }
+
+        protected override void OnEventImpl(object eventObj)
+        {
+            Task<T> mainTask = children[0];
+            ParallelChildHelper<T> childHelper = GetChildHelper(mainTask);
+
+            Task<T> inlinedChild = childHelper.GetInlinedChild();
+            if (inlinedChild != null)
+            {
+                inlinedChild.OnEvent(eventObj);
+            }
+            else
+            {
+                mainTask.OnEvent(eventObj);
+            }
+        }
+    }
+}

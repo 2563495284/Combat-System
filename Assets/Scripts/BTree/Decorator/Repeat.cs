@@ -1,0 +1,110 @@
+﻿using System;
+using Commons;
+
+namespace BTree.Decorator
+{
+    /// <summary>
+    /// 常量工具类
+    /// </summary>
+    public static class RepeatMode
+    {
+        /** 总是计数 */
+        public const int MODE_ALWAYS = 0;
+        /** 成功时计数 */
+        public const int MODE_ONLY_SUCCESS = 1;
+        /** 失败时计数 */
+        public const int MODE_ONLY_FAILED = 2;
+        /** 不计数 - 可能无限执行 */
+        public const int MODE_NEVER = 3;
+    }
+
+    /// <summary>
+    /// 重复N次
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [TaskInlinable]
+    public class Repeat<T> : LoopDecorator<T> where T : class
+    {
+        /** 考虑到Java枚举与其它语言的兼容性问题，我们在编辑器中使用数字 */
+        private int countMode = RepeatMode.MODE_ALWAYS;
+        /** 需要重复的次数，-1表示无限重复 */
+        private int required = 1;
+        /** 当前计数 */
+        [NonSerialized] private int count;
+
+        public override void ResetForRestart()
+        {
+            base.ResetForRestart();
+            count = 0;
+        }
+
+        protected override void BeforeEnter()
+        {
+            base.BeforeEnter();
+            if (required < -1)
+            {
+                throw new IllegalStateException("required < -1");
+            }
+            count = 0;
+        }
+
+        protected override int Enter()
+        {
+            base.Enter();
+            if (required == 0)
+            {
+                return TaskStatus.SUCCESS;
+            }
+            return TaskStatus.RUNNING;
+        }
+
+        protected override int OnChildCompleted(Task<T> child)
+        {
+            if (child.IsCancelled)
+            {
+                return TaskStatus.CANCELLED;
+            }
+            bool match = countMode switch
+            {
+                RepeatMode.MODE_ALWAYS => true,
+                RepeatMode.MODE_ONLY_SUCCESS => child.IsSucceeded,
+                RepeatMode.MODE_ONLY_FAILED => child.IsFailed,
+                _ => false
+            };
+            if (match)
+            {
+                count++;
+                if (required >= 0 && count >= required)
+                {
+                    return TaskStatus.SUCCESS;
+                }
+            }
+            if (!HasNextLoop())
+            {
+                return TaskStatus.MAX_LOOP_LIMIT;
+            }
+            else
+            {
+                return TaskStatus.RUNNING;
+            }
+        }
+
+        #region 序列化
+
+        /** 计数模式 */
+        public int CountMode
+        {
+            get => countMode;
+            set => countMode = value;
+        }
+
+        /** 期望的次数 */
+        public int Required
+        {
+            get => required;
+            set => required = value;
+        }
+
+        #endregion
+    }
+}

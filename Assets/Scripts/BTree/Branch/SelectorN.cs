@@ -1,0 +1,105 @@
+﻿using System;
+using BTree.Leaf;
+
+namespace BTree.Branch
+{
+    /// <summary>
+    /// 多选Selector。
+    /// 如果{required}小于等于0，则等同于<see cref="Success{T}"/>
+    /// 如果{required}等于1，则等同于<see cref="Selector{T}"/>
+    /// 如果{required}等于<code>children.code</code>，则在所有child成功之后成功 -- 默认不会提前失败。
+    /// 如果{required}大于<code>children.size</code>，则在所有child运行完成之后失败 -- 默认不会提前失败。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [TaskInlinable]
+    public class SelectorN<T> : SingleRunningChildBranch<T> where T : class
+    {
+        /** 需要达成的次数 */
+        private int required = 1;
+        /** 是否快速失败 */
+        private bool failFast;
+        /** 当前计数 */
+        [NonSerialized] private int count;
+
+        public override void ResetForRestart()
+        {
+            base.ResetForRestart();
+            count = 0;
+        }
+
+        protected override void BeforeEnter()
+        {
+            base.BeforeEnter();
+            count = 0;
+        }
+
+        protected override int Enter()
+        {
+            if (required < 1)
+            {
+                return TaskStatus.SUCCESS;
+            }
+            else if (ChildCount == 0)
+            {
+                return TaskStatus.CHILDLESS;
+            }
+            else if (CheckFailFast())
+            {
+                return TaskStatus.INSUFFICIENT_CHILD;
+            }
+            else if (IsCheckingGuard())
+            {
+                // 条件检测性能优化
+                for (int i = 0; i < children.Count; i++)
+                {
+                    Task<T> child = children[i];
+                    if (Template_CheckGuard(child) && ++count >= required)
+                    {
+                        return TaskStatus.SUCCESS;
+                    }
+                }
+                return TaskStatus.ERROR;
+            }
+            return TaskStatus.RUNNING;
+        }
+
+        protected override int OnChildCompleted(Task<T> child)
+        {
+            if (child.IsCancelled)
+            {
+                return TaskStatus.CANCELLED;
+            }
+            if (child.IsSucceeded && ++count >= required)
+            {
+                return TaskStatus.SUCCESS;
+            }
+            else if (IsAllChildCompleted || CheckFailFast())
+            {
+                return TaskStatus.ERROR;
+            }
+            else
+            {
+                return TaskStatus.RUNNING;
+            }
+        }
+
+        private bool CheckFailFast()
+        {
+            return failFast && (children.Count - CompletedCount < required - count);
+        }
+
+        /** 需要达成的次数 */
+        public int Required
+        {
+            get => required;
+            set => required = value;
+        }
+
+        /** 是否快速失败 */
+        public bool FailFast
+        {
+            get => failFast;
+            set => failFast = value;
+        }
+    }
+}
