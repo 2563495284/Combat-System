@@ -6,6 +6,7 @@ using Commons.Concurrent;
 
 namespace BTree
 {
+#nullable enable
     /// <summary>
     /// 行为树模块使用的取消令牌
     /// 1.行为树模块需要的功能不多，且需要进行一些特殊的优化，因此去除对Concurrent模块的依赖。

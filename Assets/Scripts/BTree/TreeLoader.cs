@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace BTree
 {
+#nullable enable
     /// <summary>
     /// 行为树加载器
     /// </summary>
@@ -25,7 +26,7 @@ namespace BTree
         /// <exception cref="ArgumentException">目标对象不存在时</exception>
         object LoadObject(string nameOrGuid)
         {
-            object result = TryLoadObject(nameOrGuid);
+            object? result = TryLoadObject(nameOrGuid);
             if (result == null)
             {
                 throw new ArgumentException("target object is absent, name: " + nameOrGuid);
@@ -51,7 +52,7 @@ namespace BTree
         /// <exception cref="ArgumentException">目标对象不是Task类型时</exception>
         Task<T>? TryLoadRootTask<T>(string treeName) where T : class
         {
-            object result = TryLoadObject(treeName);
+            object? result = TryLoadObject(treeName);
             if (result == null)
             {
                 return null;
@@ -72,7 +73,7 @@ namespace BTree
         /// <exception cref="ArgumentException"></exception>
         Task<T> LoadRootTask<T>(string treeName) where T : class
         {
-            object result = TryLoadObject(treeName);
+            object? result = TryLoadObject(treeName);
             if (result == null)
             {
                 throw new ArgumentException("target tree is absent, name: " + treeName);

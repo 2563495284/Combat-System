@@ -1,5 +1,6 @@
 ﻿namespace BTree
 {
+#nullable enable
     public static class TaskVisitors
     {
         public static TaskVisitor<T> RefreshActive<T>() where T : class

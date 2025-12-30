@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BTree
 {
+#nullable enable
     /// <summary>
     /// Task的基础状态码
     /// </summary>

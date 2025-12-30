@@ -2,6 +2,7 @@
 
 namespace Commons
 {
+    #nullable enable
     /// <summary>
     /// 该异常表示断言错误，不应该发送的错误发生了。
     /// </summary>

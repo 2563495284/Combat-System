@@ -2,6 +2,7 @@
 
 namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 循环节点抽象
     /// </summary>

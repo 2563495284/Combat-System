@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Commons.Concurrent
 {
+#nullable enable
     /// <summary>
     /// 取消码辅助类
     /// </summary>

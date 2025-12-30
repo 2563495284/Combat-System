@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Commons.Collections
 {
+#nullable enable
     internal static class CollectionUtil
     {
         /// <summary>

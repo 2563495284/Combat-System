@@ -1,5 +1,6 @@
 ﻿namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 反转装饰器，它用于反转子节点的执行结果。
     /// 如果被装饰的任务失败，它将返回成功；

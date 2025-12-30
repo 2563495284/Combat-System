@@ -2,6 +2,7 @@
 
 namespace BTree.Branch
 {
+#nullable enable
 /// <summary>
 /// 主动选择节点
 /// 每次运行时都会重新测试节点的运行条件，选择一个新的可运行节点。
@@ -18,7 +19,7 @@ public class ActiveSelector<T> : SingleRunningChildBranch<T> where T : class
     }
 
     protected override int Execute() {
-        Task<T> childToRun = null;
+        Task<T>? childToRun = null;
         int childIndex = -1;
         for (int idx = 0; idx < children.Count; idx++) {
             Task<T> child = children[idx];
@@ -37,7 +38,7 @@ public class ActiveSelector<T> : SingleRunningChildBranch<T> where T : class
 
         Task<T> runningChild = this.runningChild;
         if (runningChild == childToRun) {
-            Task<T> inlinedChild = inlineHelper.GetInlinedChild();
+            Task<T>? inlinedChild = inlineHelper.GetInlinedChild();
             if (inlinedChild != null) {
                 inlinedChild.Template_ExecuteInlined(ref inlineHelper, runningChild);
             } else if (runningChild.IsRunning) {

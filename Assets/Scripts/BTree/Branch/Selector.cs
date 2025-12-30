@@ -2,6 +2,7 @@
 
 namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// 
     /// </summary>

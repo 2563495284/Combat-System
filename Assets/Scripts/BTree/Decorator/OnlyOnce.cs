@@ -1,5 +1,6 @@
 ﻿namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 只执行一次。
     /// 1.适用那些不论成功与否只执行一次的行为。

@@ -2,6 +2,7 @@
 
 namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// Switch-选择一个分支运行，直到其结束。
     /// Switch的基础实现通过逐个检测child的前置条件实现选择，在分支较多的情况下可能开销较大，
@@ -44,7 +45,7 @@ namespace BTree.Branch
         protected override int Execute()
         {
             Task<T> runningChild = this.runningChild; // 完成时会被清理
-            Task<T> inlinedChild = inlineHelper.GetInlinedChild();
+            Task<T>? inlinedChild = inlineHelper.GetInlinedChild();
             if (inlinedChild != null)
             {
                 inlinedChild.Template_ExecuteInlined(ref inlineHelper, runningChild);

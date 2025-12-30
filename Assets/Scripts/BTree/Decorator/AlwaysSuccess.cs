@@ -1,5 +1,6 @@
 ﻿namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 在子节点完成之后固定返回成功
     /// </summary>

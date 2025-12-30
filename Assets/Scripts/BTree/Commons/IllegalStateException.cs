@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Commons
 {
+    #nullable enable
     /// <summary>
     /// 该异常表示对象的状态错误
     /// </summary>

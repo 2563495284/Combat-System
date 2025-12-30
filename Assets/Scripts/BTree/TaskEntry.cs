@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Commons;
 namespace BTree
 {
+#nullable enable
     /// <summary>
     /// 任务入口（可联想程序的Main）
     /// 
@@ -43,7 +44,7 @@ namespace BTree
         {
             this.name = name;
             this.rootTask = rootTask;
-            this.blackboard = blackboard;
+            this.blackboard = blackboard!;
             this.entity = entity;
             this.treeLoader = treeLoader ?? ITreeLoader.NullLoader();
 
@@ -130,7 +131,7 @@ namespace BTree
             {
                 Template_StartChild(rootTask, true, ref inlineHelper);
             }
-            return rootTask.Status;
+            return rootTask!.Status;
         }
 
         protected override void Exit()

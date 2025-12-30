@@ -1,5 +1,6 @@
 ﻿namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 循环子节点直到给定的条件达成
     /// </summary>

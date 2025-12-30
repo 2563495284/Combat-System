@@ -1,5 +1,6 @@
 ﻿namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// 展开的switch
     /// 在编辑器中，children根据坐标排序，容易变动；这里将其展开为字段，从而方便配置。

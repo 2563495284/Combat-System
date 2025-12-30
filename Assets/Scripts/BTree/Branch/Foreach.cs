@@ -2,6 +2,7 @@
 
 namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// 迭代所有的子节点最后返回成功
     /// </summary>

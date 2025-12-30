@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// 并行节点基类
     /// 定义该类主要说明一些注意事项，包括：

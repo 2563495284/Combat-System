@@ -1,5 +1,6 @@
 ﻿namespace BTree
 {
+#nullable enable
     /// <summary>
     /// Task访问器，用于访问Task的内部结构。
     /// 注意：访问器在访问过程中不能导致Task产生状态迁移，即不能使Task进入完成状态。

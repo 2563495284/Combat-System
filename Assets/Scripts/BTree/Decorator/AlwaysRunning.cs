@@ -2,6 +2,7 @@
 
 namespace BTree.Decorator
 {
+#nullable enable
     /// <summary>
     /// 在子节点完成之后仍返回运行。
     /// 注意：在运行期间只运行一次子节点

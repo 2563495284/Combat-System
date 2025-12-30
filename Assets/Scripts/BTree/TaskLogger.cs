@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BTree
 {
+#nullable enable
     /// <summary>
     /// 用于行为树记录日志
     /// </summary>

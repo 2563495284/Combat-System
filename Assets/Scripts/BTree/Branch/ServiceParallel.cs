@@ -2,6 +2,7 @@
 
 namespace BTree.Branch
 {
+#nullable enable
     /// <summary>
     /// 服务并发节点
     /// 1.其中第一个任务为主要任务，其余任务为后台服务。

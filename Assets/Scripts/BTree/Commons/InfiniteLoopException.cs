@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 
 namespace Commons.Ex
 {
+#nullable enable
     /// <summary>
     /// 死循环预防
     /// </summary>
