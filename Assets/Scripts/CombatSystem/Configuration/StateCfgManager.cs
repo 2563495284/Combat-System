@@ -41,15 +41,15 @@ namespace CombatSystem.Configuration
         /// </summary>
         private void InitializeDefaultConfigs()
         {
-            // 技能：简单攻击
+            // 技能：普通攻击
             AddConfig(new StateCfg
             {
                 cid = 1001,
                 name = "普通攻击",
                 slot = -1,
-                duration = 1000,
+                duration = 500,  // 0.5秒的攻击动作
                 isActiveSkill = true,
-                taskTypeName = "CombatSystem.Skills.SimpleAttackSkill"
+                taskTypeName = "CombatSystem.Skills.NormalAttackSkillTask"
             });
 
             // 技能：AOE攻击

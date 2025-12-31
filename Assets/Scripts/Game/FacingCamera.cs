@@ -10,7 +10,7 @@ public class FacingCamera : MonoBehaviour
 {
     // 所有子对象（用于静态物体初始化）
     Transform[] allChilds;
-    
+
     // 动态物体信息（需要每帧更新 order in layer）
     struct DynamicChildInfo
     {
@@ -19,7 +19,7 @@ public class FacingCamera : MonoBehaviour
         public BoxCollider2D boxCollider;
     }
     List<DynamicChildInfo> dynamicChilds;
-    
+
     private Camera mainCamera;
 
     [Header("Order in Layer 设置")]
@@ -37,7 +37,7 @@ public class FacingCamera : MonoBehaviour
             Debug.LogWarning("FacingCamera: Camera.main 未找到！");
             return;
         }
-        
+
         int childCount = transform.childCount;
         allChilds = new Transform[childCount];
         dynamicChilds = new List<DynamicChildInfo>();

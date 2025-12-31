@@ -2,8 +2,6 @@
 // using CombatSystem.Core;
 // using CombatSystem.Attributes;
 
-// namespace Character3C.Enemy
-// {
 //     /// <summary>
 //     /// 敌人生成器
 //     /// 用于在场景中生成和配置敌人
@@ -209,8 +207,6 @@
 //             {
 //                 Gizmos.color = Color.cyan;
 //                 Gizmos.DrawWireSphere(transform.position, patrolRadius);
-//             }
-//         }
-//     }
+    // }
 // }
 

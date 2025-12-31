@@ -6,55 +6,91 @@ using UnityEngine;
 namespace CombatSystem.Core
 {
     /// <summary>
-    /// 战斗实体 - 主要实现部分
-    /// 对应游戏中的角色、怪物等可战斗对象
+    /// 战斗实体基类 - 核心战斗逻辑
+    /// 提供基础的战斗功能，具体实现由子类扩展
     /// </summary>
-    public partial class CombatEntity
+    public abstract partial class CombatEntity : MonoBehaviour
     {
+        #region 核心组件（必需）
+        
         /// <summary>
         /// 事件总线
         /// </summary>
-        public CombatEventBus EventBus { get; private set; }
+        public CombatEventBus EventBus { get; protected set; }
 
         /// <summary>
         /// 状态组件 - 管理技能和Buff
         /// </summary>
-        public StateComponent StateComp { get; private set; }
+        public StateComponent StateComp { get; protected set; }
 
         /// <summary>
         /// 属性组件 - 管理生命值、攻击力等属性
         /// </summary>
-        public AttrComponent AttrComp { get; private set; }
+        public AttrComponent AttrComp { get; protected set; }
 
         /// <summary>
         /// 技能组件 - 管理当前施放的技能
         /// </summary>
-        public SkillComponent SkillComp { get; private set; }
+        public SkillComponent SkillComp { get; protected set; }
+
+        #endregion
+
+        #region 可选组件（由子类决定）
 
         /// <summary>
-        /// 移动组件
+        /// 移动组件（可选）
         /// </summary>
-        public MoveComponent MoveComp { get; private set; }
+        public MoveComponent MoveComp { get; protected set; }
+
+        /// <summary>
+        /// 动画组件（可选）- 管理动画播放和动画事件
+        /// </summary>
+        public AnimationComponent AnimComp { get; protected set; }
+
+        #endregion
+
+        #region 生命周期
 
         private void Awake()
         {
-            Initialize();
+            InitializeCore();
+            InitializeComponents();
+            OnInitialize();
         }
 
         /// <summary>
-        /// 初始化
+        /// 初始化核心组件（必需）
         /// </summary>
-        private void Initialize()
+        private void InitializeCore()
         {
             EventBus = new CombatEventBus();
             StateComp = new StateComponent(this);
             AttrComp = new AttrComponent(this);
             SkillComp = new SkillComponent(this);
-            MoveComp = new MoveComponent(this);
 
-            // 注册事件监听
+            // 注册核心事件监听
             RegisterEventListeners();
         }
+
+        /// <summary>
+        /// 初始化可选组件（由子类决定）
+        /// </summary>
+        protected virtual void InitializeComponents()
+        {
+            // 默认实现：尝试获取常用组件
+            MoveComp = new MoveComponent(this);
+            AnimComp = GetComponent<AnimationComponent>();
+        }
+
+        /// <summary>
+        /// 子类自定义初始化（在所有组件初始化之后）
+        /// </summary>
+        protected virtual void OnInitialize()
+        {
+            // 留给子类实现
+        }
+
+        #endregion
 
         /// <summary>
         /// 注册事件监听
@@ -73,11 +109,31 @@ namespace CombatSystem.Core
             float deltaTime = Time.deltaTime;
             _currentFrame++;
 
+            // 更新核心组件
+            UpdateCore(deltaTime);
+
+            // 子类自定义更新
+            OnUpdate(deltaTime);
+        }
+
+        /// <summary>
+        /// 更新核心组件
+        /// </summary>
+        protected virtual void UpdateCore(float deltaTime)
+        {
             // 更新状态组件
             StateComp?.Update(_currentFrame);
 
-            // 更新移动组件
+            // 更新移动组件（如果有）
             MoveComp?.Update(deltaTime);
+        }
+
+        /// <summary>
+        /// 子类自定义更新
+        /// </summary>
+        protected virtual void OnUpdate(float deltaTime)
+        {
+            // 留给子类实现
         }
 
         #region 战斗相关方法
@@ -217,7 +273,17 @@ namespace CombatSystem.Core
             StateComp.Clear();
             SkillComp.Clear();
 
-            // TODO: 播放死亡动画、特效等
+            // 子类自定义死亡处理
+            OnEntityDeath(evt);
+        }
+
+        /// <summary>
+        /// 实体死亡时的自定义处理（由子类实现）
+        /// </summary>
+        protected virtual void OnEntityDeath(DeathEvent evt)
+        {
+            // 默认实现：播放死亡动画（如果有动画组件）
+            AnimComp?.PlayDeathAnimation();
         }
 
         /// <summary>

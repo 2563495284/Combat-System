@@ -6,7 +6,7 @@ namespace CombatSystem.Core
     /// 战斗实体基类定义
     /// 用于解决循环依赖问题
     /// </summary>
-    public partial class CombatEntity : MonoBehaviour
+    public abstract partial class CombatEntity : MonoBehaviour
     {
         /// <summary>
         /// 实体ID

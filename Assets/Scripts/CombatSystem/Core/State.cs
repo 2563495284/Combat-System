@@ -97,7 +97,7 @@ namespace CombatSystem.Core
                 if (task is LeafTask<Blackboard> leafTask)
                 {
                     // 设置 State 引用
-                    if (leafTask is SkillTask skillTask)
+                    if (leafTask is SkillTask<Blackboard> skillTask)
                     {
                         skillTask.SetState(this);
                     }

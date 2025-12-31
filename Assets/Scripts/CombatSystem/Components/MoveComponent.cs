@@ -35,6 +35,21 @@ namespace CombatSystem.Components
         /// </summary>
         public MoveMode Mode { get; set; }
 
+        /// <summary>
+        /// 是否可以移动
+        /// </summary>
+        public bool CanMove { get; private set; } = true;
+
+        /// <summary>
+        /// 击退速度
+        /// </summary>
+        private Vector3 _knockbackVelocity;
+
+        /// <summary>
+        /// 击退衰减率
+        /// </summary>
+        private float _knockbackDecay = 10f;
+
         public MoveComponent(CombatEntity owner)
         {
             Owner = owner;
@@ -47,6 +62,13 @@ namespace CombatSystem.Components
         public void Update(float deltaTime)
         {
             if (!Owner.IsAlive())
+                return;
+
+            // 更新击退
+            UpdateKnockback(deltaTime);
+
+            // 如果不能移动,直接返回
+            if (!CanMove)
                 return;
 
             switch (Mode)
@@ -152,6 +174,47 @@ namespace CombatSystem.Components
             if (direction.sqrMagnitude > 0.01f)
             {
                 Owner.transform.forward = direction.normalized;
+            }
+        }
+
+        /// <summary>
+        /// 设置是否可以移动
+        /// </summary>
+        public void SetCanMove(bool canMove)
+        {
+            CanMove = canMove;
+            if (!canMove)
+            {
+                Stop();
+            }
+        }
+
+        /// <summary>
+        /// 应用击退
+        /// </summary>
+        public void ApplyKnockback(Vector3 velocity)
+        {
+            _knockbackVelocity = velocity;
+        }
+
+        /// <summary>
+        /// 更新击退
+        /// </summary>
+        private void UpdateKnockback(float deltaTime)
+        {
+            if (_knockbackVelocity.sqrMagnitude > 0.01f)
+            {
+                // 应用击退位移
+                Owner.transform.position += _knockbackVelocity * deltaTime;
+
+                // 衰减击退速度
+                _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * deltaTime);
+
+                // 如果速度很小,直接停止
+                if (_knockbackVelocity.sqrMagnitude < 0.01f)
+                {
+                    _knockbackVelocity = Vector3.zero;
+                }
             }
         }
     }

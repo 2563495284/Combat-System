@@ -3033,6 +3033,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ccf098aea21412459e0f8a36d7c4192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseOrderInLayer: 0
+  yToOrderMultiplier: -100
 --- !u!1 &1339644609
 GameObject:
   m_ObjectHideFlags: 0
@@ -23608,6 +23610,8 @@ GameObject:
   - component: {fileID: 1807951488}
   - component: {fileID: 1807951487}
   - component: {fileID: 1807951486}
+  - component: {fileID: 1807951490}
+  - component: {fileID: 1807951489}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -23829,6 +23833,34 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   groundCheckOffset: {x: 0, y: 0}
+--- !u!114 &1807951489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807951480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86a55befd62a94eac9cfabfa644a2d7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1807951490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807951480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433389ff38cfa4492a5d5ddba8ecc7f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 1807951481}
+  autoGetAnimator: 1
+  debugMode: 0
+  skillStateParam: IsInSkill
 --- !u!1 &1925519956
 GameObject:
   m_ObjectHideFlags: 0
