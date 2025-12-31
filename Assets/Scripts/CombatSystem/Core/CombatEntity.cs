@@ -66,12 +66,15 @@ namespace CombatSystem.Core
             EventBus.Register<DeathEvent>(OnDeath);
         }
 
+        private int _currentFrame = 0;
+
         private void Update()
         {
             float deltaTime = Time.deltaTime;
+            _currentFrame++;
 
             // 更新状态组件
-            StateComp?.Update(deltaTime);
+            StateComp?.Update(_currentFrame);
 
             // 更新移动组件
             MoveComp?.Update(deltaTime);

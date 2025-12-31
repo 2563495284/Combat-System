@@ -1,35 +1,84 @@
 using CombatSystem.Core;
 using CombatSystem.Events;
 using UnityEngine;
-
+using BTree;
 namespace CombatSystem.Skills
 {
     /// <summary>
     /// 技能任务基类
     /// </summary>
-    public abstract class SkillTask : TaskEntry
+    public abstract class SkillTask : LeafTask<Blackboard>
     {
         protected State State { get; private set; }
         protected CombatEntity Caster => State?.Owner;
         protected CombatEntity Target => Blackboard?.Get<CombatEntity>("Target");
+        
+        private float _lastUpdateTime;
 
         public void SetState(State state)
         {
             State = state;
         }
-
-        protected override void OnStart()
+        
+        protected float DeltaTime
         {
-            Debug.Log($"[Skill] {State.Cfg.name} 开始施放");
+            get
+            {
+                float currentTime = Time.time;
+                float deltaTime = currentTime - _lastUpdateTime;
+                _lastUpdateTime = currentTime;
+                return deltaTime;
+            }
         }
 
-        protected override void OnComplete()
+        protected sealed override int Execute()
+        {
+            int result = OnExecute(DeltaTime);
+            return result;
+        }
+
+        protected override int Enter()
+        {
+            _lastUpdateTime = Time.time;
+            Debug.Log($"[Skill] {State.Cfg.name} 开始施放");
+            OnSkillStart();
+            return TaskStatus.RUNNING;
+        }
+
+        protected override void Exit()
         {
             Debug.Log($"[Skill] {State.Cfg.name} 施放完成");
-
+            OnSkillEnd();
+            
             // 技能完成后从技能组件移除
             Caster?.SkillComp.UnpublishSkill(State);
         }
+
+        protected override void OnEventImpl(object eventObj)
+        {
+            HandleSkillEvent(eventObj);
+        }
+
+        /// <summary>
+        /// 技能开始时调用
+        /// </summary>
+        protected virtual void OnSkillStart() { }
+
+        /// <summary>
+        /// 技能每帧更新
+        /// 返回任务状态：RUNNING, SUCCESS, ERROR等
+        /// </summary>
+        protected abstract int OnExecute(float deltaTime);
+
+        /// <summary>
+        /// 技能结束时调用
+        /// </summary>
+        protected virtual void OnSkillEnd() { }
+
+        /// <summary>
+        /// 处理技能事件
+        /// </summary>
+        protected virtual void HandleSkillEvent(object evt) { }
     }
 
     /// <summary>
@@ -42,16 +91,14 @@ namespace CombatSystem.Skills
         private float _currentTime;
         private bool _hasDealtDamage;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _castTime = Blackboard.Get<float>("CastTime", 0.5f);
             _currentTime = 0;
             _hasDealtDamage = false;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
 
@@ -65,8 +112,10 @@ namespace CombatSystem.Skills
             // 技能完成
             if (_currentTime >= _castTime)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         private void DealDamage()
@@ -94,16 +143,14 @@ namespace CombatSystem.Skills
         private float _currentTime;
         private bool _hasDealtDamage;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _castTime = Blackboard.Get<float>("CastTime", 1f);
             _currentTime = 0;
             _hasDealtDamage = false;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
 
@@ -117,8 +164,10 @@ namespace CombatSystem.Skills
             // 技能完成
             if (_currentTime >= _castTime)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         private void DealAoeDamage()
@@ -158,16 +207,14 @@ namespace CombatSystem.Skills
         private float _currentTime;
         private bool _hasHealed;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _castTime = Blackboard.Get<float>("CastTime", 0.8f);
             _currentTime = 0;
             _hasHealed = false;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
 
@@ -179,8 +226,10 @@ namespace CombatSystem.Skills
 
             if (_currentTime >= _castTime)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         private void DoHeal()
@@ -207,20 +256,21 @@ namespace CombatSystem.Skills
         private float _duration;
         private float _currentTime;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _startPos = Caster.transform.position;
             _targetPos = Blackboard.Get<Vector3>("TargetPosition", _startPos + Caster.transform.forward * 5f);
             _duration = Blackboard.Get<float>("Duration", 0.3f);
             _currentTime = 0;
+        }
 
+        protected override void OnSkillStart()
+        {
             // 停止当前移动
             Caster.MoveComp.Stop();
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
             float progress = Mathf.Clamp01(_currentTime / _duration);
@@ -230,13 +280,14 @@ namespace CombatSystem.Skills
 
             if (progress >= 1f)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
-        protected override void OnComplete()
+        protected override void OnSkillEnd()
         {
-            base.OnComplete();
             Debug.Log($"[DashSkill] 冲刺完成，到达位置: {Caster.transform.position}");
         }
     }
@@ -252,17 +303,15 @@ namespace CombatSystem.Skills
         private float _currentTime;
         private float _tickTimer;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _channelTime = Blackboard.Get<float>("ChannelTime", 3f);
             _tickInterval = Blackboard.Get<float>("TickInterval", 0.5f);
             _currentTime = 0;
             _tickTimer = _tickInterval;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
             _tickTimer -= deltaTime;
@@ -277,8 +326,10 @@ namespace CombatSystem.Skills
             // 引导结束
             if (_currentTime >= _channelTime)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         private void OnTick()
@@ -292,13 +343,13 @@ namespace CombatSystem.Skills
             Debug.Log($"[ChannelSkill] 引导技能Tick，造成 {tickDamage} 点伤害");
         }
 
-        protected override void HandleEvent(object evt)
+        protected override void HandleSkillEvent(object evt)
         {
             // 移动会打断引导
             if (evt is MoveEvent)
             {
                 Debug.Log("[ChannelSkill] 引导被打断");
-                Stop();
+                Stop(TaskStatus.ERROR);
             }
         }
     }
@@ -313,16 +364,14 @@ namespace CombatSystem.Skills
         private float _currentTime;
         private bool _hasExecuted;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
-            base.OnStart();
-
             _castTime = Blackboard.Get<float>("CastTime", 0.5f);
             _currentTime = 0;
             _hasExecuted = false;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnExecute(float deltaTime)
         {
             _currentTime += deltaTime;
 
@@ -336,8 +385,10 @@ namespace CombatSystem.Skills
             // 技能完成
             if (_currentTime >= _castTime)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         private void ExecuteKnockback()
@@ -364,7 +415,7 @@ namespace CombatSystem.Skills
 
                         // 应用击退效果
                         ApplyKnockbackToEntity(entity, center, knockbackForce);
-                        
+
                         hitCount++;
                     }
                 }
@@ -388,14 +439,14 @@ namespace CombatSystem.Skills
             {
                 controllerType = target.GetType().Assembly.GetType("Character3C.Enemy.Enemy25DController");
             }
-            
+
             // 尝试通过组件查找
             var components = target.GetComponents<MonoBehaviour>();
             foreach (var component in components)
             {
-                var method = component.GetType().GetMethod("TakeKnockback", 
+                var method = component.GetType().GetMethod("TakeKnockback",
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                
+
                 if (method != null)
                 {
                     method.Invoke(component, new object[] { fromPosition, force });

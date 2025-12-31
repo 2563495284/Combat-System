@@ -2,6 +2,7 @@ using CombatSystem.Buffs;
 using CombatSystem.Configuration;
 using CombatSystem.Skills;
 using UnityEngine;
+using BTree;
 
 namespace CombatSystem.Core
 {
@@ -40,7 +41,7 @@ namespace CombatSystem.Core
         /// <summary>
         /// 关联的任务
         /// </summary>
-        public TaskEntry Task { get; private set; }
+        public TaskEntry<Blackboard> Task { get; private set; }
 
         /// <summary>
         /// 绑定的状态槽
@@ -89,19 +90,34 @@ namespace CombatSystem.Core
             if (Task != null)
                 return;
 
-            Task = Cfg.CreateTask();
-            if (Task != null)
+            var task = Cfg.CreateTask();
+            if (task != null)
             {
-                Task.Blackboard = Blackboard;
+                // 如果是 LeafTask（SkillTask 或 BuffTask），需要包装在 TaskEntry 中
+                if (task is LeafTask<Blackboard> leafTask)
+                {
+                    // 设置 State 引用
+                    if (leafTask is SkillTask skillTask)
+                    {
+                        skillTask.SetState(this);
+                    }
+                    else if (leafTask is BuffTask buffTask)
+                    {
+                        buffTask.SetState(this);
+                    }
 
-                // 设置 State 引用到任务
-                if (Task is Skills.SkillTask skillTask)
-                {
-                    skillTask.SetState(this);
+                    // 创建 TaskEntry 包装器
+                    Task = new TaskEntry<Blackboard>
+                    {
+                        Name = Cfg.name,
+                        RootTask = leafTask,
+                        Blackboard = Blackboard
+                    };
                 }
-                else if (Task is Buffs.BuffTask buffTask)
+                else if (task is TaskEntry<Blackboard> entry)
                 {
-                    buffTask.SetState(this);
+                    Task = entry;
+                    Task.Blackboard = Blackboard;
                 }
             }
         }
@@ -113,13 +129,13 @@ namespace CombatSystem.Core
         {
             Active = true;
             InitializeTask();
-            Task?.Start();
+            // TaskEntry 会在第一次 Update 时自动启动
         }
 
         /// <summary>
         /// 更新状态
         /// </summary>
-        public void Update(float deltaTime)
+        public void Update(int curFrame)
         {
             if (!Active)
                 return;
@@ -127,6 +143,7 @@ namespace CombatSystem.Core
             // 更新时间
             if (TimeLeft > 0)
             {
+                float deltaTime = Time.deltaTime;
                 TimeLeft -= (int)(deltaTime * 1000);
                 if (TimeLeft <= 0)
                 {
@@ -136,7 +153,7 @@ namespace CombatSystem.Core
             }
 
             // 更新任务
-            Task?.Update(deltaTime);
+            Task?.Update(curFrame);
         }
 
         /// <summary>

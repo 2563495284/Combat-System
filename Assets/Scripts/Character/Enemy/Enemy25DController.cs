@@ -1,7 +1,7 @@
 using UnityEngine;
 using CombatSystem.Core;
 using System.Collections.Generic;
-
+using BTree;
 namespace Character3C.Enemy
 {
     /// <summary>
@@ -49,6 +49,9 @@ namespace Character3C.Enemy
         private Vector3 knockbackVelocity;
         private float knockbackDecay = 10f; // 击退衰减速度
         private bool isKnockedBack = false;
+
+        // 帧计数器
+        private int currentFrame = 0;
 
         public float MoveSpeed => moveSpeed;
         public bool IsGrounded => isGrounded;
@@ -105,7 +108,7 @@ namespace Character3C.Enemy
             if (Blackboard.IsDead)
                 return;
 
-            float deltaTime = Time.deltaTime;
+            currentFrame++;
 
             // 更新目标检测 - 已禁用
             // UpdateTargetDetection();
@@ -114,7 +117,7 @@ namespace Character3C.Enemy
             UpdateBlackboard();
 
             // 更新当前任务 - 已禁用
-            currentTask?.Update(deltaTime);
+            currentTask?.Update(currentFrame);
 
             // 确保敌人不移动
             Blackboard.CanMove = false;
@@ -228,7 +231,7 @@ namespace Character3C.Enemy
                 // 在空中时，使用计算的垂直速度
                 currentVelocity.x = velocity.x;
             }
-            
+
             rb.linearVelocity = currentVelocity;
 
             // 如果敌人不应该移动（CanMove为false），强制速度为0
@@ -246,30 +249,30 @@ namespace Character3C.Enemy
         {
             isGrounded = true;
             return;
-            // 计算检测起点（角色底部中心）
-            // 地面是XY平面，Z轴是垂直方向
-            Vector3 checkPosition = transform.position;
-            
-            // 如果有Collider2D，使用碰撞体底部作为检测起点
-            if (col != null)
-            {
-                Bounds bounds = col.bounds;
-                // 底部是Z轴的最小值（bounds.min.z），XY保持中心
-                checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z);
-            }
-            
-            // 向Z轴正方向（向上）发射射线检测地面（地面是XY平面）
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(
-                checkPosition,
-                Vector3.forward, // Z轴正方向（向上，朝向XY平面）
-                out hit,
-                groundCheckDistance,
-                groundLayer
-            );
-            
-            // 如果检测到地面，且Z轴速度向下或接近0，则认为在地面上
-            isGrounded = hasHit && transform.position.z <= hit.point.z + 0.1f;
+            // // 计算检测起点（角色底部中心）
+            // // 地面是XY平面，Z轴是垂直方向
+            // Vector3 checkPosition = transform.position;
+
+            // // 如果有Collider2D，使用碰撞体底部作为检测起点
+            // if (col != null)
+            // {
+            //     Bounds bounds = col.bounds;
+            //     // 底部是Z轴的最小值（bounds.min.z），XY保持中心
+            //     checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z);
+            // }
+
+            // // 向Z轴正方向（向上）发射射线检测地面（地面是XY平面）
+            // RaycastHit hit;
+            // bool hasHit = Physics.Raycast(
+            //     checkPosition,
+            //     Vector3.forward, // Z轴正方向（向上，朝向XY平面）
+            //     out hit,
+            //     groundCheckDistance,
+            //     groundLayer
+            // );
+
+            // // 如果检测到地面，且Z轴速度向下或接近0，则认为在地面上
+            // isGrounded = hasHit && transform.position.z <= hit.point.z + 0.1f;
         }
 
         /// <summary>
@@ -295,7 +298,7 @@ namespace Character3C.Enemy
             if (currentTask != null)
             {
                 currentTask.Blackboard = Blackboard;
-                currentTask.Start();
+                // TaskEntry 会在第一次 Update 时自动启动
             }
         }
 
@@ -431,7 +434,7 @@ namespace Character3C.Enemy
                 Bounds bounds = col.bounds;
                 checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z);
             }
-            
+
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(checkPosition, Vector3.forward * groundCheckDistance); // Z轴正方向（向上，朝向XY平面）
         }

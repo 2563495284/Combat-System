@@ -1,6 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
-
+using BTree;
 namespace Character3C.Enemy.Tasks
 {
     /// <summary>
@@ -18,7 +18,7 @@ namespace Character3C.Enemy.Tasks
             this.controller = controller;
         }
 
-        protected override void OnStart()
+        protected override int Enter()
         {
             Debug.Log($"{controller.name} - 进入空闲状态");
 
@@ -30,14 +30,17 @@ namespace Character3C.Enemy.Tasks
 
             // 开始等待
             // isWaiting = true;
+
+            return TaskStatus.RUNNING;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int Execute()
         {
-
+            // 空闲状态持续运行，除非外部停止
+            return TaskStatus.RUNNING;
         }
 
-        protected override void OnStop()
+        protected override void Exit()
         {
             Blackboard.MoveDirection = Vector3.zero;
             Debug.Log($"{controller.name} - 退出空闲状态");

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using BTree;
 
 namespace CombatSystem.Configuration
 {
@@ -73,7 +74,7 @@ namespace CombatSystem.Configuration
         /// <summary>
         /// 创建任务实例
         /// </summary>
-        public Core.TaskEntry CreateTask()
+        public Task<Core.Blackboard> CreateTask()
         {
             if (string.IsNullOrEmpty(taskTypeName))
                 return null;
@@ -81,9 +82,9 @@ namespace CombatSystem.Configuration
             try
             {
                 var type = Type.GetType(taskTypeName);
-                if (type != null && typeof(Core.TaskEntry).IsAssignableFrom(type))
+                if (type != null && typeof(Task<Core.Blackboard>).IsAssignableFrom(type))
                 {
-                    return Activator.CreateInstance(type) as Core.TaskEntry;
+                    return Activator.CreateInstance(type) as Task<Core.Blackboard>;
                 }
             }
             catch (Exception e)

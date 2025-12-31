@@ -2,35 +2,82 @@ using CombatSystem.Attributes;
 using CombatSystem.Core;
 using CombatSystem.Events;
 using UnityEngine;
-
+using BTree;
 namespace CombatSystem.Buffs
 {
     /// <summary>
     /// Buff任务基类
     /// 用于实现各种Buff效果
     /// </summary>
-    public abstract class BuffTask : TaskEntry
+    public abstract class BuffTask : LeafTask<Blackboard>
     {
         protected State State { get; private set; }
         protected CombatEntity Owner => State?.Owner;
+        
+        private float _lastUpdateTime;
 
         public void SetState(State state)
         {
             State = state;
         }
-
-        protected override void OnStart()
+        
+        protected float DeltaTime
         {
-            ApplyBuff();
+            get
+            {
+                float currentTime = Time.time;
+                float deltaTime = currentTime - _lastUpdateTime;
+                _lastUpdateTime = currentTime;
+                return deltaTime;
+            }
         }
 
-        protected override void OnStop()
+        protected sealed override int Execute()
+        {
+            int result = OnBuffUpdate(DeltaTime);
+            return result;
+        }
+
+        protected override int Enter()
+        {
+            _lastUpdateTime = Time.time;
+            ApplyBuff();
+            return TaskStatus.RUNNING;
+        }
+
+        protected override void Exit()
         {
             RemoveBuff();
         }
 
+        protected override void OnEventImpl(object eventObj)
+        {
+            HandleBuffEvent(eventObj);
+        }
+
+        /// <summary>
+        /// 应用Buff效果
+        /// </summary>
         protected abstract void ApplyBuff();
+
+        /// <summary>
+        /// Buff每帧更新
+        /// 返回任务状态：RUNNING, SUCCESS, ERROR等
+        /// </summary>
+        protected virtual int OnBuffUpdate(float deltaTime) 
+        { 
+            return TaskStatus.RUNNING; 
+        }
+
+        /// <summary>
+        /// 移除Buff效果
+        /// </summary>
         protected abstract void RemoveBuff();
+
+        /// <summary>
+        /// 处理Buff事件（可选）
+        /// </summary>
+        protected virtual void HandleBuffEvent(object evt) { }
     }
 
     /// <summary>
@@ -74,16 +121,19 @@ namespace CombatSystem.Buffs
         private float _tickDamage;
         private float _tickTimer;
 
-        protected override void ApplyBuff()
+        protected override void BeforeEnter()
         {
             _tickInterval = Blackboard.Get<float>("TickInterval", 1f);
             _tickDamage = Blackboard.Get<float>("TickDamage", 5f);
             _tickTimer = _tickInterval;
+        }
 
+        protected override void ApplyBuff()
+        {
             Debug.Log($"[DotBuff] 应用持续伤害: 每{_tickInterval}秒造成{_tickDamage}点伤害");
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnBuffUpdate(float deltaTime)
         {
             _tickTimer -= deltaTime;
             if (_tickTimer <= 0)
@@ -97,6 +147,8 @@ namespace CombatSystem.Buffs
                     caster.DealDamage(Owner, _tickDamage, DamageType.True);
                 }
             }
+
+            return TaskStatus.RUNNING;
         }
 
         protected override void RemoveBuff()
@@ -114,16 +166,19 @@ namespace CombatSystem.Buffs
         private float _tickHeal;
         private float _tickTimer;
 
-        protected override void ApplyBuff()
+        protected override void BeforeEnter()
         {
             _tickInterval = Blackboard.Get<float>("TickInterval", 1f);
             _tickHeal = Blackboard.Get<float>("TickHeal", 10f);
             _tickTimer = _tickInterval;
+        }
 
+        protected override void ApplyBuff()
+        {
             Debug.Log($"[HotBuff] 应用持续治疗: 每{_tickInterval}秒恢复{_tickHeal}点生命");
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnBuffUpdate(float deltaTime)
         {
             _tickTimer -= deltaTime;
             if (_tickTimer <= 0)
@@ -137,6 +192,8 @@ namespace CombatSystem.Buffs
                     caster.Heal(Owner, _tickHeal);
                 }
             }
+
+            return TaskStatus.RUNNING;
         }
 
         protected override void RemoveBuff()
@@ -162,15 +219,17 @@ namespace CombatSystem.Buffs
             Debug.Log($"[StunBuff] {Owner.EntityName} 被眩晕");
         }
 
-        protected override void RemoveBuff()
-        {
-            Debug.Log($"[StunBuff] {Owner.EntityName} 眩晕解除");
-        }
-
-        protected override void OnUpdate(float deltaTime)
+        protected override int OnBuffUpdate(float deltaTime)
         {
             // 持续阻止移动
             Owner.MoveComp.Stop();
+
+            return TaskStatus.RUNNING;
+        }
+
+        protected override void RemoveBuff()
+        {
+            Debug.Log($"[StunBuff] {Owner.EntityName} 眩晕解除");
         }
     }
 
@@ -182,11 +241,14 @@ namespace CombatSystem.Buffs
     {
         private float _shieldValue;
 
-        protected override void ApplyBuff()
+        protected override void BeforeEnter()
         {
             _shieldValue = Blackboard.Get<float>("ShieldValue", 50f);
             Blackboard.Set("CurrentShield", _shieldValue);
+        }
 
+        protected override void ApplyBuff()
+        {
             // 注册伤害事件
             Owner.EventBus.Register<DamageEvent>(OnDamage);
 
@@ -216,7 +278,7 @@ namespace CombatSystem.Buffs
                 // 护盾破碎
                 if (currentShield <= 0)
                 {
-                    State.Stop();
+                    Stop(TaskStatus.SUCCESS);
                 }
             }
         }

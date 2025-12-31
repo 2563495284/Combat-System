@@ -1,6 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
-
+using BTree;
 namespace Character3C.Tasks
 {
     /// <summary>
@@ -11,13 +11,18 @@ namespace Character3C.Tasks
     {
         private bool jumpExecuted = false;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
             jumpExecuted = false;
-            Debug.Log("进入跳跃状态");
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int Enter()
+        {
+            Debug.Log("进入跳跃状态");
+            return TaskStatus.RUNNING;
+        }
+
+        protected override int Execute()
         {
             // 执行跳跃
             if (!jumpExecuted && Blackboard.InputJump)
@@ -29,8 +34,10 @@ namespace Character3C.Tasks
             if (Blackboard.IsGrounded && Blackboard.Velocity.y <= 0)
             {
                 OnLanding();
-                Complete();
+                return TaskStatus.SUCCESS;
             }
+
+            return TaskStatus.RUNNING;
         }
 
         /// <summary>
@@ -102,7 +109,7 @@ namespace Character3C.Tasks
             }
         }
 
-        protected override void HandleEvent(object evt)
+        protected override void OnEventImpl(object evt)
         {
             // 处理跳跃相关事件
             if (evt is string eventName)
@@ -117,14 +124,9 @@ namespace Character3C.Tasks
             }
         }
 
-        protected override void OnComplete()
+        protected override void Exit()
         {
-            Debug.Log("跳跃状态完成");
-        }
-
-        protected override void OnStop()
-        {
-            Debug.Log("跳跃状态停止");
+            Debug.Log("跳跃状态结束");
         }
     }
 }

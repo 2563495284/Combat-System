@@ -1,7 +1,7 @@
 using UnityEngine;
 using CombatSystem.Core;
 using CombatSystem.Attributes;
-
+using BTree;
 namespace Character3C.Tasks
 {
     /// <summary>
@@ -16,6 +16,7 @@ namespace Character3C.Tasks
         private float attackTimer = 0f;
         private bool hitExecuted = false;
         private State skillState; // 当前施放的技能状态
+        private float lastUpdateTime;
 
         // 攻击配置
         private Vector3 attackOffset = new Vector3(1f, 0.5f, 0f);
@@ -30,12 +31,16 @@ namespace Character3C.Tasks
             this.enemyLayer = LayerMask.GetMask("Enemy");
         }
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
             attackTimer = 0f;
             hitExecuted = false;
             skillState = null;
+            lastUpdateTime = Time.time;
+        }
 
+        protected override int Enter()
+        {
             // 禁用移动
             Blackboard.CanMove = false;
             Blackboard.IsAttacking = true;
@@ -48,7 +53,7 @@ namespace Character3C.Tasks
                 {
                     // 查找攻击范围内的敌人作为目标
                     CombatEntity target = FindNearestEnemyInRange();
-                    
+
                     skillState = combatEntity.CastSkill(skillCfg, target);
                     if (skillState != null)
                     {
@@ -57,7 +62,7 @@ namespace Character3C.Tasks
                         float comboMultiplier = 1f + Blackboard.ComboIndex * 0.2f; // 连击加成
                         skillState.Blackboard.Set("Damage", baseDamage * comboMultiplier);
                         skillState.Blackboard.Set("CastTime", skillCfg.duration / 1000f);
-                        
+
                         // 使用技能配置的持续时间
                         attackDuration = skillCfg.duration / 1000f;
                     }
@@ -68,10 +73,14 @@ namespace Character3C.Tasks
             // AudioManager.Instance?.PlaySound("Attack");
 
             Debug.Log($"开始攻击 - 连击: {Blackboard.ComboIndex}");
+            return TaskStatus.RUNNING;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int Execute()
         {
+            float deltaTime = Time.time - lastUpdateTime;
+            lastUpdateTime = Time.time;
+
             attackTimer += deltaTime;
 
             // 如果使用 CombatEntity 的技能系统，伤害由技能任务处理
@@ -95,8 +104,7 @@ namespace Character3C.Tasks
                     // 技能完成后，攻击任务也完成
                     if (combatEntity.SkillComp.GetCastingSkill(skillState.Cfg.cid) == null || combatEntity.SkillComp.GetCastingSkill(skillState.Cfg.cid) != skillState)
                     {
-                        Complete();
-                        return;
+                        return TaskStatus.SUCCESS;
                     }
                 }
             }
@@ -104,7 +112,7 @@ namespace Character3C.Tasks
             // 检查攻击是否完成
             if (attackTimer >= attackDuration)
             {
-                Complete();
+                return TaskStatus.SUCCESS;
             }
 
             // 检查连击输入
@@ -113,6 +121,8 @@ namespace Character3C.Tasks
                 // 允许在攻击后期输入下一段连击
                 Blackboard.Set("ComboBuffered", true);
             }
+
+            return TaskStatus.RUNNING;
         }
 
         /// <summary>
@@ -207,7 +217,7 @@ namespace Character3C.Tasks
                 float baseDamage = combatEntity.AttrComp.GetAttr(CombatSystem.Attributes.AttrType.Attack);
                 float comboMultiplier = 1f + Blackboard.ComboIndex * 0.2f;
                 float damage = baseDamage * comboMultiplier;
-                
+
                 combatEntity.DealDamage(enemyEntity, damage, CombatSystem.DamageType.Physical);
             }
 
@@ -282,37 +292,32 @@ namespace Character3C.Tasks
 #endif
         }
 
-        protected override void OnComplete()
+        protected override void Exit()
         {
             // 恢复移动能力
             Blackboard.CanMove = true;
             Blackboard.IsAttacking = false;
 
-            // 更新连击索引
-            Blackboard.LastAttackTime = Time.time;
-
-            // 检查是否缓存了连击输入
-            if (Blackboard.Get<bool>("ComboBuffered", false))
+            // 如果是正常完成（不是被打断），更新连击索引
+            if (IsSucceeded)
             {
-                Blackboard.ComboIndex = (Blackboard.ComboIndex + 1) % 3;
-                Blackboard.Set("ComboBuffered", false);
+                // 更新连击索引
+                Blackboard.LastAttackTime = Time.time;
+
+                // 检查是否缓存了连击输入
+                if (Blackboard.Get<bool>("ComboBuffered", false))
+                {
+                    Blackboard.ComboIndex = (Blackboard.ComboIndex + 1) % 3;
+                    Blackboard.Set("ComboBuffered", false);
+                }
+                else
+                {
+                    // 没有连击，延迟后重置
+                    Blackboard.Set("ResetComboTime", Time.time + 0.5f);
+                }
             }
-            else
-            {
-                // 没有连击，延迟后重置
-                Blackboard.Set("ResetComboTime", Time.time + 0.5f);
-            }
 
-            Debug.Log("攻击完成");
-        }
-
-        protected override void OnStop()
-        {
-            // 确保恢复状态
-            Blackboard.CanMove = true;
-            Blackboard.IsAttacking = false;
-
-            Debug.Log("攻击状态停止");
+            Debug.Log("攻击状态结束");
         }
 
         /// <summary>

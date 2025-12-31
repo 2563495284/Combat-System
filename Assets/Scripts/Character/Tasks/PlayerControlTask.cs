@@ -1,6 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
-
+using BTree;
 namespace Character3C.Tasks
 {
     /// <summary>
@@ -12,24 +12,29 @@ namespace Character3C.Tasks
     {
         private Character25DController character;
         private TaskEntry<CharacterBlackboard25D> currentStateTask;
+        private int currentFrame;
 
         public PlayerControlTask(Character25DController character)
         {
             this.character = character;
         }
 
-        protected override void OnStart()
+        protected override int Enter()
         {
             Debug.Log("玩家控制任务启动");
+            currentFrame = 0;
+            return TaskStatus.RUNNING;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int Execute()
         {
+            currentFrame++;
+
             // 更新当前状态任务
             if (currentStateTask != null)
             {
-                currentStateTask.Update(deltaTime);
-                
+                currentStateTask.Update(currentFrame);
+
                 // 如果状态任务完成，清除它
                 if (currentStateTask.IsCompleted)
                 {
@@ -41,26 +46,26 @@ namespace Character3C.Tasks
             if (currentStateTask == null || currentStateTask.IsCompleted)
             {
                 // 优先级：攻击 > 冲刺 > 移动
-                
+
                 // 检查攻击输入
                 if (Blackboard.InputAttack && Blackboard.CanAttack && !Blackboard.IsAttacking)
                 {
                     StartAttackTask();
-                    return;
+                    return TaskStatus.RUNNING;
                 }
 
                 // 检查冲刺输入
                 if (Blackboard.InputDash && Blackboard.CanDash && !Blackboard.IsDashing)
                 {
                     StartDashTask();
-                    return;
+                    return TaskStatus.RUNNING;
                 }
 
                 // 检查移动输入
                 if (Blackboard.CanMove && Blackboard.InputMove.sqrMagnitude > 0.01f)
                 {
                     StartMoveTask();
-                    return;
+                    return TaskStatus.RUNNING;
                 }
             }
             else
@@ -73,19 +78,21 @@ namespace Character3C.Tasks
                     if (Blackboard.InputAttack && Blackboard.CanAttack && !Blackboard.IsAttacking)
                     {
                         StartAttackTask();
-                        return;
+                        return TaskStatus.RUNNING;
                     }
-                    
+
                     if (Blackboard.InputDash && Blackboard.CanDash && !Blackboard.IsDashing)
                     {
                         StartDashTask();
-                        return;
+                        return TaskStatus.RUNNING;
                     }
                 }
             }
 
             // 更新攻击连击
-            UpdateAttackCombo(deltaTime);
+            UpdateAttackCombo();
+
+            return TaskStatus.RUNNING;
         }
 
         /// <summary>
@@ -98,11 +105,11 @@ namespace Character3C.Tasks
 
             // 停止当前任务
             currentStateTask?.Stop();
-            
+
             // 创建并设置移动任务
             currentStateTask = new MoveStateTask();
             currentStateTask.Blackboard = Blackboard;
-            currentStateTask.Start();
+            // TaskEntry 会在第一次 Update 时自动启动
         }
 
         /// <summary>
@@ -112,11 +119,11 @@ namespace Character3C.Tasks
         {
             // 停止当前任务
             currentStateTask?.Stop();
-            
+
             // 创建并设置攻击任务
             currentStateTask = new AttackStateTask(character.GetComponent<CombatEntity>());
             currentStateTask.Blackboard = Blackboard;
-            currentStateTask.Start();
+            // TaskEntry 会在第一次 Update 时自动启动
         }
 
         /// <summary>
@@ -126,17 +133,17 @@ namespace Character3C.Tasks
         {
             // 停止当前任务
             currentStateTask?.Stop();
-            
+
             // 创建并设置冲刺任务
             currentStateTask = new DashStateTask();
             currentStateTask.Blackboard = Blackboard;
-            currentStateTask.Start();
+            // TaskEntry 会在第一次 Update 时自动启动
         }
 
         /// <summary>
         /// 更新攻击连击
         /// </summary>
-        private void UpdateAttackCombo(float deltaTime)
+        private void UpdateAttackCombo()
         {
             if (!Blackboard.IsAttacking)
                 return;
@@ -185,19 +192,22 @@ namespace Character3C.Tasks
             Debug.Log($"攻击结束 - 下一连击索引: {Blackboard.ComboIndex}");
         }
 
-        protected override void HandleEvent(object evt)
+        protected override void OnEventImpl(object evt)
         {
             // 处理游戏事件
             // 例如：角色受伤、拾取物品等
+            
+            // 将事件传递给当前状态任务
+            currentStateTask?.OnEvent(evt);
         }
 
-        protected override void OnStop()
+        protected override void Exit()
         {
             // 停止当前状态任务
             currentStateTask?.Stop();
             currentStateTask = null;
-            
-            Debug.Log("玩家控制任务停止");
+
+            Debug.Log("玩家控制任务结束");
         }
     }
 }

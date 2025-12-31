@@ -1,4 +1,4 @@
-    using UnityEngine;
+using UnityEngine;
 using CombatSystem.Core;
 using System.Collections.Generic;
 
@@ -43,18 +43,21 @@ namespace Character3C
         private Vector2 moveDirection;
         private int jumpCount;
         private bool isGrounded;
-        
+
         // 击退状态管理
         private Vector2 knockbackVelocity;
         private float knockbackDecay = 10f; // 击退衰减速度
         private bool isKnockedBack = false;
-        
+
         // 相机引用（用于计算移动方向）
         private Camera mainCamera;
 
         public float MoveSpeed => moveSpeed;
         public float JumpForce => jumpForce;
         public bool IsGrounded => isGrounded;
+
+        // 帧计数器
+        private int currentFrame = 0;
 
         private void Awake()
         {
@@ -90,18 +93,17 @@ namespace Character3C
             // 初始化主任务（PlayerControlTask）
             mainTask = new Tasks.PlayerControlTask(this);
             mainTask.Blackboard = Blackboard;
-            mainTask.Start();
         }
 
         private void Update()
         {
-            float deltaTime = Time.deltaTime;
+            currentFrame++;
 
             // 更新黑板数据
             UpdateBlackboard();
 
             // 更新主任务（PlayerControlTask 会管理所有子状态任务）
-            mainTask?.Update(deltaTime);
+            mainTask?.Update(currentFrame);
 
             // 重置单帧输入标记
             Blackboard.ResetInputFlags();
@@ -111,7 +113,7 @@ namespace Character3C
         {
             // 检测地面
             CheckGrounded();
-            
+
             CalculateHorizontalMovement();
             CalculateVerticalMovement();
             ApplyMovement();
@@ -151,7 +153,7 @@ namespace Character3C
 
                 // 计算目标速度（X轴和Y轴）
                 Vector2 targetVelocity = moveDirection * moveSpeed;
-                
+
                 velocity.x = targetVelocity.x;
                 velocity.y = targetVelocity.y; // 添加Y轴速度支持
             }
@@ -180,7 +182,7 @@ namespace Character3C
             {
                 jumpCount = 0;
             }
-            
+
             // 如果有跳跃输入，velocity.x会在Jump()方法中设置
             // 否则X轴速度（垂直）保持为0（无重力，不会自动下落）
         }
@@ -214,7 +216,7 @@ namespace Character3C
                 // 如果没有输入，强制垂直速度为0（无重力，不会自动下落）
                 currentVelocity.x = 0;
             }
-            
+
             rb.linearVelocity = currentVelocity;
         }
 
@@ -261,7 +263,7 @@ namespace Character3C
         {
             // 临时禁用地面检测，始终认为在地面上
             isGrounded = true;
-            
+
             // 以下代码已禁用，如需启用地面检测，请取消注释
             /*
             // 计算检测起点（角色底部中心 + 偏移）
@@ -348,11 +350,11 @@ namespace Character3C
             // 在XY平面系统中，击退只在Y轴（水平方向），不影响X轴（垂直）
             direction.x = 0; // 不影响垂直（X轴是垂直方向）
             direction.Normalize();
-            
+
             // 先清零当前水平速度（保留垂直速度）
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
             velocity.y = 0;
-            
+
             // 临时忽略所有角色碰撞体（允许穿透，但不影响地面碰撞）
             // 查找场景中所有角色碰撞体并临时忽略
             var allCharacters = FindObjectsByType<Character25DController>(FindObjectsSortMode.None);
@@ -363,7 +365,7 @@ namespace Character3C
                     Physics2D.IgnoreCollision(col, character.col, true);
                 }
             }
-            
+
             var allEnemies = FindObjectsByType<Character3C.Enemy.Enemy25DController>(FindObjectsSortMode.None);
             foreach (var enemy in allEnemies)
             {
@@ -373,10 +375,10 @@ namespace Character3C
                     Physics2D.IgnoreCollision(col, enemyCol, true);
                 }
             }
-            
+
             // 应用击退力
             rb.AddForce(direction * force, ForceMode2D.Impulse);
-            
+
             // 记录击退速度用于衰减
             knockbackVelocity = direction * force;
             isKnockedBack = true;
@@ -445,7 +447,7 @@ namespace Character3C
                 Gizmos.color = Color.blue;
                 Gizmos.DrawRay(transform.position, moveDirection * 2f);
             }
-            
+
             // 绘制地面检测射线（XY平面为地面，Z轴是垂直方向）
             Vector3 checkPosition = transform.position + new Vector3(groundCheckOffset.x, groundCheckOffset.y, 0);
             if (col != null)
@@ -453,7 +455,7 @@ namespace Character3C
                 Bounds bounds = col.bounds;
                 checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z) + new Vector3(groundCheckOffset.x, groundCheckOffset.y, 0);
             }
-            
+
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(checkPosition, Vector3.forward * groundCheckDistance); // Z轴正方向（向上，朝向XY平面）
         }

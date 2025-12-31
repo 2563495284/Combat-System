@@ -286,7 +286,7 @@ namespace CombatSystem.Components
         /// <summary>
         /// 更新所有状态
         /// </summary>
-        public void Update(float deltaTime)
+        public void Update(int curFrame)
         {
             // 复制列表防止迭代中修改
             var slotsToUpdate = new List<StateSlot>(activeSlots);
@@ -295,7 +295,7 @@ namespace CombatSystem.Components
             {
                 if (slot.State != null && slot.State.Active)
                 {
-                    slot.State.Update(deltaTime);
+                    slot.State.Update(curFrame);
 
                     // 检查是否过期
                     if (slot.State.IsExpired())

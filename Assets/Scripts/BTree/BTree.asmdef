@@ -1,16 +1,15 @@
 {
-    "name": "CombatSystem",
-    "rootNamespace": "CombatSystem",
-    "references": [
-        "GUID:5569afb22d2aa4cccbc9bf456292786a"
-    ],
+    "name": "BTree",
+    "rootNamespace": "BTree",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }
+

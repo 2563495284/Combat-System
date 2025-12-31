@@ -1,3 +1,4 @@
+using BTree;
 namespace CombatSystem.Core
 {
     /// <summary>
@@ -19,7 +20,7 @@ namespace CombatSystem.Core
         /// <summary>
         /// 任务缓存（非必须）
         /// </summary>
-        public TaskEntry Task => State?.Task;
+        public TaskEntry<Blackboard> Task => State?.Task;
 
         /// <summary>
         /// 是否是静态槽

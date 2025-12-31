@@ -1,6 +1,6 @@
 using UnityEngine;
 using CombatSystem.Core;
-
+using BTree;
 namespace Character3C.Tasks
 {
     /// <summary>
@@ -12,16 +12,26 @@ namespace Character3C.Tasks
         private bool dashStarted = false;
         private float dashTimer = 0f;
         private float dashDuration = 0.2f;
+        private float lastUpdateTime;
 
-        protected override void OnStart()
+        protected override void BeforeEnter()
         {
             dashStarted = false;
             dashTimer = 0f;
-            Debug.Log("进入冲刺状态");
+            lastUpdateTime = Time.time;
         }
 
-        protected override void OnUpdate(float deltaTime)
+        protected override int Enter()
         {
+            Debug.Log("进入冲刺状态");
+            return TaskStatus.RUNNING;
+        }
+
+        protected override int Execute()
+        {
+            float deltaTime = Time.time - lastUpdateTime;
+            lastUpdateTime = Time.time;
+
             // 开始冲刺
             if (!dashStarted && Blackboard.IsDashing)
             {
@@ -40,9 +50,11 @@ namespace Character3C.Tasks
                 if (!Blackboard.IsDashing || dashTimer >= dashDuration)
                 {
                     EndDash();
-                    Complete();
+                    return TaskStatus.SUCCESS;
                 }
             }
+
+            return TaskStatus.RUNNING;
         }
 
         /// <summary>
@@ -117,22 +129,17 @@ namespace Character3C.Tasks
             Debug.Log("冲刺结束");
         }
 
-        protected override void HandleEvent(object evt)
+        protected override void OnEventImpl(object evt)
         {
             // 处理冲刺过程中的事件
             // 例如：冲刺攻击、冲刺取消等
         }
 
-        protected override void OnComplete()
-        {
-            Debug.Log("冲刺状态完成");
-        }
-
-        protected override void OnStop()
+        protected override void Exit()
         {
             // 确保清理冲刺状态
             Blackboard.Set("IsInvincible", false);
-            Debug.Log("冲刺状态停止");
+            Debug.Log("冲刺状态结束");
         }
     }
 }
