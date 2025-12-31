@@ -30,10 +30,8 @@ public partial class CombatEntity : MonoBehaviour
 
     #endregion
 
-    #region 可选组件（由子类决定）
-
     /// <summary>
-    /// 移动组件（可选）
+    /// 移动组件
     /// </summary>
     public MoveComponent MoveComp { get; protected set; }
 
@@ -42,7 +40,6 @@ public partial class CombatEntity : MonoBehaviour
     /// </summary>
     public AnimationComponent AnimComp { get; protected set; }
 
-    #endregion
 
     #region 生命周期
 

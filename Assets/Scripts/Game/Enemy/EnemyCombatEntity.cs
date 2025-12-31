@@ -27,16 +27,6 @@ public class EnemyCombatEntity : CombatEntity
     protected override void InitializeComponents()
     {
         base.InitializeComponents();
-
-        // 根据配置初始化组件
-        // 注意：MoveComponent 目前只支持 PlayerCombatEntity
-        // 敌人的移动逻辑可以通过AI组件或其他方式实现
-        // TODO: 重构 MoveComponent 以支持所有实体类型
-
-        if (hasAnimation)
-        {
-            AnimComp = GetComponent<AnimationComponent>();
-        }
     }
 
     protected override void OnInitialize()

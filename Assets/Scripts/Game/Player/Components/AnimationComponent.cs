@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// 动画组件 - 负责管理战斗系统与Unity Animator的集成
+/// 动画组件 - 通用的动画控制器
+/// 负责管理 Unity Animator，不依赖任何具体的实体类型
 /// </summary>
 public class AnimationComponent : MonoBehaviour
 {
@@ -23,18 +24,11 @@ public class AnimationComponent : MonoBehaviour
 
     // 动画状态缓存
     private Dictionary<string, AnimationClip> _animationClips = new Dictionary<string, AnimationClip>();
-    private string _currentAnimationState;
-    private float _currentAnimationLength;
-
-    // 组件引用
-    private CombatEntity _entity;
 
     #region 初始化
 
     private void Awake()
     {
-        _entity = GetComponent<CombatEntity>();
-
         if (autoGetAnimator && animator == null)
         {
             animator = GetComponentInChildren<Animator>();
