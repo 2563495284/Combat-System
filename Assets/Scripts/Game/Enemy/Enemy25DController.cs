@@ -1,5 +1,4 @@
 using UnityEngine;
-using CombatSystem.Core;
 using System.Collections.Generic;
 using BTree;
 
@@ -85,8 +84,8 @@ public class Enemy25DController : MonoBehaviour
         };
 
         // 配置战斗实体
-        combatEntity.EntityType = CombatSystem.EntityType.Monster;
-        combatEntity.Camp = (int)CombatSystem.CampType.Enemy;
+        combatEntity.EntityType = EntityType.Monster;
+        combatEntity.Camp = (int)CampType.Enemy;
     }
 
     private void Start()
@@ -99,7 +98,7 @@ public class Enemy25DController : MonoBehaviour
         Blackboard.MoveDirection = Vector3.zero;
 
         // 注册死亡事件
-        combatEntity.EventBus.Register<CombatSystem.Events.DeathEvent>(OnDeath);
+        combatEntity.EventBus.Register<DeathEvent>(OnDeath);
     }
 
     private void Update()
@@ -312,7 +311,7 @@ public class Enemy25DController : MonoBehaviour
     /// <summary>
     /// 死亡处理
     /// </summary>
-    private void OnDeath(CombatSystem.Events.DeathEvent evt)
+    private void OnDeath(DeathEvent evt)
     {
         if (evt.entity != combatEntity)
             return;
@@ -441,6 +440,6 @@ public class Enemy25DController : MonoBehaviour
     private void OnDestroy()
     {
         // 取消事件注册
-        combatEntity?.EventBus?.Unregister<CombatSystem.Events.DeathEvent>(OnDeath);
+        combatEntity?.EventBus?.Unregister<DeathEvent>(OnDeath);
     }
 }

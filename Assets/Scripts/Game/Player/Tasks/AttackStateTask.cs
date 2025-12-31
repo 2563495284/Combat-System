@@ -1,6 +1,4 @@
 using UnityEngine;
-using CombatSystem.Core;
-using CombatSystem.Attributes;
 using BTree;
 /// <summary>
 /// 攻击状态任务 (2.5D)
@@ -46,7 +44,7 @@ public class AttackStateTask : TaskEntry<CharacterBlackboard>
         // 通过 CombatEntity 施放普通攻击技能
         if (combatEntity != null)
         {
-            var skillCfg = CombatSystem.Configuration.StateCfgManager.Instance.GetConfig(1001); // 普通攻击技能ID
+            var skillCfg = StateCfgManager.Instance.GetConfig(1001); // 普通攻击技能ID
             if (skillCfg != null)
             {
                 // 查找攻击范围内的敌人作为目标
@@ -204,8 +202,8 @@ public class AttackStateTask : TaskEntry<CharacterBlackboard>
         if (enemyEntity != null && combatEntity != null)
         {
             // 使用 CombatEntity 的 DealDamage 方法（基础伤害，连击倍率由技能管理）
-            float baseDamage = combatEntity.AttrComp.GetAttr(CombatSystem.Attributes.AttrType.Attack);
-            combatEntity.DealDamage(enemyEntity, baseDamage, CombatSystem.DamageType.Physical);
+            float baseDamage = combatEntity.AttrComp.GetAttr(AttrType.Attack);
+            combatEntity.DealDamage(enemyEntity, baseDamage, DamageType.Physical);
         }
 
         // 应用击退效果

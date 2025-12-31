@@ -1,5 +1,4 @@
 using UnityEngine;
-using CombatSystem.Core;
 
 /// <summary>
 /// 2.5D 角色黑板数据

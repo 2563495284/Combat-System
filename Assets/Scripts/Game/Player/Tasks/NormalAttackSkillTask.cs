@@ -1,9 +1,5 @@
-using CombatSystem.Core;
-using CombatSystem.Attributes;
 using UnityEngine;
 using BTree;
-using CombatSystem.Skills;
-using CombatSystem;
 /// <summary>
 /// 普通攻击技能任务
 /// 实现基础的近战物理攻击，支持动画事件驱动和时序控制两种模式
@@ -142,7 +138,7 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
 
         foreach (var hit in hits)
         {
-            var targetEntity = hit.GetComponent<CombatEntity>();
+            var targetEntity = hit.GetComponent<PlayerCombatEntity>();
             if (targetEntity != null && targetEntity != Caster && targetEntity.IsAlive())
             {
                 // 检查阵营(不同阵营才能攻击)
@@ -203,7 +199,7 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
         float knockbackForce = 3f;
 
         // 使用移动组件应用击退
-        target.MoveComp?.ApplyKnockback(knockbackDir * knockbackForce);
+        // target.MoveComp?.ApplyKnockback(knockbackDir * knockbackForce);
     }
 
     /// <summary>
