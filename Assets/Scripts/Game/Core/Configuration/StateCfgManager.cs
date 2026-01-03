@@ -51,6 +51,58 @@ public class StateCfgManager : MonoBehaviour
             taskTypeName = "NormalAttackSkillTask"
         });
 
+        // 主状态：受击硬直（主状态槽，互斥组：控制类）
+        AddConfig(new StateCfg
+        {
+            cid = 9004,
+            name = "受击硬直",
+            slot = StaticSlotIds.MAIN_STATE,
+            duration = 250,
+            priority = 120,
+            mutexGroup = 1,
+            publish = true,
+            taskTypeName = "HitStunStateTask"
+        });
+
+        // 主状态：眩晕（主状态槽，互斥组：控制类）
+        AddConfig(new StateCfg
+        {
+            cid = 9002,
+            name = "眩晕",
+            slot = StaticSlotIds.MAIN_STATE,
+            duration = 1200,
+            priority = 200,
+            mutexGroup = 1,
+            publish = true,
+            taskTypeName = "StunStateTask"
+        });
+
+        // 主状态：冰冻（主状态槽，互斥组：控制类）
+        AddConfig(new StateCfg
+        {
+            cid = 9003,
+            name = "冰冻",
+            slot = StaticSlotIds.MAIN_STATE,
+            duration = 1500,
+            priority = 220,
+            mutexGroup = 1,
+            publish = true,
+            taskTypeName = "FreezeStateTask"
+        });
+
+        // 主状态：死亡（主状态槽 + 全互斥屏障）
+        AddConfig(new StateCfg
+        {
+            cid = 9001,
+            name = "死亡",
+            slot = StaticSlotIds.MAIN_STATE,
+            duration = -1,
+            priority = 1000,
+            mutexAll = true,
+            publish = true,
+            taskTypeName = "DeathStateTask"
+        });
+
         Debug.Log($"[StateCfgManager] 加载了 {_configs.Count} 个配置");
     }
 

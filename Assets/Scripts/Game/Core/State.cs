@@ -1,5 +1,35 @@
 using UnityEngine;
 using BTree;
+using System;
+using System.Collections.Generic;
+
+/// <summary>
+/// 可序列化的“命名浮点参数”
+/// 用于 SkillData/State 在运行时携带可扩展参数（Damage/Range/Radius...）。
+/// </summary>
+[Serializable]
+public struct StateValueFloat
+{
+    public string key;
+    public float value;
+}
+
+/// <summary>
+/// 统一的“状态修改器”入口
+/// 任何组件（装备/天赋/被动系统等）都可以在状态启动前修改参数/黑板/等级等。
+/// </summary>
+public interface IStateModifier
+{
+    void ModifyState(CombatEntity owner, State state);
+}
+
+/// <summary>
+/// 状态任务统一注入接口
+/// </summary>
+public interface IStateTask
+{
+    void SetState(State state);
+}
 
 /// <summary>
 /// 状态类
@@ -16,6 +46,27 @@ public class State
     /// 状态等级
     /// </summary>
     public int Level { get; set; }
+
+    /// <summary>
+    /// 兼容“一切皆状态”写法：lv 即 Level
+    /// </summary>
+    public int lv
+    {
+        get => Level;
+        set => Level = value;
+    }
+
+    /// <summary>
+    /// 兼容“一切皆状态”写法：技能/状态的数值参数（由 SkillData 覆盖）
+    /// 现在改为“命名参数”：key/value，更适合做技能修改器与调试。
+    /// </summary>
+    public readonly List<StateValueFloat> values = new List<StateValueFloat>();
+
+    /// <summary>
+    /// 兼容“一切皆状态”写法：技能输入（方向/目标/点选等）
+    /// 为了让 State 核心层不强依赖具体输入类型，这里用 object；实际类型由 SkillSystem 传入（如 SkillInput）。
+    /// </summary>
+    public object input;
 
     /// <summary>
     /// 叠层数
@@ -91,14 +142,10 @@ public class State
             // 如果是 LeafTask（SkillTask 或 BuffTask），需要包装在 TaskEntry 中
             if (task is LeafTask<Blackboard> leafTask)
             {
-                // 设置 State 引用
-                if (leafTask is SkillTask<Blackboard> skillTask)
+                // 设置 State 引用（统一接口）
+                if (leafTask is IStateTask stateTask)
                 {
-                    skillTask.SetState(this);
-                }
-                else if (leafTask is BuffTask buffTask)
-                {
-                    buffTask.SetState(this);
+                    stateTask.SetState(this);
                 }
 
                 // 创建 TaskEntry 包装器
@@ -165,10 +212,10 @@ public class State
     /// <summary>
     /// 停止状态
     /// </summary>
-    public void Stop()
+    public void Stop(int result = TaskStatus.CANCELLED)
     {
         Active = false;
-        Task?.Stop();
+        Task?.Stop(result);
     }
 
     /// <summary>

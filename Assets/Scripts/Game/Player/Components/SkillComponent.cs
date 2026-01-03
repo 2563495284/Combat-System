@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// 技能组件
-/// 管理正在施放的技能状态
+/// 状态发布/查询组件（历史命名：SkillComponent）
+/// 作用：把“需要被外部快速查询的状态”发布出来（技能/被动/Buff都属于State）
+/// - Skill：fgCastingSkill/castingSkills（保留兼容）
+/// - Passive/Buff：提供列表以便统一查询
 /// </summary>
 public class SkillComponent
 {
@@ -15,6 +17,21 @@ public class SkillComponent
     /// 当前执行的主动技能（前台技能）
     /// </summary>
     public State fgCastingSkill;
+
+    /// <summary>
+    /// 当前发布的所有状态（技能/被动/Buff）
+    /// </summary>
+    public readonly List<State> publishedStates = new List<State>();
+
+    /// <summary>
+    /// 当前发布的所有Buff状态
+    /// </summary>
+    public readonly List<State> buffStates = new List<State>();
+
+    /// <summary>
+    /// 当前发布的所有被动技能状态
+    /// </summary>
+    public readonly List<State> passiveStates = new List<State>();
 
     /// <summary>
     /// 组件拥有者
@@ -86,20 +103,40 @@ public class SkillComponent
     }
 
     /// <summary>
-    /// 发布技能状态
-    /// 当技能状态启动时调用，将其添加到技能组件
+    /// 发布状态（技能/被动/Buff）
+    /// 当状态启动时调用，将其添加到发布列表，提供额外查询能力。
     /// </summary>
-    public void PublishSkill(State state)
+    public void PublishState(State state)
     {
-        if (state == null || !state.Cfg.isActiveSkill && !state.Cfg.isPassiveSkill)
+        if (state == null || state.Cfg == null)
             return;
 
-        if (!castingSkills.Contains(state))
+        // 发布总表（去重）
+        if (!publishedStates.Contains(state))
         {
-            castingSkills.Add(state);
+            publishedStates.Add(state);
         }
 
-        // 如果是主动技能，设置为前台技能
+        // 分类发布
+        if (state.Cfg.isBuff)
+        {
+            if (!buffStates.Contains(state))
+                buffStates.Add(state);
+        }
+
+        if (state.Cfg.isPassiveSkill)
+        {
+            if (!passiveStates.Contains(state))
+                passiveStates.Add(state);
+        }
+
+        if (state.Cfg.isActiveSkill || state.Cfg.isPassiveSkill)
+        {
+            if (!castingSkills.Contains(state))
+                castingSkills.Add(state);
+        }
+
+        // 主动技能作为前台技能
         if (state.Cfg.isActiveSkill)
         {
             fgCastingSkill = state;
@@ -107,14 +144,17 @@ public class SkillComponent
     }
 
     /// <summary>
-    /// 取消发布技能状态
-    /// 当技能状态结束时调用
+    /// 取消发布状态（技能/被动/Buff）
+    /// 当状态结束/被移除时调用。
     /// </summary>
-    public void UnpublishSkill(State state)
+    public void UnpublishState(State state)
     {
         if (state == null)
             return;
 
+        publishedStates.Remove(state);
+        buffStates.Remove(state);
+        passiveStates.Remove(state);
         castingSkills.Remove(state);
 
         if (fgCastingSkill == state)
@@ -122,6 +162,16 @@ public class SkillComponent
             fgCastingSkill = null;
         }
     }
+
+    /// <summary>
+    /// 兼容旧接口：发布技能状态
+    /// </summary>
+    public void PublishSkill(State state) => PublishState(state);
+
+    /// <summary>
+    /// 兼容旧接口：取消发布技能状态
+    /// </summary>
+    public void UnpublishSkill(State state) => UnpublishState(state);
 
     /// <summary>
     /// 是否正在施放主动技能
@@ -154,8 +204,8 @@ public class SkillComponent
     {
         if (fgCastingSkill != null)
         {
-            fgCastingSkill.Stop();
-            UnpublishSkill(fgCastingSkill);
+            // 生命周期统一由 StateComponent 管理：这里应当移除状态，而不是只 Stop/Unpublish
+            Owner?.StateComp?.RemoveState(fgCastingSkill, BTree.TaskStatus.CANCELLED, "InterruptActiveSkill");
         }
     }
 
@@ -164,11 +214,10 @@ public class SkillComponent
     /// </summary>
     public void Clear()
     {
-        var skills = new List<State>(castingSkills);
-        foreach (var skill in skills)
-        {
-            skill.Stop();
-        }
+        // 只清理索引/缓存，不直接 Stop 状态（生命周期由 StateComponent 统一管理）
+        publishedStates.Clear();
+        buffStates.Clear();
+        passiveStates.Clear();
         castingSkills.Clear();
         fgCastingSkill = null;
         _comboRuntimeBySkillId.Clear();

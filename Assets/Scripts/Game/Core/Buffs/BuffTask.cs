@@ -4,7 +4,7 @@ using BTree;
 /// Buff任务基类
 /// 用于实现各种Buff效果
 /// </summary>
-public abstract class BuffTask : LeafTask<Blackboard>
+public abstract class BuffTask : LeafTask<Blackboard>, IStateTask
 {
     protected State State { get; private set; }
     protected CombatEntity Owner => State?.Owner;

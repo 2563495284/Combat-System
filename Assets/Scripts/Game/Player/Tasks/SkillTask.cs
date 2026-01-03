@@ -4,7 +4,7 @@ using BTree;
 /// <summary>
 /// 技能任务基类
 /// </summary>
-public abstract class SkillTask<T> : LeafTask<T> where T : Blackboard
+public abstract class SkillTask<T> : LeafTask<T>, IStateTask where T : Blackboard
 {
     protected State State { get; private set; }
     protected CombatEntity Caster => State?.Owner;
@@ -49,9 +49,6 @@ public abstract class SkillTask<T> : LeafTask<T> where T : Blackboard
 
         // 退出技能状态，返回移动状态机
         Caster?.AnimComp?.ExitSkillState();
-
-        // 技能完成后从技能组件移除
-        Caster?.SkillComp.UnpublishSkill(State);
     }
 
     protected override void OnEventImpl(object eventObj)

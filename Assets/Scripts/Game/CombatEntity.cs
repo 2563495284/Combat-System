@@ -250,6 +250,12 @@ public partial class CombatEntity : MonoBehaviour
         // 子类自定义伤害处理
         OnDamageReceived(evt);
 
+        // 非致死受击：自动施加受击硬直（主状态槽，由状态系统处理互斥/优先级）
+        if (IsAlive() && evt.damage > 0)
+        {
+            ApplyMainState(9004);
+        }
+
         // 检查死亡
         if (!IsAlive())
         {
@@ -334,6 +340,13 @@ public partial class CombatEntity : MonoBehaviour
         StateComp.Clear();
         SkillComp.Clear();
 
+        // 挂载“死亡状态”（主状态槽屏障，用于互斥与查询）
+        var deathCfg = StateCfgManager.Instance.GetConfig(9001);
+        if (deathCfg != null)
+        {
+            ApplyState(deathCfg, this, 1, null, null);
+        }
+
         // 子类自定义死亡处理
         OnEntityDeath(evt);
     }
@@ -369,6 +382,54 @@ public partial class CombatEntity : MonoBehaviour
     #region 技能和状态相关方法
 
     /// <summary>
+    /// 统一入口：应用一个状态（技能/被动/Buff都属于State）
+    /// 差异应尽量下沉到 StateCfg + State脚本本身，而不是拆分成多个系统。
+    /// </summary>
+    public State ApplyState(StateCfg cfg, CombatEntity caster = null, int level = 1, object input = null, System.Collections.Generic.List<StateValueFloat> valueOverrides = null)
+    {
+        if (cfg == null)
+        {
+            Debug.LogWarning("无效的状态配置");
+            return null;
+        }
+
+        // 主动技能的默认互斥仍走 CanCastSkill
+        if (cfg.isActiveSkill && !CanCastSkill(cfg))
+        {
+            return null;
+        }
+
+        var state = StateUtil.CreateState(cfg.cid, level);
+        if (state == null) return null;
+
+        state.Owner = this;
+        state.Caster = caster ?? this;
+        state.Level = level;
+        state.input = input;
+
+        // 覆盖命名参数
+        if (valueOverrides != null)
+        {
+            state.values.Clear();
+            state.values.AddRange(valueOverrides);
+        }
+
+        // 确保任务启动前 blackboard 已经具备 input/values/target 等运行时数据
+        StateUtil.SyncRuntimeDataToBlackboard(state);
+
+        // 挂载状态并启动（统一发布/事件在 StateComponent 内部完成）
+        var added = StateComp.AddState(state);
+
+        // 主动技能沿用旧的技能施放回调（兼容）
+        if (added != null && cfg.isActiveSkill)
+        {
+            OnSkillCast(added, added.Blackboard.Get<CombatEntity>("Target", null));
+        }
+
+        return added;
+    }
+
+    /// <summary>
     /// 施放技能
     /// </summary>
     public State CastSkill(StateCfg skillCfg, CombatEntity target = null)
@@ -385,31 +446,13 @@ public partial class CombatEntity : MonoBehaviour
             return null;
         }
 
-        // 添加技能状态
-        var skillState = StateComp.AddState(skillCfg, this);
-        if (skillState != null)
+        // 统一走 ApplyState（重要：目标需要在状态启动/派发 SkillCastEvent 之前进入黑板）
+        object input = null;
+        if (target != null)
         {
-            // 发布到技能组件
-            SkillComp.PublishSkill(skillState);
-
-            // 触发技能施放事件
-            EventBus.Fire(new SkillCastEvent
-            {
-                caster = this,
-                skillState = skillState
-            });
-
-            // 将目标存入黑板
-            if (target != null)
-            {
-                skillState.Blackboard.Set("Target", target);
-            }
-
-            // 子类自定义技能施放处理
-            OnSkillCast(skillState, target);
+            input = new SkillInput { target = target };
         }
-
-        return skillState;
+        return ApplyState(skillCfg, this, 1, input, null);
     }
 
     /// <summary>
@@ -447,7 +490,8 @@ public partial class CombatEntity : MonoBehaviour
             return null;
         }
 
-        var buff = StateComp.AddState(buffCfg, caster ?? this);
+        // 统一走 ApplyState
+        var buff = ApplyState(buffCfg, caster ?? this, 1, null, null);
 
         // 子类自定义Buff添加处理
         if (buff != null)
@@ -456,6 +500,20 @@ public partial class CombatEntity : MonoBehaviour
         }
 
         return buff;
+    }
+
+    /// <summary>
+    /// 施加主状态（示例）：眩晕/冰冻/死亡等
+    /// </summary>
+    public State ApplyMainState(int stateId, int level = 1)
+    {
+        var cfg = StateCfgManager.Instance.GetConfig(stateId);
+        if (cfg == null)
+        {
+            Debug.LogWarning($"找不到主状态配置: {stateId}");
+            return null;
+        }
+        return ApplyState(cfg, this, level, null, null);
     }
 
     /// <summary>

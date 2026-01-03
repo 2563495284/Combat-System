@@ -56,11 +56,10 @@ public class StateSlot
     {
         State oldState = State;
 
-        // 移除旧状态
+        // 移除旧状态（注意：生命周期/StopStatus 由 StateComponent 统一决定，这里只做解绑）
         if (oldState != null)
         {
             oldState.Slot = null;
-            oldState.Stop();
         }
 
         // 绑定新状态
@@ -81,7 +80,6 @@ public class StateSlot
         if (State != null)
         {
             State.Slot = null;
-            State.Stop();
             State = null;
         }
     }

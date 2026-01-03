@@ -86,6 +86,17 @@ public class StateComponent
             Level = level
         };
 
+        // 在启动前同步运行时数据/应用修改器（让差异下沉到配置+脚本+修改器）
+        StateUtil.SyncRuntimeDataToBlackboard(state);
+        ApplyStateModifiers(state);
+
+        // 统一互斥解析（跨槽互斥 + 清场互斥）
+        if (!ResolveMutualExclusion(state))
+        {
+            Debug.LogWarning($"状态互斥失败，无法添加: {cfg.name}");
+            return null;
+        }
+
         // 分配状态槽
         if (!AllocateSlot(state))
         {
@@ -109,8 +120,206 @@ public class StateComponent
             activeSlots.Add(state.Slot);
         }
 
+        // 统一发布：技能/被动/Buff都可被查询（可由 cfg.publish 控制是否发布）
+        if (state.Cfg.publish)
+        {
+            Owner?.SkillComp?.PublishState(state);
+        }
+        Owner?.EventBus?.Fire(new StateAddedEvent { owner = Owner, state = state });
+
+        // 兼容技能事件：主动技能开始
+        if (state.Cfg != null && state.Cfg.isActiveSkill)
+        {
+            Owner?.EventBus?.Fire(new SkillCastEvent { caster = Owner, skillState = state });
+        }
+
         Debug.Log($"添加状态: {state}");
         return state;
+    }
+
+    /// <summary>
+    /// 添加“现成的状态实例”
+    /// 用于“一切皆状态”风格：先 CreateState，再覆盖 values/input/lv，然后挂载到实体上执行。
+    /// </summary>
+    public State AddState(State state)
+    {
+        if (state == null || state.Cfg == null)
+        {
+            Debug.LogError("状态为空或状态配置为空");
+            return null;
+        }
+
+        var cfg = state.Cfg;
+
+        // 检查是否已存在相同状态
+        if (TryGetState(cfg.cid, out var existingState))
+        {
+            // 尝试叠加
+            if (existingState.AddStack())
+            {
+                existingState.RefreshDuration();
+                return existingState;
+            }
+            // 无法叠加，刷新持续时间
+            existingState.RefreshDuration();
+            return existingState;
+        }
+
+        // 绑定Owner/Caster
+        state.Owner = state.Owner ?? Owner;
+        state.Caster = state.Caster ?? state.Owner;
+        if (state.Level <= 0) state.Level = 1;
+
+        // 在启动前同步运行时数据/应用修改器
+        StateUtil.SyncRuntimeDataToBlackboard(state);
+        ApplyStateModifiers(state);
+
+        // 统一互斥解析（跨槽互斥 + 清场互斥）
+        if (!ResolveMutualExclusion(state))
+        {
+            Debug.LogWarning($"状态互斥失败，无法添加: {cfg.name}");
+            return null;
+        }
+
+        // 分配状态槽
+        if (!AllocateSlot(state))
+        {
+            Debug.LogWarning($"无法为状态分配槽: {cfg.name}");
+            return null;
+        }
+
+        // 添加到字典
+        if (!stateDic.ContainsKey(cfg.cid))
+        {
+            stateDic[cfg.cid] = new List<State>();
+        }
+        stateDic[cfg.cid].Add(state);
+
+        // 启动状态
+        state.Start();
+
+        // 添加到活动列表
+        if (!activeSlots.Contains(state.Slot))
+        {
+            activeSlots.Add(state.Slot);
+        }
+
+        // 统一发布：技能/被动/Buff都可被查询（可由 cfg.publish 控制是否发布）
+        if (state.Cfg.publish)
+        {
+            Owner?.SkillComp?.PublishState(state);
+        }
+        Owner?.EventBus?.Fire(new StateAddedEvent { owner = Owner, state = state });
+
+        // 兼容技能事件：主动技能开始
+        if (state.Cfg != null && state.Cfg.isActiveSkill)
+        {
+            Owner?.EventBus?.Fire(new SkillCastEvent { caster = Owner, skillState = state });
+        }
+
+        Debug.Log($"添加状态: {state}");
+        return state;
+    }
+
+    private void ApplyStateModifiers(State state)
+    {
+        if (state == null || Owner == null) return;
+
+        // 允许用 MonoBehaviour 组件实现 IStateModifier（装备/天赋/被动系统等）
+        var monos = Owner.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < monos.Length; i++)
+        {
+            if (monos[i] is IStateModifier modifier)
+            {
+                modifier.ModifyState(Owner, state);
+            }
+        }
+
+        // 修改器可能改写了 values，再次同步到黑板以保证一致
+        StateUtil.SyncRuntimeDataToBlackboard(state);
+    }
+
+    private bool ResolveMutualExclusion(State newState)
+    {
+        if (newState == null || newState.Cfg == null) return false;
+
+        int newPriority = newState.Cfg.priority;
+
+        // 收集现有状态快照（避免迭代中修改）
+        var existing = GetAllStates();
+
+        // 对称处理：如果“已有状态”是 mutexAll 屏障，则默认阻止新状态进入（除非新状态优先级更高并替换）
+        for (int i = 0; i < existing.Count; i++)
+        {
+            var s = existing[i];
+            if (s == null || !s.Active || s.Cfg == null) continue;
+            if (!s.Cfg.mutexAll) continue;
+
+            if (s.Cfg.priority > newPriority)
+            {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < existing.Count; i++)
+        {
+            var s = existing[i];
+            if (s == null || !s.Active || s.Cfg == null) continue;
+            if (!s.Cfg.mutexAll) continue;
+
+            RemoveState(s, BTree.TaskStatus.CANCELLED, "ReplacedMutexAll");
+        }
+
+        // mutexAll：清场互斥
+        if (newState.Cfg.mutexAll)
+        {
+            for (int i = 0; i < existing.Count; i++)
+            {
+                var s = existing[i];
+                if (s == null || !s.Active) continue;
+
+                // 优先级不足：不能清掉更高优先级状态
+                if (s.Cfg != null && s.Cfg.priority > newPriority)
+                {
+                    return false;
+                }
+            }
+
+            for (int i = 0; i < existing.Count; i++)
+            {
+                var s = existing[i];
+                if (s == null || !s.Active) continue;
+                RemoveState(s, BTree.TaskStatus.CANCELLED, "MutexAll");
+            }
+        }
+
+        // mutexGroup：跨槽互斥组
+        int group = newState.Cfg.mutexGroup;
+        if (group != 0)
+        {
+            for (int i = 0; i < existing.Count; i++)
+            {
+                var s = existing[i];
+                if (s == null || !s.Active || s.Cfg == null) continue;
+                if (s.Cfg.mutexGroup != group) continue;
+
+                if (s.Cfg.priority > newPriority)
+                {
+                    return false;
+                }
+            }
+
+            for (int i = 0; i < existing.Count; i++)
+            {
+                var s = existing[i];
+                if (s == null || !s.Active || s.Cfg == null) continue;
+                if (s.Cfg.mutexGroup != group) continue;
+
+                RemoveState(s, BTree.TaskStatus.CANCELLED, "MutexGroupReplaced");
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -135,7 +344,8 @@ public class StateComponent
                 var oldState = slot.BindState(state);
                 if (oldState != null)
                 {
-                    RemoveState(oldState);
+                    // 槽冲突挤掉旧状态：属于打断/取消
+                    RemoveState(oldState, BTree.TaskStatus.CANCELLED, "SlotReplaced");
                 }
                 return true;
             }
@@ -179,11 +389,22 @@ public class StateComponent
     /// </summary>
     public bool RemoveState(State state)
     {
+        return RemoveState(state, BTree.TaskStatus.CANCELLED, "Manual");
+    }
+
+    /// <summary>
+    /// 移除状态（可指定停止码与原因）
+    /// </summary>
+    public bool RemoveState(State state, int stopStatus, string reason = null)
+    {
         if (state == null)
             return false;
 
-        // 停止状态
-        state.Stop();
+        // 捕获“结束前”的任务状态（用于区分完成/取消/失败）
+        int? taskStatus = state.Task != null ? state.Task.Status : null;
+
+        // 停止状态（如果任务已完成，Stop 不会覆盖原完成状态）
+        state.Stop(stopStatus);
 
         // 从字典移除
         if (stateDic.TryGetValue(state.Cfg.cid, out var list))
@@ -219,6 +440,33 @@ public class StateComponent
         }
 
         Debug.Log($"移除状态: {state}");
+
+        // 统一取消发布（技能/被动/Buff）
+        Owner?.SkillComp?.UnpublishState(state);
+
+        // 通用状态移除事件
+        Owner?.EventBus?.Fire(new StateRemovedEvent
+        {
+            owner = Owner,
+            state = state,
+            stopStatus = taskStatus ?? stopStatus,
+            reason = reason
+        });
+
+        // 兼容技能事件：主动技能完成/打断
+        if (state.Cfg != null && state.Cfg.isActiveSkill)
+        {
+            int finalStatus = taskStatus ?? stopStatus;
+            if (BTree.TaskStatus.IsSucceeded(finalStatus))
+            {
+                Owner?.EventBus?.Fire(new SkillCompleteEvent { caster = Owner, skillState = state });
+            }
+            else if (BTree.TaskStatus.IsCancelled(finalStatus))
+            {
+                Owner?.EventBus?.Fire(new SkillInterruptEvent { caster = Owner, skillState = state, reason = reason ?? "Cancelled" });
+            }
+        }
+
         return true;
     }
 
@@ -292,10 +540,19 @@ public class StateComponent
             {
                 slot.State.Update(curFrame);
 
+                // 任务完成即状态结束（技能/一次性行为等不应依赖 duration）
+                // 注意：此处 RemoveState 会调用 state.Stop()，但 Task 已完成时 Stop 不会覆盖既有完成码
+                var task = slot.State.Task;
+                if (task != null && BTree.TaskStatus.IsCompleted(task.Status))
+                {
+                    RemoveState(slot.State, task.Status, BTree.TaskStatus.IsSucceeded(task.Status) ? "Completed" : "TaskCompleted");
+                    continue;
+                }
+
                 // 检查是否过期
                 if (slot.State.IsExpired())
                 {
-                    RemoveState(slot.State);
+                    RemoveState(slot.State, BTree.TaskStatus.SUCCESS, "Expired");
                 }
             }
         }
@@ -320,7 +577,7 @@ public class StateComponent
         var allStates = GetAllStates();
         foreach (var state in allStates)
         {
-            RemoveState(state);
+            RemoveState(state, BTree.TaskStatus.CANCELLED, "Clear");
         }
 
         stateDic.Clear();

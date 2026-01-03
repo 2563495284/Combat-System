@@ -1,37 +1,16 @@
-
 /// <summary>
-/// 状态添加事件
+/// 通用状态事件（技能/被动/Buff统一）
 /// </summary>
 public class StateAddedEvent
 {
-    public State state;        // 添加的状态
+    public CombatEntity owner;
+    public State state;
 }
 
-/// <summary>
-/// 状态移除事件
-/// </summary>
 public class StateRemovedEvent
 {
-    public State state;        // 移除的状态
+    public CombatEntity owner;
+    public State state;
+    public int stopStatus;   // BTree.TaskStatus
+    public string reason;    // 可选：Expired/SlotReplaced/Manual/Dispel/...
 }
-
-/// <summary>
-/// 状态更新事件
-/// </summary>
-public class StateUpdatedEvent
-{
-    public State state;        // 更新的状态
-    public float deltaTime;    // 时间增量
-}
-
-/// <summary>
-/// 状态叠层改变事件
-/// </summary>
-public class StateStackChangedEvent
-{
-    public State state;        // 状态
-    public int oldStack;       // 旧叠层
-    public int newStack;       // 新叠层
-}
-
-
