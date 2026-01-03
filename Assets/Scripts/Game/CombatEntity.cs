@@ -344,7 +344,7 @@ public partial class CombatEntity : MonoBehaviour
     protected virtual void OnEntityDeath(DeathEvent evt)
     {
         // 默认实现：播放死亡动画（如果有动画组件）
-        AnimComp?.PlayDeathAnimation();
+        // AnimComp?.PlayDeathAnimation();
     }
 
     /// <summary>
@@ -418,7 +418,14 @@ public partial class CombatEntity : MonoBehaviour
     protected virtual bool CanCastSkill(StateCfg skillCfg)
     {
         // 默认检查：是否存活
-        return IsAlive();
+        if (!IsAlive())
+            return false;
+
+        // 默认互斥：同一时刻仅允许一个“主动技能”(前台技能)
+        if (skillCfg != null && skillCfg.isActiveSkill && SkillComp != null && SkillComp.IsCastingActiveSkill())
+            return false;
+
+        return true;
     }
 
     /// <summary>

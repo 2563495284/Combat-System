@@ -26,6 +26,65 @@ public class SkillComponent
         Owner = owner;
     }
 
+    private class ComboRuntime
+    {
+        public int comboIndex;
+        public float lastCastTime;
+    }
+
+    // 记录“同一个技能”的连击运行时数据（用于三连击等单技能内部FSM）
+    private readonly Dictionary<int, ComboRuntime> _comboRuntimeBySkillId = new Dictionary<int, ComboRuntime>();
+
+    private ComboRuntime GetOrCreateComboRuntime(int skillId)
+    {
+        if (!_comboRuntimeBySkillId.TryGetValue(skillId, out var rt))
+        {
+            rt = new ComboRuntime { comboIndex = 0, lastCastTime = -999f };
+            _comboRuntimeBySkillId[skillId] = rt;
+        }
+        return rt;
+    }
+
+    /// <summary>
+    /// 获取本次施放应当使用的连击段（不会推进段数）
+    /// </summary>
+    public int PeekComboIndex(int skillId, float comboTimeoutSeconds, int maxComboCount)
+    {
+        var rt = GetOrCreateComboRuntime(skillId);
+
+        if (maxComboCount <= 0) return 0;
+
+        float dt = UnityEngine.Time.time - rt.lastCastTime;
+        if (rt.lastCastTime < 0f || dt > comboTimeoutSeconds)
+        {
+            rt.comboIndex = 0;
+        }
+
+        rt.comboIndex = (rt.comboIndex % maxComboCount + maxComboCount) % maxComboCount;
+        return rt.comboIndex;
+    }
+
+    /// <summary>
+    /// 在技能正常完成后推进连击段
+    /// </summary>
+    public void CommitComboOnSuccess(int skillId, int maxComboCount)
+    {
+        if (maxComboCount <= 0) return;
+
+        var rt = GetOrCreateComboRuntime(skillId);
+        rt.lastCastTime = UnityEngine.Time.time;
+        rt.comboIndex = (rt.comboIndex + 1) % maxComboCount;
+    }
+
+    public void ResetCombo(int skillId)
+    {
+        if (_comboRuntimeBySkillId.TryGetValue(skillId, out var rt))
+        {
+            rt.comboIndex = 0;
+            rt.lastCastTime = -999f;
+        }
+    }
+
     /// <summary>
     /// 发布技能状态
     /// 当技能状态启动时调用，将其添加到技能组件
@@ -112,6 +171,7 @@ public class SkillComponent
         }
         castingSkills.Clear();
         fgCastingSkill = null;
+        _comboRuntimeBySkillId.Clear();
     }
 }
 

@@ -2,25 +2,31 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// 动画组件 - 通用的动画控制器
-/// 负责管理 Unity Animator，不依赖任何具体的实体类型
+/// 动画组件 - 统一的动画控制器
+/// 整合了 CharacterAnimator 和原 AnimationComponent 的功能
+/// 支持黑板驱动的动画更新和事件回调系统
 /// </summary>
 public class AnimationComponent : MonoBehaviour
 {
     [Header("动画器引用")]
     [SerializeField] private Animator animator;
 
+    [Header("Sprite 渲染器（用于翻转）")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
     [Header("动画配置")]
+    [SerializeField] private AnimationConfig animationConfig = new AnimationConfig();
     [SerializeField] private bool autoGetAnimator = true;
     [SerializeField] private bool debugMode = false;
-
-    [Header("状态机参数名称")]
-    [SerializeField] private string skillStateParam = "IsInSkill";  // 控制 Movement/Skill 子状态机切换的参数
 
     // 动画事件回调
     private System.Action _onAnimationHit;      // 动画触发伤害判定
     private System.Action _onAnimationEnd;      // 动画播放结束
     private System.Action<string> _onAnimationEvent; // 通用动画事件
+
+    // 运行时动画状态（B方案：动画组件内部持有，不再由黑板承载）
+    private bool _inSkillState;
+    private int _comboIndex;
 
     // 动画状态缓存
     private Dictionary<string, AnimationClip> _animationClips = new Dictionary<string, AnimationClip>();
@@ -34,10 +40,18 @@ public class AnimationComponent : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         }
 
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+
         if (animator != null)
         {
             CacheAnimationClips();
         }
+
+        // 初始化动画配置的哈希值
+        animationConfig.InitializeHashes();
     }
 
     /// <summary>
@@ -63,6 +77,45 @@ public class AnimationComponent : MonoBehaviour
 
     #endregion
 
+    #region 黑板驱动的动画更新
+
+    /// <summary>
+    /// 根据黑板数据更新动画状态（每帧调用）
+    /// </summary>
+    public void UpdateAnimations(CharacterBlackboard blackboard)
+    {
+        if (animator == null || blackboard == null) return;
+
+        // 更新移动相关动画参数
+        float moveSpeed = Mathf.Abs(blackboard.Velocity.magnitude);
+        animator.SetFloat(animationConfig.speedHash, moveSpeed);
+        // 更新地面状态
+        animator.SetBool(animationConfig.isGroundedHash, blackboard.IsGrounded);
+
+        // 更新技能/连击状态（由 AnimationComponent 内部状态驱动）
+        animator.SetBool(animationConfig.skillStateHash, _inSkillState);
+        animator.SetInteger(animationConfig.comboIndexHash, _comboIndex);
+
+        // 更新 Sprite 翻转
+        UpdateSpriteFlip(blackboard);
+    }
+
+    /// <summary>
+    /// 更新 Sprite 翻转（根据朝向）
+    /// </summary>
+    private void UpdateSpriteFlip(CharacterBlackboard blackboard)
+    {
+        if (spriteRenderer == null) return;
+
+        // 根据朝向方向翻转 Sprite
+        if (blackboard.FacingDirection.x != 0)
+        {
+            spriteRenderer.flipX = blackboard.FacingDirection.x < 0f;
+        }
+    }
+
+    #endregion
+
     #region 动画播放控制
 
     /// <summary>
@@ -70,7 +123,8 @@ public class AnimationComponent : MonoBehaviour
     /// </summary>
     public void EnterSkillState()
     {
-        animator.SetBool(skillStateParam, true);
+        _inSkillState = true;
+        animator.SetBool(animationConfig.skillStateHash, true);
 
         if (debugMode)
             Debug.Log($"[AnimationComponent] 进入技能状态");
@@ -81,7 +135,8 @@ public class AnimationComponent : MonoBehaviour
     /// </summary>
     public void ExitSkillState()
     {
-        animator.SetBool(skillStateParam, false);
+        _inSkillState = false;
+        animator.SetBool(animationConfig.skillStateHash, false);
 
         if (debugMode)
             Debug.Log($"[AnimationComponent] 退出技能状态");
@@ -94,71 +149,78 @@ public class AnimationComponent : MonoBehaviour
     {
         if (animator == null) return false;
 
-        return animator.GetBool(skillStateParam);
+        return animator.GetBool(animationConfig.skillStateHash);
     }
 
     /// <summary>
-    /// 播放攻击动画
+    /// 设置连击段数（用于 Skill 子状态机选择 hero_jian_attack0/1/2）
     /// </summary>
-    /// <param name="attackIndex">攻击索引(用于连击)</param>
-    /// <returns>动画时长(秒)</returns>
-    public float PlayAttackAnimation(int attackIndex = 0)
+    public void SetComboIndex(int comboIndex)
     {
-        EnterSkillState();
-        animator.SetInteger("NormalAttack", attackIndex);
-        if (debugMode)
-            Debug.Log($"[AnimationComponent] 播放普通攻击动画: {attackIndex}");
-        // 返回动画时长
-        return GetAnimationLength("NormalAttack");
+        _comboIndex = comboIndex;
+        if (animator == null) return;
+        animator.SetInteger(animationConfig.comboIndexHash, comboIndex);
     }
 
     /// <summary>
-    /// 播放技能动画
+    /// 播放普通攻击（B方案：外部不再通过黑板控制 Skill/Combo 参数）
+    /// - 设置 ComboIndex
+    /// - 进入 Skill 子状态机
+    /// - 尝试直接播放 hero_jian_attack 0/1/2（若找不到则依赖状态机过渡）
     /// </summary>
-    /// <param name="skillName">技能名称</param>
-    /// <returns>动画时长(秒)</returns>
-    public float PlaySkillAnimation(string skillName)
+    public float PlayNormalAttack(int comboIndex, int layer = 0)
     {
-        // 自动切换到技能状态
+        SetComboIndex(comboIndex);
         EnterSkillState();
 
-        animator.SetTrigger(skillName);
+        if (animator != null)
+        {
+            // 兼容两种命名：有空格/无空格
+            string stateNameWithSpace = $"hero_jian_attack {comboIndex}";
+            string stateNameNoSpace = $"hero_jian_attack{comboIndex}";
 
-        if (debugMode)
-            Debug.Log($"[AnimationComponent] 播放技能动画: {skillName}");
+            int hashWithSpace = Animator.StringToHash(stateNameWithSpace);
+            int hashNoSpace = Animator.StringToHash(stateNameNoSpace);
 
-        return GetAnimationLength(skillName);
+            if (animator.HasState(layer, hashWithSpace))
+            {
+                animator.Play(stateNameWithSpace, layer, 0f);
+            }
+            else if (animator.HasState(layer, hashNoSpace))
+            {
+                animator.Play(stateNameNoSpace, layer, 0f);
+            }
+        }
+
+        // 时长仅做兜底：优先使用动画事件结束
+        float len = GetAnimationLength($"hero_jian_attack{comboIndex}");
+        if (len <= 0f) len = GetAnimationLength($"hero_jian_attack {comboIndex}");
+        return len;
     }
 
     /// <summary>
-    /// 播放受击动画
+    /// 播放指定动画
     /// </summary>
-    public float PlayHitAnimation()
+    public void PlayAnimation(string stateName, int layer = 0, float normalizedTime = 0f)
     {
-        if (animator == null) return 0f;
+        if (animator != null)
+        {
+            animator.Play(stateName, layer, normalizedTime);
 
-        animator.SetTrigger("Hit");
-
-        if (debugMode)
-            Debug.Log($"[AnimationComponent] 播放受击动画");
-
-        return GetAnimationLength("Hit");
+            if (debugMode)
+                Debug.Log($"[AnimationComponent] 播放动画: {stateName}");
+        }
     }
 
     /// <summary>
-    /// 播放死亡动画
+    /// 设置动画速度
     /// </summary>
-    public float PlayDeathAnimation()
+    public void SetAnimationSpeed(float speed)
     {
-        if (animator == null) return 0f;
-
-        animator.SetTrigger("Death");
-        animator.SetBool("IsDead", true);
-
-        if (debugMode)
-            Debug.Log($"[AnimationComponent] 播放死亡动画");
-
-        return GetAnimationLength("Death");
+        if (animator != null)
+        {
+            animator.speed = speed;
+        }
     }
 
     /// <summary>
@@ -168,7 +230,7 @@ public class AnimationComponent : MonoBehaviour
     {
         if (animator == null) return;
 
-        animator.SetFloat("Speed", speed);
+        animator.SetFloat(animationConfig.speedHash, speed);
     }
 
     /// <summary>
@@ -285,6 +347,63 @@ public class AnimationComponent : MonoBehaviour
         return animator.GetCurrentAnimatorStateInfo(layerIndex).IsName(stateName);
     }
 
+    /// <summary>
+    /// 检查动画是否正在播放
+    /// </summary>
+    public bool IsAnimationPlaying(string stateName, int layer = 0)
+    {
+        if (animator == null) return false;
+        return animator.GetCurrentAnimatorStateInfo(layer).IsName(stateName);
+    }
+
+    /// <summary>
+    /// 获取当前动画的归一化时间
+    /// </summary>
+    public float GetAnimationNormalizedTime(int layer = 0)
+    {
+        if (animator == null) return 0f;
+        return animator.GetCurrentAnimatorStateInfo(layer).normalizedTime;
+    }
+
+    #endregion
+
+    #region Sprite 控制
+
+    /// <summary>
+    /// 设置 Sprite 渲染颜色
+    /// </summary>
+    public void SetSpriteColor(Color color)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = color;
+        }
+    }
+
+    /// <summary>
+    /// 设置 Sprite 透明度
+    /// </summary>
+    public void SetSpriteAlpha(float alpha)
+    {
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = alpha;
+            spriteRenderer.color = color;
+        }
+    }
+
+    /// <summary>
+    /// 设置 Sprite 翻转
+    /// </summary>
+    public void SetSpriteFlipX(bool flip)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = flip;
+        }
+    }
+
     #endregion
 
     #region 动画事件回调(由Animation Event调用)
@@ -390,7 +509,10 @@ public class AnimationComponent : MonoBehaviour
     #region 属性访问
 
     public Animator Animator => animator;
+    public SpriteRenderer SpriteRenderer => spriteRenderer;
+    public AnimationConfig Config => animationConfig;
     public bool HasAnimator => animator != null;
+    public bool DebugMode { get => debugMode; set => debugMode = value; }
 
     #endregion
 }

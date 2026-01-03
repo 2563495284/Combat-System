@@ -80,8 +80,8 @@ public class Character25DController : MonoBehaviour
         Blackboard = new CharacterBlackboard
         {
             Transform = transform,
-            Rigidbody = null, // 2D系统不使用3D Rigidbody
-            Collider = null  // 2D系统不使用3D Collider
+            Rigidbody2D = rb,
+            Collider2D = col
         };
     }
 

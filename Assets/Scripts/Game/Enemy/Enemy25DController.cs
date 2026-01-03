@@ -58,7 +58,7 @@ public class Enemy25DController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
-        combatEntity = GetComponent<CombatEntity>();
+        combatEntity = GetComponent<EnemyCombatEntity>();
 
         // 配置Rigidbody2D - XY平面游戏，不使用重力
         rb.mass = 100f; // 质量远大于玩家（玩家mass=1f），防止玩家推动敌人

@@ -5,21 +5,8 @@ using UnityEngine;
 /// 实现玩家特定的战斗逻辑和行为
 /// </summary>
 [RequireComponent(typeof(AnimationComponent))]
-[RequireComponent(typeof(CharacterAnimator))]
 public class PlayerCombatEntity : CombatEntity
 {
-    #region 玩家特定组件
-
-    [Header("玩家特定组件")]
-    [SerializeField] private CharacterAnimator characterAnimator;
-
-    /// <summary>
-    /// 角色动画管理器
-    /// </summary>
-    public CharacterAnimator CharacterAnimator => characterAnimator;
-
-    #endregion
-
     #region 玩家特定配置
 
     [Header("玩家配置")]
@@ -75,9 +62,6 @@ public class PlayerCombatEntity : CombatEntity
     protected override void OnDamageReceived(DamageEvent evt)
     {
         base.OnDamageReceived(evt);
-
-        // 播放受击动画
-        AnimComp?.PlayHitAnimation();
 
         // 设置无敌时间
         _invincibilityTimer = invincibilityDuration;

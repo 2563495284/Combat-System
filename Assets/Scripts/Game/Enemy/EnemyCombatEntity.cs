@@ -8,10 +8,6 @@ public class EnemyCombatEntity : CombatEntity
 {
     #region 敌人特定配置
 
-    [Header("敌人特定配置")]
-    [SerializeField] private bool hasAnimation = true;
-    [SerializeField] private bool canMove = true;
-
     [Header("掉落配置")]
     [SerializeField] private int expReward = 10;
     [SerializeField] private GameObject[] dropItems;
@@ -57,7 +53,7 @@ public class EnemyCombatEntity : CombatEntity
         base.OnDamageReceived(evt);
 
         // 敌人受击反应
-        AnimComp?.PlayHitAnimation();
+        // AnimComp?.PlayHitAnimation();
 
         // 可以在这里添加受击AI逻辑
         // 例如：转向攻击者、进入警戒状态等

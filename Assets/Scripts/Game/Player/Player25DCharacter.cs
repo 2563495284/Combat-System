@@ -7,10 +7,10 @@ using UnityEngine;
 [RequireComponent(typeof(Character25DController))]
 [RequireComponent(typeof(InputController))]
 [RequireComponent(typeof(CombatEntity))]
-[RequireComponent(typeof(CharacterAnimator))]
+[RequireComponent(typeof(AnimationComponent))]
 public class Player25DCharacter : MonoBehaviour
 {
-    private CharacterAnimator characterAnimator;
+    private AnimationComponent animationComponent;
 
     private Character25DController controller;
     private InputController inputController;
@@ -21,7 +21,7 @@ public class Player25DCharacter : MonoBehaviour
         controller = GetComponent<Character25DController>();
         inputController = GetComponent<InputController>();
         combatEntity = GetComponent<CombatEntity>();
-        characterAnimator = GetComponent<CharacterAnimator>();
+        animationComponent = GetComponent<AnimationComponent>();
     }
 
     private void Start()
@@ -31,8 +31,8 @@ public class Player25DCharacter : MonoBehaviour
 
     private void Update()
     {
-        // 更新动画（由 CharacterAnimator 统一管理）
-        characterAnimator?.UpdateAnimations(controller?.Blackboard);
+        // 更新动画（由 AnimationComponent 统一管理）
+        animationComponent?.UpdateAnimations(controller?.Blackboard);
     }
 
     /// <summary>
@@ -51,8 +51,8 @@ public class Player25DCharacter : MonoBehaviour
     public CombatEntity GetCombatEntity() => combatEntity;
 
     /// <summary>
-    /// 获取动画管理器
+    /// 获取动画组件
     /// </summary>
-    public CharacterAnimator GetAnimator() => characterAnimator;
+    public AnimationComponent GetAnimationComponent() => animationComponent;
 }
 

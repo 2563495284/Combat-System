@@ -1,96 +1,98 @@
 using UnityEngine;
 using BTree;
+
 /// <summary>
 /// 普通攻击技能任务
-/// 实现基础的近战物理攻击，支持动画事件驱动和时序控制两种模式
+/// - 进入 Skill 子状态机
+/// - 根据连击索引播放 hero_jian_attack0/1/2（由 Animator 参数 NormalAttack 驱动）
+/// - 动画事件驱动命中与结束；缺失动画事件时用时序兜底
 /// </summary>
-public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
+public class NormalAttackSkillTask : SkillTask<Blackboard>
 {
-    // 攻击配置参数
-    private float _attackRange = 2f;        // 攻击范围
-    private float _attackRadius = 1.5f;     // 攻击半径
-    private float _hitTiming = 0.3f;        // 伤害判定时机(秒) - 仅在时序模式下使用
-    private LayerMask _enemyLayer;          // 敌人层级
+    private struct ComboHitConfig
+    {
+        public float damageMultiplier;
+        public float forwardOffset;
+        public Vector3 halfExtents; // OverlapBox 的半尺寸
+        public Vector3 centerOffset;
+    }
 
-    // 运行时数据
-    private float _elapsedTime;             // 已运行时间
-    private bool _hitExecuted;              // 是否已执行伤害判定
-    private float _skillDuration;           // 技能持续时间
+    // 一技能一脚本：三连击的段配置都放在同一个任务里（后续可移到 StateCfg/ScriptableObject）
+    private static readonly ComboHitConfig[] COMBO_CONFIGS = new ComboHitConfig[]
+    {
+        new ComboHitConfig { damageMultiplier = 1.0f, forwardOffset = 1.0f, halfExtents = new Vector3(0.9f, 0.8f, 0.9f), centerOffset = new Vector3(0f, 0.9f, 0f) },
+        new ComboHitConfig { damageMultiplier = 1.2f, forwardOffset = 1.1f, halfExtents = new Vector3(1.0f, 0.85f, 1.0f), centerOffset = new Vector3(0f, 0.9f, 0f) },
+        new ComboHitConfig { damageMultiplier = 1.5f, forwardOffset = 1.25f, halfExtents = new Vector3(1.15f, 0.9f, 1.15f), centerOffset = new Vector3(0f, 0.9f, 0f) },
+    };
 
-    // 动画相关
-    private bool _useAnimationEvents = true; // 是否使用动画事件驱动
+    private LayerMask _enemyLayer; // 敌人层级
 
     // 连击系统
-    private const int MAX_COMBO_COUNT = 3;   // 最大连击数 (0, 1, 2)
-    private const float COMBO_TIMEOUT = 1.5f; // 连击超时时间(秒)
-    private const string COMBO_INDEX_KEY = "ComboIndex";      // 黑板键：连击索引
-    private const string LAST_ATTACK_TIME_KEY = "LastAttackTime"; // 黑板键：上次攻击时间
+    private const int MAX_COMBO_COUNT = 3;    // 最大连击数 (0, 1, 2)
+    private const float COMBO_TIMEOUT = 10f;  // 连击超时时间(秒)
+
+    private bool _hitExecuted = false;
+    private bool _animEnded = false;
+    private float _elapsedTime = 0f;
+    private int _comboIndex = 0;
+    private float _fallbackDuration = 0f;
 
     protected override void OnSkillStart()
     {
-        _elapsedTime = 0f;
         _hitExecuted = false;
+        _animEnded = false;
+        _elapsedTime = 0f;
 
-        // 更新连击索引
-        int comboIndex = UpdateComboIndex();
-
-        // 从配置读取技能持续时间，如果有动画则使用动画时长
-        _skillDuration = State.Cfg.duration / 1000f;
+        // 获取本次施放段（跨施放持久化：存 SkillComponent）
+        int skillId = State?.Cfg?.cid ?? 0;
+        _comboIndex = Caster?.SkillComp != null
+            ? Caster.SkillComp.PeekComboIndex(skillId, COMBO_TIMEOUT, MAX_COMBO_COUNT)
+            : 0;
 
         // 设置敌人层级
         _enemyLayer = LayerMask.GetMask("Enemy");
+        Caster?.MoveComp?.SetCanMove(false);
 
-        // 禁用移动
-        if (Caster != null)
+        if (Caster?.AnimComp != null)
         {
-            Caster.MoveComp?.SetCanMove(false);
-        }
-
-        // 播放攻击动画并获取实际时长
-        float animDuration = PlayAttackAnimation(comboIndex);
-        if (animDuration > 0)
-        {
-            _skillDuration = animDuration;
-        }
-        else if (_skillDuration <= 0)
-        {
-            _skillDuration = 0.5f; // 默认时长
-        }
-
-        // 注册动画事件回调
-        if (_useAnimationEvents && Caster?.AnimComp != null)
-        {
+            // 由动画驱动逻辑：Hit/End 都走 AnimationEvent 回调
             Caster.AnimComp.RegisterHitCallback(OnAnimationHitEvent);
             Caster.AnimComp.RegisterEndCallback(OnAnimationEndEvent);
+
+            // 选择本段动画（Animator 子状态机或直接 Play）
+            _fallbackDuration = Caster.AnimComp.PlayNormalAttack(_comboIndex);
+        }
+        else
+        {
+            _fallbackDuration = 0f;
         }
 
-        Debug.Log($"[普通攻击] {Caster?.EntityName} 开始攻击 连击:{comboIndex} (时长:{_skillDuration}秒)");
+        // 兜底：如果拿不到 clip 长度，就用配置 duration
+        if (_fallbackDuration <= 0f && State?.Cfg != null && State.Cfg.duration > 0)
+        {
+            _fallbackDuration = State.Cfg.duration / 1000f;
+        }
+
+        Blackboard?.Set("ComboIndex", _comboIndex);
+
+        Debug.Log($"[普通攻击] {Caster?.EntityName} 开始攻击 连击:{_comboIndex}");
+        
     }
 
     protected override int OnExecute(float deltaTime)
     {
         _elapsedTime += deltaTime;
 
-        // 如果不使用动画事件，则使用时序控制伤害判定
-        if (!_useAnimationEvents || Caster?.AnimComp == null)
-        {
-            // 在特定时机执行伤害判定
-            if (!_hitExecuted && _elapsedTime >= _hitTiming)
-            {
-                ExecuteAttackHit();
-                _hitExecuted = true;
-            }
-        }
-
-        // 检查技能是否完成
-        if (_elapsedTime >= _skillDuration)
+        // 动画事件最准确
+        if (_animEnded)
         {
             return TaskStatus.SUCCESS;
         }
 
-        // 也可以通过动画状态判断是否完成
-        if (Caster?.AnimComp != null && Caster.AnimComp.IsAnimationFinished())
+        // 兜底：动画事件缺失时，超时结束（避免卡死）
+        if (_fallbackDuration > 0f && _elapsedTime >= _fallbackDuration + 0.1f)
         {
+            Debug.LogWarning($"[普通攻击] 动画结束事件缺失，使用时序兜底结束。combo={_comboIndex}");
             return TaskStatus.SUCCESS;
         }
 
@@ -99,15 +101,16 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
 
     protected override void OnSkillEnd()
     {
+        // 仅在“正常完成”时推进连击；被打断/被挤出槽(CANCELLED)不推进
+        if (Status == TaskStatus.SUCCESS)
+        {
+            int skillId = State?.Cfg?.cid ?? 0;
+            Caster?.SkillComp?.CommitComboOnSuccess(skillId, MAX_COMBO_COUNT);
+        }
+
         // 清除动画回调
         Caster?.AnimComp?.ClearAllCallbacks();
-
-        // 恢复移动能力
         Caster?.MoveComp?.SetCanMove(true);
-
-        // 更新上次攻击时间
-        Blackboard?.Set(LAST_ATTACK_TIME_KEY, Time.time);
-
         Debug.Log($"[普通攻击] {Caster?.EntityName} 攻击结束");
     }
 
@@ -118,39 +121,50 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
     {
         if (Caster == null) return;
 
-        // 计算攻击位置和方向
-        Vector3 attackOrigin = Caster.transform.position;
+        var cfg = COMBO_CONFIGS[Mathf.Clamp(_comboIndex, 0, COMBO_CONFIGS.Length - 1)];
+
+        // 计算攻击方向（优先朝向目标）
+        Vector3 attackOrigin = Caster.transform.position + cfg.centerOffset;
         Vector3 attackDirection = Caster.transform.forward;
 
         // 如果有指定目标,朝向目标
         if (Target != null && Target.IsAlive())
         {
-            attackDirection = (Target.transform.position - attackOrigin).normalized;
+            var dir = (Target.transform.position - attackOrigin);
+            dir.y = 0f;
+            if (dir.sqrMagnitude > 0.0001f)
+            {
+                attackDirection = dir.normalized;
+            }
         }
+        attackDirection.y = 0f;
+        if (attackDirection.sqrMagnitude < 0.0001f)
+        {
+            attackDirection = Vector3.forward;
+        }
+        attackDirection.Normalize();
 
-        // 计算攻击判定位置
-        Vector3 attackCenter = attackOrigin + attackDirection * (_attackRange * 0.5f);
+        // 计算攻击判定（包围盒）
+        Vector3 attackCenter = attackOrigin + attackDirection * cfg.forwardOffset;
+        Quaternion rot = Quaternion.LookRotation(attackDirection, Vector3.up);
 
-        // 检测范围内的敌人
-        Collider[] hits = Physics.OverlapSphere(attackCenter, _attackRadius, _enemyLayer);
+        Collider[] hits = Physics.OverlapBox(attackCenter, cfg.halfExtents, rot, _enemyLayer);
 
         int hitCount = 0;
-
         foreach (var hit in hits)
         {
-            var targetEntity = hit.GetComponent<PlayerCombatEntity>();
+            // 兼容：Collider 可能挂在子物体上
+            var targetEntity = hit.GetComponentInParent<CombatEntity>();
             if (targetEntity != null && targetEntity != Caster && targetEntity.IsAlive())
             {
-                // 检查阵营(不同阵营才能攻击)
                 if (targetEntity.Camp != Caster.Camp)
                 {
-                    DealDamageToTarget(targetEntity);
+                    DealDamageToTarget(targetEntity, cfg.damageMultiplier);
                     hitCount++;
                 }
             }
         }
 
-        // 播放效果
         if (hitCount > 0)
         {
             PlayHitEffect(attackCenter);
@@ -160,15 +174,9 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
         {
             Debug.Log("[普通攻击] 未命中任何目标");
         }
-
-        // 调试可视化
-        DebugDrawAttackRange(attackCenter);
     }
 
-    /// <summary>
-    /// 对目标造成伤害
-    /// </summary>
-    private void DealDamageToTarget(CombatEntity target)
+    private void DealDamageToTarget(CombatEntity target, float damageMultiplier)
     {
         if (target == null || Caster == null) return;
 
@@ -179,176 +187,26 @@ public class NormalAttackSkillTask : SkillTask<CharacterBlackboard>
             damage = Caster.AttrComp.GetAttr(AttrType.Attack);
         }
 
-        // 应用伤害
+        damage = Mathf.Max(0f, damage * Mathf.Max(0f, damageMultiplier));
         Caster.DealDamage(target, damage, DamageType.Physical);
-
-        // 应用击退效果(可选)
-        ApplyKnockback(target);
     }
 
-    /// <summary>
-    /// 应用击退效果
-    /// </summary>
-    private void ApplyKnockback(CombatEntity target)
-    {
-        if (target == null || Caster == null) return;
-
-        Vector3 knockbackDir = (target.transform.position - Caster.transform.position).normalized;
-        knockbackDir.y = 0; // 只在水平方向击退
-
-        float knockbackForce = 3f;
-
-        // 使用移动组件应用击退
-        // target.MoveComp?.ApplyKnockback(knockbackDir * knockbackForce);
-    }
-
-    /// <summary>
-    /// 更新连击索引
-    /// </summary>
-    /// <returns>当前连击索引</returns>
-    private int UpdateComboIndex()
-    {
-        if (Blackboard == null)
-            return 0;
-
-        // 获取上次攻击时间
-        float lastAttackTime = Blackboard.Get<float>(LAST_ATTACK_TIME_KEY);
-        float currentTime = Time.time;
-
-        // 检查是否超时
-        bool isTimeout = (currentTime - lastAttackTime) > COMBO_TIMEOUT;
-
-        if (isTimeout || lastAttackTime <= 0)
-        {
-            // 超时或首次攻击，重置为0
-            ResetCombo();
-            Debug.Log($"[连击系统] 连击重置");
-        }
-
-        int currentCombo = Blackboard?.Get<int>(COMBO_INDEX_KEY) ?? 0;
-
-
-        return currentCombo;
-    }
-
-    /// <summary>
-    /// 重置连击系统
-    /// </summary>
-    private void ResetCombo()
-    {
-        if (Blackboard == null)
-            return;
-
-        Blackboard.Set(COMBO_INDEX_KEY, 0);
-        Blackboard.Set(LAST_ATTACK_TIME_KEY, 0f);
-
-        Debug.Log($"[连击系统] 手动重置连击");
-    }
-
-    /// <summary>
-    /// 播放攻击动画
-    /// </summary>
-    /// <param name="comboIndex">连击索引</param>
-    /// <returns>动画时长(秒)</returns>
-    private float PlayAttackAnimation(int comboIndex)
-    {
-        return Caster.AnimComp.PlayAttackAnimation(comboIndex);
-    }
-
-    /// <summary>
-    /// 动画事件回调 - 伤害判定
-    /// 由 AnimationComponent 在动画事件触发时调用
-    /// </summary>
     private void OnAnimationHitEvent()
     {
-        if (!_hitExecuted)
-        {
-            ExecuteAttackHit();
-            _hitExecuted = true;
-        }
+        if (_hitExecuted) return;
+        ExecuteAttackHit();
+        _hitExecuted = true;
     }
 
-    /// <summary>
-    /// 动画事件回调 - 动画结束
-    /// </summary>
     private void OnAnimationEndEvent()
     {
-        // 可以在这里提前结束技能
-        int comboIndex = Blackboard?.Get<int>(COMBO_INDEX_KEY) ?? 0;
-
-        Blackboard.Set(COMBO_INDEX_KEY, (comboIndex + 1) % MAX_COMBO_COUNT);
-
-        Debug.Log("[普通攻击] 动画播放完成");
+        _animEnded = true;
     }
 
-    /// <summary>
-    /// 播放击中特效
-    /// </summary>
     private void PlayHitEffect(Vector3 position)
     {
         // TODO: 播放粒子特效和音效
-        // ParticleManager.Instance?.PlayEffect("HitEffect", position);
-        // AudioManager.Instance?.PlaySound("Hit");
-    }
-
-    /// <summary>
-    /// 调试绘制攻击范围
-    /// </summary>
-    private void DebugDrawAttackRange(Vector3 center)
-    {
-#if UNITY_EDITOR
-        // 绘制攻击范围球体
-        Color color = _hitExecuted ? Color.red : Color.yellow;
-        Debug.DrawLine(center, center + Vector3.up * _attackRadius, color, 0.5f);
-
-        // 绘制圆形范围(简化版)
-        int segments = 16;
-        float angleStep = 360f / segments;
-        for (int i = 0; i < segments; i++)
-        {
-            float angle1 = i * angleStep * Mathf.Deg2Rad;
-            float angle2 = (i + 1) * angleStep * Mathf.Deg2Rad;
-
-            Vector3 point1 = center + new Vector3(Mathf.Cos(angle1), 0, Mathf.Sin(angle1)) * _attackRadius;
-            Vector3 point2 = center + new Vector3(Mathf.Cos(angle2), 0, Mathf.Sin(angle2)) * _attackRadius;
-
-            Debug.DrawLine(point1, point2, color, 0.5f);
-        }
-#endif
-    }
-
-    /// <summary>
-    /// 设置攻击参数
-    /// </summary>
-    public void SetAttackParams(float range, float radius, float hitTiming)
-    {
-        _attackRange = range;
-        _attackRadius = radius;
-        _hitTiming = hitTiming;
-    }
-
-    /// <summary>
-    /// 设置是否使用动画事件
-    /// </summary>
-    public void SetUseAnimationEvents(bool use)
-    {
-        _useAnimationEvents = use;
-    }
-
-    /// <summary>
-    /// 获取当前连击索引
-    /// </summary>
-    public int GetCurrentComboIndex()
-    {
-        return Blackboard?.Get<int>(COMBO_INDEX_KEY) ?? 0;
-    }
-
-    /// <summary>
-    /// 手动重置连击
-    /// </summary>
-    public void ManualResetCombo()
-    {
-        ResetCombo();
     }
 }
+
 

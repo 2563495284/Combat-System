@@ -187,7 +187,6 @@ public class InputController : MonoBehaviour
     private void UpdateCharacterBlackboard()
     {
         var blackboard = character.Blackboard;
-
         blackboard.InputMove = moveInput;
         blackboard.InputJump = jumpPressed;
         blackboard.InputDash = dashPressed;

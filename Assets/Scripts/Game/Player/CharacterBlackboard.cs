@@ -40,6 +40,7 @@ public class CharacterBlackboard : Blackboard
     public bool CanJump { get; set; } = true;
     public bool CanDash { get; set; } = true;
     public bool CanAttack { get; set; } = true;
+    public bool IsDead { get; set; }
 
     // 地图相关
     public Vector2Int GridPosition { get; set; } // 在地图网格中的位置
@@ -47,8 +48,8 @@ public class CharacterBlackboard : Blackboard
 
     // Transform 引用
     public Transform Transform { get; set; }
-    public Rigidbody Rigidbody { get; set; }
-    public Collider Collider { get; set; }
+    public Rigidbody2D Rigidbody2D { get; set; }
+    public BoxCollider2D Collider2D { get; set; }
 
     /// <summary>
     /// 重置输入状态（每帧调用）
