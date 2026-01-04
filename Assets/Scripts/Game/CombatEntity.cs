@@ -4,7 +4,7 @@ using UnityEngine;
 /// 通用战斗实体基类
 /// 实现所有实体共享的战斗逻辑
 /// </summary>
-public partial class CombatEntity : MonoBehaviour
+public class CombatEntity : CombatEntityBase
 {
     #region 核心组件（必需）
 
