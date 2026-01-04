@@ -108,30 +108,10 @@ public class StateSlot
 public static class StaticSlotIds
 {
     /// <summary>
-    /// 主状态槽（类似主状态机）
-    /// 用于跳跃、死亡、冰冻等互斥状态
+    /// 主状态槽（主状态机，互斥）
+    /// 注意：本项目设计里“移动也属于主状态槽”，与跳跃/死亡/冰冻/受击等同槽互斥。
     /// </summary>
     public const int MAIN_STATE = 1;
-
-    /// <summary>
-    /// 移动状态槽
-    /// </summary>
-    public const int MOVEMENT = 2;
-
-    /// <summary>
-    /// 攻击状态槽
-    /// </summary>
-    public const int ATTACK = 3;
-
-    /// <summary>
-    /// 防御状态槽
-    /// </summary>
-    public const int DEFENSE = 4;
-
-    /// <summary>
-    /// 特殊状态槽
-    /// </summary>
-    public const int SPECIAL = 5;
 }
 
 

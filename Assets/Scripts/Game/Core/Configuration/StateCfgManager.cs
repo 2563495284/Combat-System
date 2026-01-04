@@ -39,6 +39,22 @@ public class StateCfgManager : MonoBehaviour
     /// </summary>
     private void InitializeDefaultConfigs()
     {
+        // 移动：主状态槽（标记用，生命周期由 PlayerControlTask 驱动）
+        // 说明：
+        // - 本项目设计：移动属于“主状态机”互斥的一部分，和跳跃/死亡/冰冻等同槽竞争
+        // - 该状态不需要任务脚本（taskTypeName 为空即可），只用来挂在 MAIN_STATE 方便查询/互斥扩展
+        // - 真实移动由 Character25DController + MoveStateTask 执行
+        AddConfig(new StateCfg
+        {
+            cid = 8001,
+            name = "移动",
+            slot = StaticSlotIds.MAIN_STATE,
+            duration = -1,
+            priority = 0,
+            publish = false,
+            taskTypeName = null
+        });
+
         // 技能：普通攻击
         AddConfig(new StateCfg
         {

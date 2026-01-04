@@ -8,7 +8,6 @@ public class AttackStateTask : TaskEntry<CharacterBlackboard>
 {
     private CombatEntity combatEntity;
     private float attackTimer = 0f;
-    private bool hitExecuted = false;
     private State skillState; // 当前施放的技能状态
     private float lastUpdateTime;
 
@@ -28,7 +27,6 @@ public class AttackStateTask : TaskEntry<CharacterBlackboard>
     protected override void BeforeEnter()
     {
         attackTimer = 0f;
-        hitExecuted = false;
         skillState = null;
         lastUpdateTime = Time.time;
     }
@@ -75,7 +73,6 @@ public class AttackStateTask : TaskEntry<CharacterBlackboard>
     {
         // 重置本段计时（仅用于兜底/调试）
         attackTimer = 0f;
-        hitExecuted = false;
         lastUpdateTime = Time.time;
 
         if (combatEntity == null) return;

@@ -21,9 +21,9 @@ public class Character25DController : MonoBehaviour
     [SerializeField] private int maxJumpCount = 1;
 
     [Header("地面检测")]
-    [SerializeField] private float groundCheckDistance = 0.1f; // 地面检测距离
-    [SerializeField] private LayerMask groundLayer = 1; // 地面层级（默认所有层）
-    [SerializeField] private Vector2 groundCheckOffset = Vector2.zero; // 检测点偏移
+    // [SerializeField] private float groundCheckDistance = 0.1f; // 地面检测距离
+    // [SerializeField] private LayerMask groundLayer = 1; // 地面层级（默认所有层）
+    // [SerializeField] private Vector2 groundCheckOffset = Vector2.zero; // 检测点偏移
 
     // 黑板数据
     public CharacterBlackboard Blackboard { get; private set; }
@@ -336,125 +336,6 @@ public class Character25DController : MonoBehaviour
         Blackboard.IsGrounded = isGrounded;
         Blackboard.Position = transform.position;
         Blackboard.MoveDirection = moveDirection;
-    }
-
-
-    /// <summary>
-    /// 应用击退效果（供外部调用，如技能系统）
-    /// </summary>
-    public void ApplyKnockback(Vector2 direction, float force)
-    {
-        // 在XY平面系统中，击退只在Y轴（水平方向），不影响X轴（垂直）
-        direction.x = 0; // 不影响垂直（X轴是垂直方向）
-        direction.Normalize();
-
-        // 先清零当前水平速度（保留垂直速度）
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-        velocity.y = 0;
-
-        // 临时忽略所有角色碰撞体（允许穿透，但不影响地面碰撞）
-        // 查找场景中所有角色碰撞体并临时忽略
-        var allCharacters = FindObjectsByType<Character25DController>(FindObjectsSortMode.None);
-        foreach (var character in allCharacters)
-        {
-            if (character != this && character.col != null)
-            {
-                Physics2D.IgnoreCollision(col, character.col, true);
-            }
-        }
-
-        var allEnemies = FindObjectsByType<Enemy25DController>(FindObjectsSortMode.None);
-        foreach (var enemy in allEnemies)
-        {
-            if (enemy != null && enemy.GetComponent<Collider2D>() != null)
-            {
-                Collider2D enemyCol = enemy.GetComponent<Collider2D>();
-                Physics2D.IgnoreCollision(col, enemyCol, true);
-            }
-        }
-
-        // 应用击退力
-        rb.AddForce(direction * force, ForceMode2D.Impulse);
-
-        // 记录击退速度用于衰减
-        knockbackVelocity = direction * force;
-        isKnockedBack = true;
-    }
-
-    /// <summary>
-    /// 被击退的方法（从特定位置）
-    /// </summary>
-    public void TakeKnockback(Vector2 fromPosition, float force)
-    {
-        Vector2 direction = ((Vector2)transform.position - fromPosition).normalized;
-        direction.x = 0; // 保持水平（不影响垂直，X轴是垂直方向）
-        ApplyKnockback(direction, force);
-    }
-
-    /// <summary>
-    /// 物理碰撞检测 - 与敌人碰撞时停止移动
-    /// </summary>
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-    }
-
-    /// <summary>
-    /// 物理碰撞持续检测 - 防止穿过敌人
-    /// </summary>
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-    }
-
-    /// <summary>
-    /// 碰撞离开 - 移除阻挡标记
-    /// </summary>
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-
-    }
-
-    /// <summary>
-    /// Trigger检测 - 用于检测敌人（CircleCollider2D设置为Trigger）
-    /// </summary>
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            // Trigger检测到敌人，可以用于攻击判定、伤害检测等
-            // 物理碰撞由非Trigger Collider处理
-            Debug.Log($"检测到敌人: {other.name}");
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            Debug.Log($"离开敌人范围: {other.name}");
-        }
-    }
-    /// <summary>
-    /// 绘制 Gizmos（用于调试地面检测）
-    /// </summary>
-    private void OnDrawGizmosSelected()
-    {
-        // 绘制移动方向（X轴水平）
-        if (Application.isPlaying && moveDirection.sqrMagnitude > 0.01f)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(transform.position, moveDirection * 2f);
-        }
-
-        // 绘制地面检测射线（XY平面为地面，Z轴是垂直方向）
-        Vector3 checkPosition = transform.position + new Vector3(groundCheckOffset.x, groundCheckOffset.y, 0);
-        if (col != null)
-        {
-            Bounds bounds = col.bounds;
-            checkPosition = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z) + new Vector3(groundCheckOffset.x, groundCheckOffset.y, 0);
-        }
-
-        Gizmos.color = isGrounded ? Color.green : Color.red;
-        Gizmos.DrawRay(checkPosition, Vector3.forward * groundCheckDistance); // Z轴正方向（向上，朝向XY平面）
     }
 }
 
