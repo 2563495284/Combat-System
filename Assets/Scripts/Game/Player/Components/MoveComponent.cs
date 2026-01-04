@@ -9,7 +9,7 @@ public class MoveComponent
     /// <summary>
     /// 组件拥有者
     /// </summary>
-    public PlayerCombatEntity Owner { get; private set; }
+    public CombatEntity Owner { get; private set; }
 
     /// <summary>
     /// 当前移动方向
@@ -46,7 +46,7 @@ public class MoveComponent
     /// </summary>
     private float _knockbackDecay = 10f;
 
-    public MoveComponent(PlayerCombatEntity owner)
+    public MoveComponent(CombatEntity owner)
     {
         Owner = owner;
         Mode = MoveMode.Direction;

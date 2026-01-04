@@ -59,6 +59,7 @@ public partial class CombatEntity : MonoBehaviour
         StateComp = new StateComponent(this);
         AttrComp = new AttrComponent(this);
         SkillComp = new SkillComponent(this);
+        MoveComp = new MoveComponent(this);
 
         // 注册核心事件监听
         RegisterEventListeners();
